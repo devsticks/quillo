@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Quillo</string>
+    <string name="action_undo">UNDO?</string>
+    <string name="action_delete_item">Item Deleted</string>
+
+    <!-- used as tags for shared element transitions -->
+    <string name="transition_drawable">drawable</string>
+    <string name="transition_textbook_description">description</string>
+    <string name="transition_textbook_name">name</string>
+    <string name="title_toolbar">Search</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 </resources>
