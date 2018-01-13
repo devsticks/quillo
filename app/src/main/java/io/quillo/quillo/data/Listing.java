@@ -1,9 +1,5 @@
 package io.quillo.quillo.data;
 
-import java.text.DateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-
 /**
  * Created by Stickells on 13/01/2018.
  */
@@ -11,8 +7,8 @@ import java.util.Date;
 public class Listing {
     private String name;
     private String description;
-    private String sellerId;
-    private String listingId;
+    private String sellerUid;
+    private String uid;
     private int price;
     private String ISBN;
 
@@ -21,12 +17,12 @@ public class Listing {
 
     private int colorResource;
 
-    //    public Listing (String name, String description, String sellerId, String listingId, int price, String ISBN, int dateListed, int numberOfViews, int colorResource) {
+    //    public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, int dateListed, int numberOfViews, int colorResource) {
     public Listing (String name, String description, int colorResource) {
         this.name = name;
         this.description = description;
-//        this.sellerId = sellerId;
-//        this.listingId = listingId;
+//        this.sellerUid = sellerUid;
+//        this.uid = uid;
 //        this.price = price;
 //        this.ISBN = ISBN;
 //        Date date = new Date();
@@ -35,20 +31,20 @@ public class Listing {
         this.colorResource = colorResource;
     }
 
-    public String getSellerId() {
-        return sellerId;
+    public String getSellerUid() {
+        return sellerUid;
     }
 
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
+    public void setSellerUid(String sellerUid) {
+        this.sellerUid = sellerUid;
     }
 
-    public String getListingId() {
-        return listingId;
+    public String getUid() {
+        return uid;
     }
 
-    public void setListingId(String listingId) {
-        this.listingId = listingId;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public int getPrice() {

@@ -6,7 +6,7 @@ package io.quillo.quillo.data;
 
 public class User {
 
-    private String userId;
+    private String uid;
     private String name;
     private String email;
     private String phoneNumber;
@@ -14,9 +14,9 @@ public class User {
     private String majorId;
 
     //TODO Add in universityId and majorId when these get implemented
-    public User(String userId, String name, String email, String phoneNumber) { //, String universityId, String majorId) {
+    public User(String uid, String name, String email, String phoneNumber) { //, String universityId, String majorId) {
 
-        this.userId = userId;
+        this.uid = uid;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -25,12 +25,12 @@ public class User {
 
 }
 
-    public String getUserId() {
-        return userId;
+    public String getUid() {
+        return uid;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {

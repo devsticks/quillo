@@ -21,6 +21,12 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="Text.Accent">
+        <item name="android:fontFamily">sans-serif-bold</item>
+        <item name="android:color">@color/colorPrimary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

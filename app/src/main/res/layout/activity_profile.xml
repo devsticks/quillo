@@ -1,36 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.quillo.quillo.ui.ProfileActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_profile_activity"
+    tools:context=".ui.ProfileActivity"    >
 
-    <android.support.design.widget.AppBarLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.AppBarLayout
+
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            >
 
-    </android.support.design.widget.AppBarLayout>
+            <RelativeLayout
+                android:id="@+id/header"
+                android:orientation="vertical" android:layout_width="match_parent"
+                android:layout_height="100dp"
+                app:layout_scrollFlags="scroll"
+                android:background="#ffffff">
 
-    <include layout="@layout/content_profile" />
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/tlb_profile_activity"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:background="@color/colorPrimaryDark"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginRight="0dp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:layout_marginLeft="0dp"
+                    app:layout_constraintLeft_toLeftOf="parent" />
 
+            </RelativeLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rec_profile_listing_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="0dp"
+
+            android:scrollbars="none"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tlb_home_search_activity"
+            tools:listitem="@layout/listing_cell" />
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <!--TODO Fix below to work...-->
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_add_listing"
+        android:id="@+id/fab_create_new_item_TOFIX"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:tint="@color/colorAccent"
-        android:visibility="visible"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_add_black_24dp"
+        app:elevation="6dp"
         app:fabSize="normal"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:rippleColor="@color/transparentBackgroundBlack" />
 
-</android.support.design.widget.CoordinatorLayout>
+</android.support.constraint.ConstraintLayout>

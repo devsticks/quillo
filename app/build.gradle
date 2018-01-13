@@ -7,6 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 26
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "io.quillo.quillo"
         minSdkVersion 17
         targetSdkVersion 26

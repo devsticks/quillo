@@ -46,10 +46,10 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_search);
 
-        recyclerView = (RecyclerView) findViewById(R.id.rec_list_activity);
+        recyclerView = (RecyclerView) findViewById(R.id.rec_home_search_listing_holder);
         layoutInflater = getLayoutInflater();
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_list_activity);
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_home_search_activity);
         toolbar.setTitle(R.string.title_toolbar);
 //        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
@@ -111,7 +111,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
         listOfData.add(newListing);
         int endOfList = listOfData.size() - 1;
         adapter.notifyItemInserted(endOfList);
-        recyclerView.smoothScrollToPosition(endOfList);
+        //recyclerView.smoothScrollToPosition(endOfList);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
     @Override
     public void showUndoSnackBar() {
         Snackbar.make(
-                findViewById(R.id.root_list_activity),
+                findViewById(R.id.root_home_search_activity),
                 getString(R.string.action_delete_item),
                 Snackbar.LENGTH_LONG
         ).setAction(R.string.action_undo, new View.OnClickListener() {
