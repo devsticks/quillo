@@ -22,16 +22,28 @@
         android:layout_marginLeft="0dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rec_home_search_listing_holder"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/tlb_home_search_activity" />
+    <FrameLayout
+        android:id="@+id/sample_content_fragment"
+        android:layout_weight="2"
+        android:layout_width="match_parent"
+        android:layout_height="0px" />
+
+    <!--<fragment android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:name="io.quillo.quillo.ui.ListingRecyclerFragment"-->
+        <!--android:id="@+id/fragment_home_search_listings"-->
+        <!--android:layout_gravity="center"/>-->
+
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/rec_home_search_listing_holder"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="0dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.0"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--android:layout_marginTop="0dp"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/tlb_home_search_activity" />-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_create_new_item"
