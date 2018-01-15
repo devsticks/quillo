@@ -1,10 +1,12 @@
 package io.quillo.quillo.data;
 
+import java.io.Serializable;
+
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class User {
+public class Person implements Serializable {
 
     private String uid;
     private String name;
@@ -14,7 +16,7 @@ public class User {
     private String majorId;
 
     //TODO Add in universityId and majorId when these get implemented
-    public User(String uid, String name, String email, String phoneNumber) { //, String universityId, String majorId) {
+    public Person(String uid, String name, String email, String phoneNumber) { //, String universityId, String majorId) {
 
         this.uid = uid;
         this.name = name;

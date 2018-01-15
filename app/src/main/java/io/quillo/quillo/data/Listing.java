@@ -1,10 +1,12 @@
 package io.quillo.quillo.data;
 
+import java.io.Serializable;
+
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class Listing {
+public class Listing implements Serializable {
     private String name;
     private String description;
     private String sellerUid;

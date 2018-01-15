@@ -1,12 +1,16 @@
-package io.quillo.quillo.ui;
+package io.quillo.quillo.views;
+
+/**
+ * Created by Stickells on 15/01/2018.
+ */
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,55 +21,72 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import io.quillo.quillo.R;
-import io.quillo.quillo.data.FakeDatabase;
-import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.logic.Controller;
-
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.quillo.quillo.R;
+import io.quillo.quillo.data.Database;
+import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.data.Person;
+import io.quillo.quillo.handlers.HomeSearchController;
+import io.quillo.quillo.handlers.ProfileController;
+import io.quillo.quillo.interfaces.sellerListener;
 
-public class HomeSearchActivity extends AppCompatActivity implements HomeSearchInterface, View.OnClickListener {
+public class ProfileActivity extends AppCompatActivity implements sellerListener, View.OnClickListener {
 
-    private static final String EXTRA_TEXTBOOK_NAME = "EXTRA_TEXTBOOK_NAME";
-    private static final String EXTRA_TEXTBOOK_DESCRIPTION = "EXTRA_TEXTBOOK_DESCRIPTION";
-    private static final String EXTRA_DRAWABLE = "EXTRA_DRAWABLE";
+    private static final String EXTRA_SELLER = "EXTRA_SELLER";
+    private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
+    private static final String EXTRA_LISTING = "EXTRA_LISTING";
 
-    private List<Listing> listOfData;
+    private List<Listing> sellerListings;
+    private boolean isViewingOwnProfile;
+    private Person seller;
+    private Database database;
+
+    private ProfileController controller;
 
     private LayoutInflater layoutInflater;
-    private RecyclerView recyclerView;
+    private RecyclerView mRecyclerView;
     private CustomAdapter adapter;
     private android.support.v7.widget.Toolbar toolbar;
-
-    private Controller controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_search);
+        setContentView(R.layout.activity_profile);
 
-        recyclerView = (RecyclerView) findViewById(R.id.rec_home_search_listing_holder);
+        Intent i = getIntent();
+        database = (Database) i.getSerializableExtra(EXTRA_DATABASE);
+        seller = (Person) i.getSerializableExtra(EXTRA_SELLER);
+
+        //TODO Fill appropriate currentUser vibe here
+        // isViewingOwnProfile = seller.getUid().equals(currentUser.getUid());
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.rec_profile_listing_holder);
         layoutInflater = getLayoutInflater();
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_home_search_activity);
+        // TODO Toolbar code needed?
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_profile_activity);
         toolbar.setTitle(R.string.title_toolbar);
 //        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
 
-        controller = new Controller(this, new FakeDatabase());
+        controller = new ProfileController(this, database);
 
-        FloatingActionButton fabulous = (FloatingActionButton) findViewById(R.id.fab_create_new_item);
-        fabulous.setOnClickListener(this);
+        FloatingActionButton mAddListingButton = (FloatingActionButton) findViewById(R.id.fab_add_listing);
+        mAddListingButton.setOnClickListener(this);
+        if (isViewingOwnProfile) {
+            mAddListingButton.setVisibility(View.VISIBLE);
+        } else {
+            mAddListingButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
-    public void startListingDetailActivity(String textbookName, String textbookDescription, int colorResource, View viewRoot) {
+    public void startListingDetailActivity(Listing listing, View viewRoot) {
         Intent i = new Intent(this, ListingDetailActivity.class);
-        i.putExtra(EXTRA_TEXTBOOK_NAME, textbookName);
-        i.putExtra(EXTRA_TEXTBOOK_DESCRIPTION, textbookDescription);
-        i.putExtra(EXTRA_DRAWABLE, colorResource);
+        i.putExtra(EXTRA_DATABASE, database);
+        i.putExtra(EXTRA_LISTING, listing);
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //            getWindow().setEnterTransition(new Fade(Fade.IN));
@@ -83,53 +104,53 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
 //            startActivity(i, options.toBundle());
 //
 //        } else {
-            startActivity(i);
+        startActivity(i);
 //        }
     }
 
     @Override
-    public void setUpAdapterAndView(List<Listing> listOfData) {
-        this.listOfData = listOfData;
+    public void setUpRecyclerAdapterAndView(List<Listing> listings) {
+        this.sellerListings = listings;
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
-        recyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
         adapter = new CustomAdapter();
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(adapter);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
-        itemDecoration.setDrawable(ContextCompat.getDrawable(HomeSearchActivity.this, R.drawable.divider_white));
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), layoutManager.getOrientation());
+        itemDecoration.setDrawable(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.divider_white));
 
-        recyclerView.addItemDecoration(itemDecoration);
+        mRecyclerView.addItemDecoration(itemDecoration);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
-    public void addNewListingToView(Listing newListing) {
-        listOfData.add(newListing);
-        int endOfList = listOfData.size() - 1;
+    public void onSellerListingLoaded(Listing newListing) {
+        sellerListings.add(newListing);
+        int endOfList = sellerListings.size() - 1;
         adapter.notifyItemInserted(endOfList);
-        //recyclerView.smoothScrollToPosition(endOfList);
+        //mRecyclerView.smoothScrollToPosition(endOfList);
     }
 
     @Override
     public void deleteListingCellAt(int position) {
-        listOfData.remove(position);
+        sellerListings.remove(position);
         adapter.notifyItemRemoved(position);
     }
 
     @Override
     public void showUndoSnackBar() {
         Snackbar.make(
-                findViewById(R.id.root_home_search_activity),
+                findViewById(R.id.root_profile_activity),
                 getString(R.string.action_delete_item),
                 Snackbar.LENGTH_LONG
         ).setAction(R.string.action_undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controller.onUndoConfirmed();
+                controller.handleUndoDeleteConfirmed();
             }
         })
                 .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
@@ -137,7 +158,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
 
-                        controller.onSnackbarTimeout();
+                        controller.handleSnackbarTimeout();
                     }
                 })
                 .show();
@@ -145,7 +166,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
 
     @Override
     public void insertListingCellAt(int position, Listing listItem) {
-        listOfData.add(position, listItem);
+        sellerListings.add(position, listItem);
         adapter.notifyItemInserted(position);
     }
 
@@ -153,7 +174,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
     public void onClick(View view) {
         int viewId = view.getId();
 
-        if (viewId == R.id.fab_create_new_item) {
+        if (viewId == R.id.fab_add_listing) {
             controller.createNewListing();
         }
     }
@@ -169,7 +190,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
 
         @Override
         public void onBindViewHolder(ListingCellViewHolder holder, int position) {
-            Listing currentItem = listOfData.get(position);
+            Listing currentItem = sellerListings.get(position);
 
             holder.mTextbookIcon.setImageResource(currentItem.getColorResource());
             holder.mTextbookDescription.setText(currentItem.getDescription());
@@ -179,7 +200,7 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
 
         @Override
         public int getItemCount() {
-            return listOfData.size();
+            return sellerListings.size();
         }
 
         class ListingCellViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -204,9 +225,9 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
 
             @Override
             public void onClick(View view) {
-                Listing listing = listOfData.get(this.getAdapterPosition());
+                Listing listing = sellerListings.get(this.getAdapterPosition());
 
-                controller.onListingCellClick(listing, view);
+                controller.handleListingCellClick(listing, view);
             }
         }
 
@@ -232,9 +253,9 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
-                controller.onListingSwiped(
+                controller.handleListingSwiped(
                         position,
-                        listOfData.get(position)
+                        sellerListings.get(position)
                 );
             }
         };
@@ -243,3 +264,6 @@ public class HomeSearchActivity extends AppCompatActivity implements HomeSearchI
     }
 
 }
+
+
+

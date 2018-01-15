@@ -1,24 +1,24 @@
-package io.quillo.quillo.logic;
+package io.quillo.quillo.handlers;
 
 import android.view.View;
 
-import io.quillo.quillo.data.DatabaseListener;
+import io.quillo.quillo.data.Database;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.ui.HomeSearchInterface;
+import io.quillo.quillo.views.ProfileActivity;
 
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class Controller {
+public class ProfileController {
 
     private Listing temporaryListing;
     private int temporaryListingPosition;
 
-    private HomeSearchInterface view;
-    private DatabaseListener database;
+    private ProfileActivity view;
+    private Database database;
 
-    public Controller(HomeSearchInterface view, DatabaseListener database) {
+    public ProfileController(ProfileActivity view, Database database) {
         this.view = view;
         this.database = database;
 
@@ -26,22 +26,22 @@ public class Controller {
     }
 
     public void getListFromDataSource() {
-        view.setUpAdapterAndView(
+        view.setUpRecyclerAdapterAndView(
                 database.getListings()
         );
     }
 
-    public void onListingCellClick(Listing listing, View viewRoot) {
-        view.startListingDetailActivity(listing.getName(), listing.getDescription(), listing.getColorResource(), viewRoot);
+    public void handleListingCellClick(Listing listing, View viewRoot) {
+        view.startListingDetailActivity(listing, viewRoot);
     }
 
     public void createNewListing() {
         Listing newListing = database.createNewListing();
 
-        view.addNewListingToView(newListing);
+        view.onSellerListingLoaded(newListing);
     }
 
-    public void onListingSwiped(int position, Listing listing) {
+    public void handleListingSwiped(int position, Listing listing) {
         database.deleteListing (listing);
         view.deleteListingCellAt(position);
 
@@ -51,7 +51,7 @@ public class Controller {
         view.showUndoSnackBar();
     }
 
-    public void onUndoConfirmed() {
+    public void handleUndoDeleteConfirmed() {
         if (temporaryListing != null) {
             database.insertListing(temporaryListing);
             view.insertListingCellAt(temporaryListingPosition, temporaryListing);
@@ -61,7 +61,7 @@ public class Controller {
         }
     }
 
-    public void onSnackbarTimeout() {
+    public void handleSnackbarTimeout() {
 
     }
 }

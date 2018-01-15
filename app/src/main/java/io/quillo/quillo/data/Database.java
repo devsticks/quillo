@@ -1,5 +1,6 @@
 package io.quillo.quillo.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,7 +11,7 @@ import io.quillo.quillo.R;
  * Created by Stickells on 13/01/2018.
  */
 
-public class FakeDatabase implements DatabaseListener {
+public class Database implements Serializable {
 
     private static final int sizeOfCollection = 12;
     private Random random;
@@ -43,12 +44,18 @@ public class FakeDatabase implements DatabaseListener {
             R.drawable.yellow_drawable
     };
 
+    private final String[] names = {
+            "Dev",
+            "Tom",
+            "Senyo",
+            "Tamir"
+    };
 
-    public FakeDatabase() {
+
+    public Database() {
         random = new Random();
     }
 
-    @Override
     public List<Listing> getListings() {
 
         // TODO Pull listings from database
@@ -82,7 +89,6 @@ public class FakeDatabase implements DatabaseListener {
         return listing;
     }
 
-    @Override
     public Listing createNewListing() {
 
         int randOne = random.nextInt(4);
@@ -93,12 +99,10 @@ public class FakeDatabase implements DatabaseListener {
 
     }
 
-    @Override
     public void deleteListing(Listing listing) {
 
     }
 
-    @Override
     public void insertListing(Listing listing) {
 
     }

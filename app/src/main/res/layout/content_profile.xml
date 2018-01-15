@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="io.quillo.quillo.ui.ProfileActivity"
+    tools:context="io.quillo.quillo.views.ProfileActivity"
     tools:showIn="@layout/activity_profile">
 
 </android.support.constraint.ConstraintLayout>
