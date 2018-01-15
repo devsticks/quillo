@@ -2,9 +2,10 @@ package io.quillo.quillo.handlers;
 
 import android.view.View;
 
+import java.util.List;
+
 import io.quillo.quillo.data.Database;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.interfaces.listingsListener;
 import io.quillo.quillo.views.HomeSearchActivity;
 
 /**
@@ -15,18 +16,21 @@ public class HomeSearchController {
 
     private HomeSearchActivity view;
     private Database database;
+    private List<Listing> listings;
 
     public HomeSearchController(HomeSearchActivity view, Database database) {
         this.view = view;
         this.database = database;
 
-        getListFromDataSource();
+        getListingsFromDatabase();
     }
 
-    public void getListFromDataSource() {
-        view.setUpRecyclerAdapterAndView(
-                database.getListings()
-        );
+    public void getListingsFromDatabase() {
+        listings = database.getListings();
+    }
+
+    public List<Listing> getListings() {
+        return listings;
     }
 
     public void handleListingCellClick(Listing listing, View viewRoot) {
@@ -36,7 +40,7 @@ public class HomeSearchController {
     public void createNewListing() {
         Listing newListing = database.createNewListing();
 
-        view.onListingAdded(newListing);
+        view.onListingLoaded(newListing);
     }
 
 }

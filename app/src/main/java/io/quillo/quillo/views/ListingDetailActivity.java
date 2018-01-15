@@ -12,12 +12,13 @@ import io.quillo.quillo.data.Database;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.handlers.ListingDetailController;
+import io.quillo.quillo.interfaces.sellerListener;
 
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class ListingDetailActivity extends AppCompatActivity {
+public class ListingDetailActivity extends AppCompatActivity implements sellerListener {
 
     private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
     private static final String EXTRA_SELLER = "EXTRA_SELLER";
@@ -26,13 +27,17 @@ public class ListingDetailActivity extends AppCompatActivity {
     private TextView mListingName;
     private TextView mListingDescription;
     private View mListingImage;
+
     private LinearLayout mSellerProfileContainer;
     private ImageView mSellerProfilePic;
+    private TextView mSellerName;
 
     private ListingDetailController controller;
     private Person seller;
     private Database database;
     private Listing listing;
+
+    private boolean isViewingOwnListing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +46,7 @@ public class ListingDetailActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         database = (Database) i.getSerializableExtra(EXTRA_DATABASE);
-        seller = (Person) i.getSerializableExtra(EXTRA_SELLER);
         listing = (Listing) i.getSerializableExtra(EXTRA_LISTING);
-
-        mListingName = (TextView) findViewById(R.id.lbl_textbook_name);
-        mListingDescription = (TextView) findViewById(R.id.lbl_textbook_description);
-        mListingImage = findViewById(R.id.imv_colored_background);
-        mSellerProfilePic = findViewById(R.id.imv_listing_detail_seller_profile_pic);
 
         setUpView();
 
@@ -55,15 +54,22 @@ public class ListingDetailActivity extends AppCompatActivity {
 
     }
 
-    // Fills UI with values from database and sets click handlers, etc
+// Fills UI with values from database and sets click handlers, etc
     public void setUpView() {
+    //Listing goodies
+        mListingName = (TextView) findViewById(R.id.lbl_textbook_name);
+        mListingDescription = (TextView) findViewById(R.id.lbl_textbook_description);
+        mListingImage = findViewById(R.id.imv_colored_background);
 
         mListingName.setText(listing.getName());
         mListingDescription.setText(listing.getDescription());
 
+    //Seller goodies
+        mSellerProfilePic = findViewById(R.id.imv_listing_detail_seller_profile_pic);
+        mSellerName = (TextView) findViewById(R.id.lbl_listing_detail_seller_name);
+
         //TODO How do pictures get fetched and added to the view?
         // mListingImage.setBackgroundResource( drawableResourceExtra );
-        // mSellerProfilePic.setImageResource( ... );
 
         mSellerProfileContainer = findViewById(R.id.btn_seller_profile);
         mSellerProfileContainer.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +81,18 @@ public class ListingDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onSellerLoaded(Person seller) {
+
+        this.seller = seller;
+        //TODO Fill appropriate currentUser vibe here
+        // isViewingOwnListing = seller.getUid().equals(currentUser.getUid());
+
+        // mSellerProfilePic.setImageResource( ... );
+        mSellerName.setText(seller.getName());
+
+    }
+
     public void startProfileActivity(Person seller, View viewRoot) {
         Intent i = new Intent(this, ProfileActivity.class);
         i.putExtra(EXTRA_DATABASE, database);
@@ -82,6 +100,5 @@ public class ListingDetailActivity extends AppCompatActivity {
 
         startActivity(i);
     }
-
 
 }

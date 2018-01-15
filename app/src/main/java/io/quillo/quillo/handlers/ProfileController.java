@@ -2,6 +2,8 @@ package io.quillo.quillo.handlers;
 
 import android.view.View;
 
+import java.util.List;
+
 import io.quillo.quillo.data.Database;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.views.ProfileActivity;
@@ -17,18 +19,21 @@ public class ProfileController {
 
     private ProfileActivity view;
     private Database database;
+    private List<Listing> listings;
 
     public ProfileController(ProfileActivity view, Database database) {
         this.view = view;
         this.database = database;
 
-        getListFromDataSource();
+        getListingsFromDatabase();
     }
 
-    public void getListFromDataSource() {
-        view.setUpRecyclerAdapterAndView(
-                database.getListings()
-        );
+    public void getListingsFromDatabase() {
+        listings = database.getListings();
+    }
+
+    public List<Listing> getListings() {
+        return listings;
     }
 
     public void handleListingCellClick(Listing listing, View viewRoot) {

@@ -100,7 +100,7 @@
             app:srcCompat="@mipmap/ic_launcher_round" />
 
         <TextView
-            android:id="@+id/groupTitle"
+            android:id="@+id/lbl_listing_detail_seller_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"

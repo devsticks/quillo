@@ -19,11 +19,11 @@ public class ListingDetailController {
         this.view = view;
         this.database = database;
 
-        getListingFromDatabase();
+        getSellerFromDatabase();
     }
 
-    public void getListingFromDatabase() {
-
+    public void getSellerFromDatabase() {
+        view.onSellerLoaded(new Person("arra", "Amy Stickells", "akjsdlkj@lkjf.com", "080351"));
     }
 
     public void handleSellerDetailButtonClick (Person person, View viewRoot) {

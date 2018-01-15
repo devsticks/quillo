@@ -51,7 +51,6 @@ public class Database implements Serializable {
             "Tamir"
     };
 
-
     public Database() {
         random = new Random();
     }

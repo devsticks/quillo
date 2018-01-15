@@ -29,7 +29,7 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
     private static final String EXTRA_LISTING = "EXTRA_LISTING";
 
     private LayoutInflater layoutInflater;
-    private RecyclerView recyclerView;
+    private RecyclerView mRecyclerView;
     private CustomAdapter adapter;
     private android.support.v7.widget.Toolbar toolbar;
 
@@ -44,8 +44,8 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_search);
+        //ButterKnife.bind(this);
 
-        recyclerView = (RecyclerView) findViewById(R.id.rec_home_search_listing_holder);
         layoutInflater = getLayoutInflater();
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_home_search_activity);
@@ -57,7 +57,9 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
         databaseMade = true;
 
         controller = new HomeSearchController(this, database);
+        listings = controller.getListings();
 
+        setUpView();
     }
 
     //TODO The majority of this code and functionality is duplicated in ProfileActivity, fix up.
@@ -70,27 +72,26 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
         startActivity(i);
     }
 
-    public void setUpRecyclerAdapterAndView(List<Listing> listings) {
-        this.listings = listings;
+    public void setUpView() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.rec_home_search_listing_holder);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
-        recyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(layoutManager);
         adapter = new CustomAdapter();
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(adapter);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(HomeSearchActivity.this, R.drawable.divider_white));
-
-        recyclerView.addItemDecoration(itemDecoration);
+        mRecyclerView.addItemDecoration(itemDecoration);
     }
 
     @Override
-    public void onListingAdded(Listing newListing) {
+    public void onListingLoaded(Listing newListing) {
         listings.add(newListing);
         int endOfList = listings.size() - 1;
         adapter.notifyItemInserted(endOfList);
-        //recyclerView.smoothScrollToPosition(endOfList);
+        //mRecyclerView.smoothScrollToPosition(endOfList);
     }
 
     private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ListingCellViewHolder> {

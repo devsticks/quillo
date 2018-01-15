@@ -12,6 +12,6 @@ import java.util.List;
 
 public interface listingsListener {
 
-    void onListingAdded(Listing listing);
+    void onListingLoaded(Listing listing);
 
 }

@@ -28,18 +28,17 @@ import io.quillo.quillo.R;
 import io.quillo.quillo.data.Database;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.handlers.HomeSearchController;
 import io.quillo.quillo.handlers.ProfileController;
-import io.quillo.quillo.interfaces.sellerListener;
+import io.quillo.quillo.interfaces.sellerListingsListener;
 
-public class ProfileActivity extends AppCompatActivity implements sellerListener, View.OnClickListener {
+public class ProfileActivity extends AppCompatActivity implements sellerListingsListener, View.OnClickListener {
 
     private static final String EXTRA_SELLER = "EXTRA_SELLER";
     private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
     private static final String EXTRA_LISTING = "EXTRA_LISTING";
 
     private List<Listing> sellerListings;
-    private boolean isViewingOwnProfile;
+    private boolean isViewingOwnProfile = false;
     private Person seller;
     private Database database;
 
@@ -58,11 +57,9 @@ public class ProfileActivity extends AppCompatActivity implements sellerListener
         Intent i = getIntent();
         database = (Database) i.getSerializableExtra(EXTRA_DATABASE);
         seller = (Person) i.getSerializableExtra(EXTRA_SELLER);
-
         //TODO Fill appropriate currentUser vibe here
         // isViewingOwnProfile = seller.getUid().equals(currentUser.getUid());
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.rec_profile_listing_holder);
         layoutInflater = getLayoutInflater();
 
         // TODO Toolbar code needed?
@@ -72,14 +69,9 @@ public class ProfileActivity extends AppCompatActivity implements sellerListener
         toolbar.setTitleMarginStart(72);
 
         controller = new ProfileController(this, database);
+        sellerListings = controller.getListings();
 
-        FloatingActionButton mAddListingButton = (FloatingActionButton) findViewById(R.id.fab_add_listing);
-        mAddListingButton.setOnClickListener(this);
-        if (isViewingOwnProfile) {
-            mAddListingButton.setVisibility(View.VISIBLE);
-        } else {
-            mAddListingButton.setVisibility(View.INVISIBLE);
-        }
+        setUpView();
     }
 
     @Override
@@ -109,8 +101,17 @@ public class ProfileActivity extends AppCompatActivity implements sellerListener
     }
 
     @Override
-    public void setUpRecyclerAdapterAndView(List<Listing> listings) {
-        this.sellerListings = listings;
+    public void setUpView() {
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.rec_profile_listing_holder);
+
+        FloatingActionButton mAddListingButton = (FloatingActionButton) findViewById(R.id.fab_add_listing);
+        mAddListingButton.setOnClickListener(this);
+        if (isViewingOwnProfile) {
+            mAddListingButton.setVisibility(View.VISIBLE);
+        } else {
+            mAddListingButton.setVisibility(View.INVISIBLE);
+        }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
