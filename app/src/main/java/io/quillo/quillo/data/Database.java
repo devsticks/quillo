@@ -15,6 +15,7 @@ public class Database implements Serializable {
 
     private static final int sizeOfCollection = 12;
     private Random random;
+    private List<Listing> listings;
 
     private final String[] textbookIds = {
             "1",
@@ -52,21 +53,25 @@ public class Database implements Serializable {
     };
 
     public Database() {
-        random = new Random();
-    }
-
-    public List<Listing> getListings() {
-
         // TODO Pull listings from database
-        ArrayList<Listing> listings = new ArrayList<>();
 
         // TODO change to actual number of listings to load
         int numberOfListingsToLoad = 4;
 
-        for (int i=0; i<numberOfListingsToLoad; i++) {
-            listings.add(createNewListing());
-        }
+        random = new Random();
+        listings = new ArrayList<Listing>();
 
+        for (int i=0; i<numberOfListingsToLoad; i++) {
+            addListingToDatabase(createNewListing());
+        }
+    }
+
+
+//////////////////////////////////////////////////////////////////////////////
+    // LISTING THINGS //
+/////////////////////////////////////////////////////////////////////////////
+
+    public List<Listing> getListings() {
         return listings;
     }
 
@@ -98,6 +103,11 @@ public class Database implements Serializable {
 
     }
 
+    public void addListingToDatabase(Listing listing) {
+        // TODO Fakery here too...
+        listings.add(listing);
+    }
+
     public void deleteListing(Listing listing) {
 
     }
@@ -105,6 +115,15 @@ public class Database implements Serializable {
     public void insertListing(Listing listing) {
 
     }
+
+    public void updateListing(Listing listing) {
+
+    }
+
+//////////////////////////////////////////////////////////////////////////////
+    // THINGS //
+/////////////////////////////////////////////////////////////////////////////
+
 
 
 }

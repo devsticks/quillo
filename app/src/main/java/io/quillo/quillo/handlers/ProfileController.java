@@ -41,9 +41,11 @@ public class ProfileController {
     }
 
     public void createNewListing() {
-        Listing newListing = database.createNewListing();
 
-        view.onSellerListingLoaded(newListing);
+
+//        Listing newListing = database.createNewListing();
+//
+//        view.onSellerListingLoaded(newListing);
     }
 
     public void handleListingSwiped(int position, Listing listing) {

@@ -49,7 +49,7 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
         layoutInflater = getLayoutInflater();
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_home_search_activity);
-        toolbar.setTitle(R.string.title_toolbar);
+        toolbar.setTitle(R.string.title_activity_search);
 //        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
 

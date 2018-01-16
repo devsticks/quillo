@@ -38,7 +38,8 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
     private static final String EXTRA_LISTING = "EXTRA_LISTING";
 
     private List<Listing> sellerListings;
-    private boolean isViewingOwnProfile = false;
+    private boolean isViewingOwnProfile = true;
+    private boolean isLoggedIn = false;
     private Person seller;
     private Database database;
 
@@ -64,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
 
         // TODO Toolbar code needed?
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_profile_activity);
-        toolbar.setTitle(R.string.title_toolbar);
+        toolbar.setTitle(R.string.title_activity_profile);
 //        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
 
@@ -80,24 +81,21 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
         i.putExtra(EXTRA_DATABASE, database);
         i.putExtra(EXTRA_LISTING, listing);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            getWindow().setEnterTransition(new Fade(Fade.IN));
-//            getWindow().setEnterTransition(new Fade(Fade.OUT));
-//
-//            ActivityOptions options = ActivityOptions
-//                    .makeSceneTransitionAnimation(this,
-//                            new Pair<View, String>(viewRoot.findViewById(R.id.imv_list_item_circle),
-//                                    getString(R.string.transition_drawable)),
-//                            new Pair<View, String>(viewRoot.findViewById(R.id.lbl_message),
-//                                    getString(R.string.transition_message)),
-//                            new Pair<View, String>(viewRoot.findViewById(R.id.lbl_date_and_time),
-//                                    getString(R.string.transition_time_and_date)));
-//
-//            startActivity(i, options.toBundle());
-//
-//        } else {
         startActivity(i);
-//        }
+    }
+
+    public void startAddEditListingActivity() {
+        Intent i = new Intent(this, AddEditListingActivity.class);
+        i.putExtra(EXTRA_DATABASE, database);
+        i.putExtra(EXTRA_SELLER, seller);
+
+        startActivity(i);
+    }
+
+    public void startLoginActivity() {
+        Intent i = new Intent(this, LoginActivity.class);
+
+        startActivity(i);
     }
 
     @Override
@@ -176,7 +174,11 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
         int viewId = view.getId();
 
         if (viewId == R.id.fab_add_listing) {
-            controller.createNewListing();
+            if (isLoggedIn) {
+                startAddEditListingActivity();
+            } else {
+                startLoginActivity();
+            }
         }
     }
 

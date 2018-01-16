@@ -25,22 +25,16 @@ public class HomeSearchController {
         getListingsFromDatabase();
     }
 
+    public List<Listing> getListings () {
+        return listings;
+    }
+
     public void getListingsFromDatabase() {
         listings = database.getListings();
     }
 
-    public List<Listing> getListings() {
-        return listings;
-    }
-
     public void handleListingCellClick(Listing listing, View viewRoot) {
         view.startListingDetailActivity(listing, viewRoot);
-    }
-
-    public void createNewListing() {
-        Listing newListing = database.createNewListing();
-
-        view.onListingLoaded(newListing);
     }
 
 }
