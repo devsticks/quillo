@@ -1,5 +1,6 @@
 package io.quillo.quillo.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,10 +11,11 @@ import io.quillo.quillo.R;
  * Created by Stickells on 13/01/2018.
  */
 
-public class FakeDatabase implements DatabaseListener {
+public class Database implements Serializable {
 
     private static final int sizeOfCollection = 12;
     private Random random;
+    private List<Listing> listings;
 
     private final String[] textbookIds = {
             "1",
@@ -43,24 +45,33 @@ public class FakeDatabase implements DatabaseListener {
             R.drawable.yellow_drawable
     };
 
+    private final String[] names = {
+            "Dev",
+            "Tom",
+            "Senyo",
+            "Tamir"
+    };
 
-    public FakeDatabase() {
-        random = new Random();
-    }
-
-    @Override
-    public List<Listing> getListings() {
-
+    public Database() {
         // TODO Pull listings from database
-        ArrayList<Listing> listings = new ArrayList<>();
 
         // TODO change to actual number of listings to load
         int numberOfListingsToLoad = 4;
 
-        for (int i=0; i<numberOfListingsToLoad; i++) {
-            listings.add(createNewListing());
-        }
+        random = new Random();
+        listings = new ArrayList<Listing>();
 
+        for (int i=0; i<numberOfListingsToLoad; i++) {
+            addListingToDatabase(createNewListing());
+        }
+    }
+
+
+//////////////////////////////////////////////////////////////////////////////
+    // LISTING THINGS //
+/////////////////////////////////////////////////////////////////////////////
+
+    public List<Listing> getListings() {
         return listings;
     }
 
@@ -82,7 +93,6 @@ public class FakeDatabase implements DatabaseListener {
         return listing;
     }
 
-    @Override
     public Listing createNewListing() {
 
         int randOne = random.nextInt(4);
@@ -93,15 +103,27 @@ public class FakeDatabase implements DatabaseListener {
 
     }
 
-    @Override
+    public void addListingToDatabase(Listing listing) {
+        // TODO Fakery here too...
+        listings.add(listing);
+    }
+
     public void deleteListing(Listing listing) {
 
     }
 
-    @Override
     public void insertListing(Listing listing) {
 
     }
+
+    public void updateListing(Listing listing) {
+
+    }
+
+//////////////////////////////////////////////////////////////////////////////
+    // THINGS //
+/////////////////////////////////////////////////////////////////////////////
+
 
 
 }

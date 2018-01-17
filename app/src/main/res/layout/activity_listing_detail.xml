@@ -5,7 +5,7 @@
     android:id="@+id/root_listing_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ListingDetailActivity">
+    tools:context=".views.ListingDetailActivity">
 
 
     <ImageView
@@ -77,6 +77,7 @@
         app:srcCompat="@drawable/ic_message_black_24dp" />
 
     <LinearLayout
+        android:id="@+id/btn_seller_profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -89,7 +90,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/imv_listing_detail_seller_profile_pic"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="10dp"
@@ -99,7 +100,7 @@
             app:srcCompat="@mipmap/ic_launcher_round" />
 
         <TextView
-            android:id="@+id/groupTitle"
+            android:id="@+id/lbl_listing_detail_seller_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
