@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "719156433468",
+    "firebase_url": "https://quilloapp.firebaseio.com",
+    "project_id": "quilloapp",
+    "storage_bucket": "quilloapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719156433468:android:a8065576f3c95349",
+        "android_client_info": {
+          "package_name": "io.quillo.quillo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "719156433468-78slosso1g9ub05gclgmsa7snbh15cd4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.quillo.quillo",
+            "certificate_hash": "5bdf52c721288421895d83a60b075e8b00726a65"
+          }
+        },
+        {
+          "client_id": "719156433468-g61agkhufspq72d17ql7c07no9n76tst.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDX6nQf9ZuJ_cX8qlFchvZT7iTWeD6zsQc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "719156433468-m1qj61gpi9mtalmk0b6pk9qmskhc7v4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.Quillo.Quillo"
+              }
+            },
+            {
+              "client_id": "719156433468-g61agkhufspq72d17ql7c07no9n76tst.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
