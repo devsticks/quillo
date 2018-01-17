@@ -143,7 +143,7 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
             public void onClick(View view) {
                 Listing listing = listings.get(this.getAdapterPosition());
 
-                controller.handleListingCellClick(listing, view);
+                startListingDetailActivity(listing, view);
             }
         }
 

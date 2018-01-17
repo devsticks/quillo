@@ -33,8 +33,4 @@ public class HomeSearchController {
         listings = database.getListings();
     }
 
-    public void handleListingCellClick(Listing listing, View viewRoot) {
-        view.startListingDetailActivity(listing, viewRoot);
-    }
-
 }

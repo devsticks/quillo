@@ -10,9 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -38,7 +35,7 @@ public class ListingDetailActivity extends AppCompatActivity implements sellerLi
     private Person seller;
     private Database database;
     private Listing listing;
-    private ContactOptionsDialogController dialogController;
+    private ContactOptionsDialogController contactDialogController;
 
     private boolean isViewingOwnListing = false;
 
@@ -64,6 +61,7 @@ public class ListingDetailActivity extends AppCompatActivity implements sellerLi
         setUpView();
 
         controller = new ListingDetailController(this, database);
+
     }
 
 // Fills UI with values from database and sets click handlers, etc
@@ -89,23 +87,8 @@ public class ListingDetailActivity extends AppCompatActivity implements sellerLi
 
     @OnClick(R.id.fab_contact_seller)
     public void handleContactSellerClick (View v) {
-        dialogController.showContactOptionsDialog();
+        contactDialogController.showContactOptionsDialog();
     }
-
-//    @OnClick (R.id.btn_dialog_call)
-//    public void handleDialogCallClick (View v) {
-////        Toast.makeText(v.getContext(), "Calling...", Toast.LENGTH_LONG).show();
-//    }
-//
-//    @OnClick (R.id.btn_dialog_email)
-//    public void handleDialogEmailClick (View v) {
-////        Toast.makeText(v.getContext(), "Emailing...", Toast.LENGTH_LONG).show();
-//    }
-//
-//    @OnClick (R.id.btn_dialog_text)
-//    public void handleDialogTextClick (View v) {
-////        Toast.makeText(v.getContext(), "Texting...", Toast.LENGTH_LONG).show();
-//    }
 
     @Override
     public void onSellerLoaded(Person seller) {
@@ -117,8 +100,7 @@ public class ListingDetailActivity extends AppCompatActivity implements sellerLi
         // mSellerProfilePic.setImageResource( ... );
         mSellerName.setText(seller.getName());
 
-        dialogController = new ContactOptionsDialogController(seller, listing, this);
-
+        contactDialogController = new ContactOptionsDialogController(seller, listing, this);
     }
 
     public void startProfileActivity(Person seller, View viewRoot) {

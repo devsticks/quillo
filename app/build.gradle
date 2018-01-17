@@ -45,6 +45,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
 
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    compile 'de.cketti.mailto:email-intent-builder:1.0.0'
 }
 
 
