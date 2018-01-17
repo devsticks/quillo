@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.Database;
 import io.quillo.quillo.data.Listing;
@@ -44,7 +45,7 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_search);
-        //ButterKnife.bind(this);
+        ButterKnife.bind(this);
 
         layoutInflater = getLayoutInflater();
 

@@ -14,7 +14,7 @@
         android:id="@+id/tlb_home_search_activity"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/PrimaryDark"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="0dp"
         android:layout_marginRight="0dp"
