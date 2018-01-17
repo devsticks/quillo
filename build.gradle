@@ -13,6 +13,7 @@ buildscript {
         classpath "com.jakewharton:butterknife-gradle-plugin:9.0.0-20171223.061039-23"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.google.gms:google-services:3.1.0'
     }
 }
 
