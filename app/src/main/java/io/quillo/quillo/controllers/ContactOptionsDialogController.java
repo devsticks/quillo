@@ -1,4 +1,4 @@
-package io.quillo.quillo.handlers;
+package io.quillo.quillo.controllers;
 
 import android.app.Activity;
 import android.content.Intent;

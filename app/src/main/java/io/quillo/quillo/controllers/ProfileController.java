@@ -1,10 +1,10 @@
-package io.quillo.quillo.handlers;
+package io.quillo.quillo.controllers;
 
 import android.view.View;
 
 import java.util.List;
 
-import io.quillo.quillo.data.Database;
+import io.quillo.quillo.data.CustomFirebaseDatabase;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.views.ProfileActivity;
 
@@ -18,18 +18,18 @@ public class ProfileController {
     private int temporaryListingPosition;
 
     private ProfileActivity view;
-    private Database database;
+    private CustomFirebaseDatabase customFirebaseDatabase;
     private List<Listing> listings;
 
-    public ProfileController(ProfileActivity view, Database database) {
+    public ProfileController(ProfileActivity view, CustomFirebaseDatabase customFirebaseDatabase) {
         this.view = view;
-        this.database = database;
+        this.customFirebaseDatabase = customFirebaseDatabase;
 
         getListingsFromDatabase();
     }
 
     public void getListingsFromDatabase() {
-        listings = database.getListings();
+        //listings = customFirebaseDatabase.getListings();
     }
 
     public List<Listing> getListings() {
@@ -43,13 +43,13 @@ public class ProfileController {
     public void createNewListing() {
 
 
-//        Listing newListing = database.createNewListing();
+//        Listing newListing = customFirebaseDatabase.createNewListing();
 //
 //        view.onSellerListingLoaded(newListing);
     }
 
     public void handleListingSwiped(int position, Listing listing) {
-        database.deleteListing (listing);
+        customFirebaseDatabase.deleteListing (listing);
         view.deleteListingCellAt(position);
 
         temporaryListing = listing;
@@ -60,7 +60,7 @@ public class ProfileController {
 
     public void handleUndoDeleteConfirmed() {
         if (temporaryListing != null) {
-            database.insertListing(temporaryListing);
+            customFirebaseDatabase.insertListing(temporaryListing);
             view.insertListingCellAt(temporaryListingPosition, temporaryListing);
 
             temporaryListing = null;

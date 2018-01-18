@@ -1,8 +1,8 @@
-package io.quillo.quillo.handlers;
+package io.quillo.quillo.controllers;
 
 import android.view.View;
 
-import io.quillo.quillo.data.Database;
+import io.quillo.quillo.data.CustomFirebaseDatabase;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.views.ListingDetailActivity;
 
@@ -13,11 +13,11 @@ import io.quillo.quillo.views.ListingDetailActivity;
 public class ListingDetailController {
 
     private ListingDetailActivity view;
-    private Database database; // ??????
+    private CustomFirebaseDatabase customFirebaseDatabase; // ??????
 
-    public ListingDetailController(ListingDetailActivity view, Database database) {
+    public ListingDetailController(ListingDetailActivity view, CustomFirebaseDatabase customFirebaseDatabase) {
         this.view = view;
-        this.database = database;
+        this.customFirebaseDatabase = customFirebaseDatabase;
 
         getSellerFromDatabase();
     }

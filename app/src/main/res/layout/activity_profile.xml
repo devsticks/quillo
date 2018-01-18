@@ -73,7 +73,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tlb_home_search_activity"
+            app:layout_constraintTop_toBottomOf="@+id/tlb_home_search"
             tools:listitem="@layout/listing_cell" />
 
     </android.support.design.widget.CoordinatorLayout>

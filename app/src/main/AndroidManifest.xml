@@ -25,16 +25,24 @@
         <activity
             android:name=".views.ProfileActivity"
             android:label="@string/title_activity_profile"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".views.LoginActivity"
-            android:theme="@style/AppTheme.Dark"/>
+            android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".views.SignUpEditActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".views.AddEditListingActivity"
+            android:theme="@style/AppTheme.Dark" />
+        <activity
+            android:name=".views.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.AppBarOverlay" >
+        </activity>
+        <activity
+            android:name=".views.SplashActivity"
+            android:label="@string/title_splash"
             android:theme="@style/AppTheme.Dark">
         </activity>
     </application>

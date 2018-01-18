@@ -25,13 +25,13 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.Database;
+import io.quillo.quillo.data.CustomFirebaseDatabase;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.handlers.ProfileController;
-import io.quillo.quillo.interfaces.sellerListingsListener;
+import io.quillo.quillo.controllers.ProfileController;
+import io.quillo.quillo.interfaces.SellerListingsListener;
 
-public class ProfileActivity extends AppCompatActivity implements sellerListingsListener, View.OnClickListener {
+public class ProfileActivity extends AppCompatActivity implements SellerListingsListener, View.OnClickListener {
 
     private static final String EXTRA_SELLER = "EXTRA_SELLER";
     private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
@@ -41,7 +41,7 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
     private boolean isViewingOwnProfile = true;
     private boolean isLoggedIn = false;
     private Person seller;
-    private Database database;
+    private CustomFirebaseDatabase customFirebaseDatabase;
 
     private ProfileController controller;
 
@@ -56,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
         setContentView(R.layout.activity_profile);
 
         Intent i = getIntent();
-        database = (Database) i.getSerializableExtra(EXTRA_DATABASE);
+        customFirebaseDatabase = (CustomFirebaseDatabase) i.getSerializableExtra(EXTRA_DATABASE);
         seller = (Person) i.getSerializableExtra(EXTRA_SELLER);
         //TODO Fill appropriate currentUser vibe here
         // isViewingOwnProfile = seller.getUid().equals(currentUser.getUid());
@@ -69,7 +69,7 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
 //        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
         toolbar.setTitleMarginStart(72);
 
-        controller = new ProfileController(this, database);
+        controller = new ProfileController(this, customFirebaseDatabase);
         sellerListings = controller.getListings();
 
         setUpView();
@@ -78,7 +78,6 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
     @Override
     public void startListingDetailActivity(Listing listing, View viewRoot) {
         Intent i = new Intent(this, ListingDetailActivity.class);
-        i.putExtra(EXTRA_DATABASE, database);
         i.putExtra(EXTRA_LISTING, listing);
 
         startActivity(i);
@@ -86,7 +85,6 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
 
     public void startAddEditListingActivity() {
         Intent i = new Intent(this, AddEditListingActivity.class);
-        i.putExtra(EXTRA_DATABASE, database);
         i.putExtra(EXTRA_SELLER, seller);
 
         startActivity(i);
@@ -195,7 +193,6 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
         public void onBindViewHolder(ListingCellViewHolder holder, int position) {
             Listing currentItem = sellerListings.get(position);
 
-            holder.mTextbookIcon.setImageResource(currentItem.getColorResource());
             holder.mTextbookDescription.setText(currentItem.getDescription());
             holder.mTextbookName.setText(currentItem.getName());
             holder.mLoading.setVisibility(View.INVISIBLE);
@@ -208,7 +205,6 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
 
         class ListingCellViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            private CircleImageView mTextbookIcon;
             private TextView mTextbookDescription;
             private TextView mTextbookName;
             private ViewGroup mContainer;
@@ -217,9 +213,8 @@ public class ProfileActivity extends AppCompatActivity implements sellerListings
             public ListingCellViewHolder(View itemView) {
                 super(itemView);
 
-                this.mTextbookIcon = (CircleImageView) itemView.findViewById(R.id.imv_cell_listing_icon);
-                this.mTextbookDescription = (TextView) itemView.findViewById(R.id.lbl_cell_textbook_description);
-                this.mTextbookName = (TextView) itemView.findViewById(R.id.lbl_cell_textbook_name);
+                this.mTextbookDescription = (TextView) itemView.findViewById(R.id.lbl_cell_author);
+                this.mTextbookName = (TextView) itemView.findViewById(R.id.lbl_cell_name);
                 this.mContainer = (ViewGroup) itemView.findViewById(R.id.root_list_item);
                 this.mLoading = (ProgressBar) itemView.findViewById(R.id.pro_item_data);
 

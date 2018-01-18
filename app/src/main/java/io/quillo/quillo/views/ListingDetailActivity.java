@@ -8,32 +8,28 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.Database;
+import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.handlers.ContactOptionsDialogController;
-import io.quillo.quillo.handlers.ListingDetailController;
-import io.quillo.quillo.interfaces.sellerListener;
+import io.quillo.quillo.controllers.ContactOptionsDialogController;
+import io.quillo.quillo.controllers.ListingDetailController;
+import io.quillo.quillo.interfaces.SellerListener;
 
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class ListingDetailActivity extends AppCompatActivity implements sellerListener {
-
-    private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
-    private static final String EXTRA_SELLER = "EXTRA_SELLER";
-    private static final String EXTRA_LISTING = "EXTRA_LISTING";
+public class ListingDetailActivity extends AppCompatActivity implements SellerListener {
 
     private ListingDetailController controller;
     private Person seller;
-    private Database database;
+    private CustomFirebaseDatabase customFirebaseDatabase;
     private Listing listing;
     private ContactOptionsDialogController contactDialogController;
 
@@ -54,17 +50,18 @@ public class ListingDetailActivity extends AppCompatActivity implements sellerLi
         setContentView(R.layout.activity_listing_detail);
         ButterKnife.bind(this);
 
-        Intent i = getIntent();
-        database = (Database) i.getSerializableExtra(EXTRA_DATABASE);
-        listing = (Listing) i.getSerializableExtra(EXTRA_LISTING);
+        Intent intent = getIntent();
+        listing = (Listing) intent.getSerializableExtra(IntentExtras.EXTRA_LISTING);
+
+        customFirebaseDatabase = new CustomFirebaseDatabase();
 
         setUpView();
 
-        controller = new ListingDetailController(this, database);
+        controller = new ListingDetailController(this, customFirebaseDatabase);
 
     }
 
-// Fills UI with values from database and sets click handlers, etc
+// Fills UI with values from customFirebaseDatabase and sets click handlers, etc
     public void setUpView() {
     //Listing goodies
         mListingName.setText(listing.getName());
@@ -105,8 +102,7 @@ public class ListingDetailActivity extends AppCompatActivity implements sellerLi
 
     public void startProfileActivity(Person seller, View viewRoot) {
         Intent i = new Intent(this, ProfileActivity.class);
-        i.putExtra(EXTRA_DATABASE, database);
-        i.putExtra(EXTRA_SELLER, seller);
+        i.putExtra(IntentExtras.EXTRA_SELLER, seller);
 
         startActivity(i);
     }

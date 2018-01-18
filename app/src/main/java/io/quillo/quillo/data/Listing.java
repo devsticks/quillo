@@ -13,24 +13,22 @@ public class Listing implements Serializable {
     private String uid;
     private int price;
     private String ISBN;
+    private String author;
 
     private int dateListed;
     private int numberOfViews;
 
-    private int colorResource;
-
-    //    public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, int dateListed, int numberOfViews, int colorResource) {
-    public Listing (String name, String description, int colorResource) {
+    public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, String author) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
         this.description = description;
-//        this.sellerUid = sellerUid;
-//        this.uid = uid;
-//        this.price = price;
-//        this.ISBN = ISBN;
+        this.sellerUid = sellerUid;
+        this.uid = uid;
+        this.price = price;
+        this.ISBN = ISBN;
+        this.author = author;
 //        Date date = new Date();
 //        this.dateListed = date.hashCode();
 //        this.numberOfViews = numberOfViews;
-        this.colorResource = colorResource;
     }
 
     public String getSellerUid() {
@@ -65,6 +63,14 @@ public class Listing implements Serializable {
         this.ISBN = ISBN;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
     public int getDateListed() {
         return dateListed;
     }
@@ -97,11 +103,4 @@ public class Listing implements Serializable {
         this.description = description;
     }
 
-    public int getColorResource() {
-        return colorResource;
-    }
-
-    public void setColorResource(int colorResource) {
-        this.colorResource = colorResource;
-    }
 }
