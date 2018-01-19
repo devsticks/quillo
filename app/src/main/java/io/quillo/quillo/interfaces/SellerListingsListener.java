@@ -12,16 +12,6 @@ import io.quillo.quillo.data.Listing;
 
 public interface SellerListingsListener {
 
-    void startListingDetailActivity(Listing listing, View viewRoot);
-
-    void setUpView();
-
     void onSellerListingLoaded(Listing listing);
-
-    void deleteListingCellAt(int position);
-
-    void showUndoSnackBar();
-
-    void insertListingCellAt(int position, Listing listItem);
 
 }

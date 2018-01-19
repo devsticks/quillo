@@ -8,62 +8,71 @@
     android:id="@+id/root_profile_activity"
     tools:context=".views.ProfileActivity"    >
 
-    <android.support.design.widget.CoordinatorLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tlb_profile_activity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tlb_profile_activity">
 
         <android.support.design.widget.AppBarLayout
 
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            >
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="#ffffff"
+                android:layout_height="wrap_content"
+                android:background="@color/PrimaryDark"
                 android:orientation="vertical"
                 app:layout_scrollFlags="scroll">
-
-                <TextView
-                    android:id="@+id/lbl_person_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_below="@+id/imv_profile_picture"
-                    android:layout_toEndOf="@+id/tlb_profile_activity"
-                    android:gravity="center_vertical"
-                    android:textAlignment="center"
-                    tools:text="Tamir" />
 
                 <ImageView
                     android:id="@+id/imv_profile_picture"
                     android:layout_width="match_parent"
-                    android:layout_height="160dp"
-                    app:srcCompat="@drawable/red_drawable" />
+                    android:layout_height="180dp"
+                    android:background="@color/DarkText" />
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/tlb_profile_activity"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="0dp"
-                    android:background="@color/PrimaryDark"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/lbl_seller_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imv_profile_picture"
+                    android:gravity="center_vertical"
+                    style="@style/Text.BoldDark"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    tools:text="Tamir" />
+
+                <TextView
+                    android:id="@+id/lbl_seller_university"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/lbl_seller_name"
+                    android:gravity="center_vertical"
+                    style="@style/Text.PrimaryDark"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="University of Cape Town" />
 
             </RelativeLayout>
 
         </android.support.design.widget.AppBarLayout>
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_profile_listing_holder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
+            android:layout_height="451dp"
             android:layout_alignParentStart="true"
             android:layout_marginTop="0dp"
 
@@ -73,7 +82,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tlb_home_search"
+            tools:layout_editor_absoluteY="352dp"
             tools:listitem="@layout/listing_cell" />
 
     </android.support.design.widget.CoordinatorLayout>

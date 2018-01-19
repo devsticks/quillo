@@ -122,11 +122,12 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
 
-<!-- Activity Headers -->
+    <!-- Activity Headers -->
     <string name="title_home">Home</string>
     <string name="title_search">Search</string>
     <string name="title_add">Add</string>
     <string name="title_bookmarks">Bookmarks</string>
     <string name="title_profile">Profile</string>
     <string name="title_splash">Splash</string>
+    <string name="title_activity_rand">Rand</string>
 </resources>

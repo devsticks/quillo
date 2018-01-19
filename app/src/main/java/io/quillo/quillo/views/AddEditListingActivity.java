@@ -82,22 +82,44 @@ public class AddEditListingActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_publish)
     public void handlePublishClick(View v) {
-        //TODO Add listing to customFirebaseDatabase
+
+        if (!validate()) {
+            return;
+        }
+
         if (addingListing) {
 
             Listing newListing = new Listing(
                     titleInput.getText().toString(),
                     descriptionInput.getText().toString(),
                     seller.getUid(),
-                    "6",
-                    Integer.parseInt(priceInput.getText().toString()),
-                    isbnInput.getText().toString(),
+                    //TODO Get actual current userUid
+                    "1",
+                    Integer.parseInt(priceInput.getText().toString().substring(2)),
+                    isbnInput.getText().toString().substring(5),
                     authorInput.getText().toString());
 
             customFirebaseDatabase.addListing(newListing);
+            listing = newListing;
 
-        } else {
-            //TODO How should this be done properly?
+        } else { // Updating listing
+//            Listing newListing = new Listing(
+//                    titleInput.getText().toString(),
+//                    descriptionInput.getText().toString(),
+//                    seller.getUid(),
+//                    "1",
+//                    Integer.parseInt(priceInput.getText().toString().substring(2)),
+//                    isbnInput.getText().toString().substring(5),
+//                    authorInput.getText().toString());
+//
+//            listing = newListing;
+
+            listing.setName(titleInput.getText().toString());
+            listing.setDescription(descriptionInput.getText().toString());
+            listing.setPrice(Integer.parseInt(priceInput.getText().toString().substring(2)));
+            listing.setISBN(isbnInput.getText().toString().substring(5));
+            listing.setAuthor(authorInput.getText().toString());
+
             customFirebaseDatabase.updateListing(listing);
         }
 
@@ -105,11 +127,11 @@ public class AddEditListingActivity extends AppCompatActivity {
     }
 
     public void startListingDetailActivity(View viewRoot) {
-        Intent i = new Intent(this, ListingDetailActivity.class);
-        i.putExtra(IntentExtras.EXTRA_LISTING, listing);
-        i.putExtra(IntentExtras.EXTRA_SELLER, seller);
+        Intent intent = new Intent(this, ListingDetailActivity.class);
+        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
+        intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
 
-        startActivity(i);
+        startActivity(intent);
     }
 
     private void updatePhotoButtons() {
@@ -200,10 +222,49 @@ public class AddEditListingActivity extends AppCompatActivity {
 
     private void fillViewFields(Listing listing) {
         titleInput.setText(listing.getName());
+        authorInput.setText(listing.getAuthor());
         descriptionInput.setText(listing.getDescription());
         priceInput.setText("R " + listing.getPrice());
         isbnInput.setText("ISBN " + listing.getISBN());
     }
 
+    public boolean validate() {
+        boolean valid = true;
+
+        String title = titleInput.getText().toString();
+        String author = authorInput.getText().toString();
+        String price = priceInput.getText().toString().substring(2);
+        String isbn = isbnInput.getText().toString().substring(5);
+
+        if (title.isEmpty()) {
+            titleInput.setError("enter a title for your listing");
+            valid = false;
+        } else {
+            titleInput.setError(null);
+        }
+
+        if (author.isEmpty()) {
+            authorInput.setError("enter a title for your listing");
+            valid = false;
+        } else {
+            titleInput.setError(null);
+        }
+
+        if (price.isEmpty()) {
+            priceInput.setError("enter a sale price");
+            valid = false;
+        } else {
+            priceInput.setError(null);
+        }
+
+        if (isbn.isEmpty() || (isbn.length() != 10 && isbn.length() != 13)) {
+            isbnInput.setError("enter a 10- or 13-digit ISBN");
+            valid = false;
+        } else {
+            isbnInput.setError(null);
+        }
+
+        return valid;
+    }
 
 }

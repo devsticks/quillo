@@ -56,6 +56,20 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         this.notifyItemInserted(endOfList);
     }
 
+    public void removeListing(int position) {
+        listings.remove(position);
+        this.notifyItemRemoved(position);
+    }
+
+    public void insertListing(int position, Listing listing) {
+        listings.add(position,listing);
+        this.notifyItemInserted(position);
+    }
+
+    public List<Listing> getListings () {
+        return listings;
+    }
+
     // LISTINGCELL STUFF MOVED FROM HERE TO OWN CLASS, LISTING CELL
 
 }

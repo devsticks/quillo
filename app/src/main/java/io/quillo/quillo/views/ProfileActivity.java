@@ -14,92 +14,92 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.quillo.quillo.R;
+import io.quillo.quillo.controllers.ListingAdapter;
+import io.quillo.quillo.data.CurrentUser;
 import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.controllers.ProfileController;
+import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
 
-public class ProfileActivity extends AppCompatActivity implements SellerListingsListener, View.OnClickListener {
+public class ProfileActivity extends AppCompatActivity implements SellerListingsListener, ListingCellListener, View.OnClickListener {
 
-    private static final String EXTRA_SELLER = "EXTRA_SELLER";
-    private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
-    private static final String EXTRA_LISTING = "EXTRA_LISTING";
-
-    private List<Listing> sellerListings;
     private boolean isViewingOwnProfile = true;
-    private boolean isLoggedIn = false;
+    private boolean isLoggedIn = true;
     private Person seller;
     private CustomFirebaseDatabase customFirebaseDatabase;
+    private Listing temporaryListing;
+    private int temporaryListingPosition;
 
-    private ProfileController controller;
-
-    private LayoutInflater layoutInflater;
-    private RecyclerView mRecyclerView;
-    private CustomAdapter adapter;
-    private android.support.v7.widget.Toolbar toolbar;
+    private ListingAdapter adapter;
+    @BindView(R.id.rec_profile_listing_holder) RecyclerView recyclerView;
+    @BindView(R.id.tlb_profile_activity) Toolbar toolbar;
+    @BindView(R.id.lbl_seller_name) TextView name;
+    @BindView(R.id.lbl_seller_university) TextView university;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        ButterKnife.bind(this);
 
-        Intent i = getIntent();
-        customFirebaseDatabase = (CustomFirebaseDatabase) i.getSerializableExtra(EXTRA_DATABASE);
-        seller = (Person) i.getSerializableExtra(EXTRA_SELLER);
+        adapter = new ListingAdapter(this, this);
+
+        Intent intent = getIntent();
+        seller = (Person) intent.getSerializableExtra(IntentExtras.EXTRA_SELLER);
+
+        customFirebaseDatabase = new CustomFirebaseDatabase();
+        customFirebaseDatabase.setSellerListingsListener(this);
+        customFirebaseDatabase.observeListingsOfSeller(seller.getUid());
+
         //TODO Fill appropriate currentUser vibe here
-        // isViewingOwnProfile = seller.getUid().equals(currentUser.getUid());
-
-        layoutInflater = getLayoutInflater();
-
-        // TODO Toolbar code needed?
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_profile_activity);
-        toolbar.setTitle(R.string.title_activity_profile);
-//        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
-        toolbar.setTitleMarginStart(72);
-
-        controller = new ProfileController(this, customFirebaseDatabase);
-        sellerListings = controller.getListings();
+        isViewingOwnProfile = seller.getUid().equals(CurrentUser.Uid);
 
         setUpView();
     }
 
-    @Override
-    public void startListingDetailActivity(Listing listing, View viewRoot) {
-        Intent i = new Intent(this, ListingDetailActivity.class);
-        i.putExtra(EXTRA_LISTING, listing);
+    public void startListingDetailActivity(Listing listing) {
+        Intent intent = new Intent(this, ListingDetailActivity.class);
+        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
 
-        startActivity(i);
+        startActivity(intent);
     }
 
     public void startAddEditListingActivity() {
-        Intent i = new Intent(this, AddEditListingActivity.class);
-        i.putExtra(EXTRA_SELLER, seller);
+        Intent intent = new Intent(this, AddEditListingActivity.class);
+        intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
 
-        startActivity(i);
+        startActivity(intent);
     }
 
     public void startLoginActivity() {
-        Intent i = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
 
-        startActivity(i);
+        startActivity(intent);
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     public void setUpView() {
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.rec_profile_listing_holder);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         FloatingActionButton mAddListingButton = (FloatingActionButton) findViewById(R.id.fab_add_listing);
         mAddListingButton.setOnClickListener(this);
@@ -111,34 +111,51 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
-        mRecyclerView.setLayoutManager(layoutManager);
-        adapter = new CustomAdapter();
-        mRecyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), layoutManager.getOrientation());
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.divider_white));
 
-        mRecyclerView.addItemDecoration(itemDecoration);
+        recyclerView.addItemDecoration(itemDecoration);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        name.setText(seller.getName());
+        //TODO get actual university when we have that up and running
+        //university = ...
+
+    }
+
+    @Override
+    public void onBookmarkClick(Listing listing) {
+        customFirebaseDatabase.addBookmark(listing);
+    }
+
+    @Override
+    public void onUnBookmarkClick(Listing listing) {
+        customFirebaseDatabase.removeBookmark(listing);
+    }
+
+    @Override
+    public void onListingClick(Listing listing) {
+        startListingDetailActivity(listing);
     }
 
     @Override
     public void onSellerListingLoaded(Listing newListing) {
-        sellerListings.add(newListing);
-        int endOfList = sellerListings.size() - 1;
-        adapter.notifyItemInserted(endOfList);
-        //mRecyclerView.smoothScrollToPosition(endOfList);
+        adapter.addListing(newListing);
     }
 
-    @Override
     public void deleteListingCellAt(int position) {
-        sellerListings.remove(position);
-        adapter.notifyItemRemoved(position);
+        adapter.removeListing(position);
     }
 
-    @Override
+    public void insertListingCellAt(int position, Listing newListing) {
+        adapter.insertListing(position, newListing);
+    }
+
     public void showUndoSnackBar() {
         Snackbar.make(
                 findViewById(R.id.root_profile_activity),
@@ -147,7 +164,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
         ).setAction(R.string.action_undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controller.handleUndoDeleteConfirmed();
+                handleUndoDeleteConfirmed();
             }
         })
                 .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
@@ -155,16 +172,10 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
 
-                        controller.handleSnackbarTimeout();
+                        handleSnackbarTimeout();
                     }
                 })
                 .show();
-    }
-
-    @Override
-    public void insertListingCellAt(int position, Listing listItem) {
-        sellerListings.add(position, listItem);
-        adapter.notifyItemInserted(position);
     }
 
     @Override
@@ -178,57 +189,6 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
                 startLoginActivity();
             }
         }
-    }
-
-    private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ListingCellViewHolder> {
-
-        @Override
-        public ListingCellViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = layoutInflater.inflate(R.layout.listing_cell, parent, false);
-
-            return new ListingCellViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(ListingCellViewHolder holder, int position) {
-            Listing currentItem = sellerListings.get(position);
-
-            holder.mTextbookDescription.setText(currentItem.getDescription());
-            holder.mTextbookName.setText(currentItem.getName());
-            holder.mLoading.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        public int getItemCount() {
-            return sellerListings.size();
-        }
-
-        class ListingCellViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-            private TextView mTextbookDescription;
-            private TextView mTextbookName;
-            private ViewGroup mContainer;
-            private ProgressBar mLoading;
-
-            public ListingCellViewHolder(View itemView) {
-                super(itemView);
-
-                this.mTextbookDescription = (TextView) itemView.findViewById(R.id.lbl_cell_author);
-                this.mTextbookName = (TextView) itemView.findViewById(R.id.lbl_cell_name);
-                this.mContainer = (ViewGroup) itemView.findViewById(R.id.root_list_item);
-                this.mLoading = (ProgressBar) itemView.findViewById(R.id.pro_item_data);
-
-                this.mContainer.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View view) {
-                Listing listing = sellerListings.get(this.getAdapterPosition());
-
-                controller.handleListingCellClick(listing, view);
-            }
-        }
-
     }
 
     private ItemTouchHelper.Callback createHelperCallback () {
@@ -251,14 +211,40 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
-                controller.handleListingSwiped(
-                        position,
-                        sellerListings.get(position)
-                );
+                if (isViewingOwnProfile) {
+                    handleListingSwiped(
+                            position,
+                            adapter.getListings().get(position)
+                    );
+                }
             }
         };
 
         return simpleItemTouchCallback;
+    }
+
+    private void handleListingSwiped(int position, Listing listing) {
+        customFirebaseDatabase.deleteListing(listing);
+        deleteListingCellAt(position);
+
+        temporaryListing = listing;
+        temporaryListingPosition = position;
+
+        showUndoSnackBar();
+    }
+
+    private void handleUndoDeleteConfirmed() {
+        if (temporaryListing != null) {
+            customFirebaseDatabase.insertListing(temporaryListing);
+            insertListingCellAt(temporaryListingPosition, temporaryListing);
+
+            temporaryListing = null;
+            temporaryListingPosition = 0;
+        }
+    }
+
+    private void handleSnackbarTimeout() {
+
     }
 
 }

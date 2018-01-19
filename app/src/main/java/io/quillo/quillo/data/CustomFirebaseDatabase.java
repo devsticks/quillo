@@ -32,11 +32,11 @@ public class CustomFirebaseDatabase {
         listings.add( new Listing("Random Book Five", "This is a lengthy description which is intended to fill views and test the UI. lakjsfdlkajsdlkjadlkj lkajsdlk lkjlkj lkd lkj lkj jk lakjs dlkj  ljksadklj  alkja skjdl lksjad lkjsdj alkdjs askdjla lksjadlakjsdlkajsd alksdk", "3", "5", 500, "555555", "Author 5"));
 
         users = new ArrayList<>();
-        users.add(new Person("1", "1Dev", "sticks@gmail.com","08321234"));
-        users.add(new Person("2", "2Amy", "amy@gmail.com","08321234"));
-        users.add(new Person("3", "3Tom", "tom@gmail.com","08321234"));
-        users.add(new Person("4", "4Tamir", "tamir@gmail.com","08321234"));
-        users.add(new Person("5", "5Senyo", "senyo@gmail.com","0234987298"));
+        users.add(new Person("1", "Dev", "sticks@gmail.com","08321234"));
+        users.add(new Person("2", "Amy", "amy@gmail.com","08321234"));
+        users.add(new Person("3", "Tom", "tom@gmail.com","08321234"));
+        users.add(new Person("4", "Tamir", "tamir@gmail.com","08321234"));
+        users.add(new Person("5", "Senyo", "senyo@gmail.com","0234987298"));
     }
 
     public void setListingsListener(ListingsListener listingsListener) {
@@ -72,6 +72,14 @@ public class CustomFirebaseDatabase {
         for (int i=0; i < listings.size(); i++) {
             if (listings.get(i).getSellerUid().equals(sellerId)) {
                 sellerListingsListener.onSellerListingLoaded(listings.get(i));
+            }
+        }
+    }
+
+    public void observeUser(String userId) {
+        for (int i=0; i < users.size(); i++) {
+            if (users.get(i).getUid().equals(userId)) {
+                sellerListener.onSellerLoaded(users.get(i));
             }
         }
     }

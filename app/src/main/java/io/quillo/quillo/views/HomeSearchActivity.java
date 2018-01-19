@@ -52,10 +52,10 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
     //TODO The majority of this code and functionality is duplicated in ProfileActivity, fix up.
 
     public void startListingDetailActivity(Listing listing) {
-        Intent i = new Intent(this, ListingDetailActivity.class);
-        i.putExtra(IntentExtras.EXTRA_LISTING, listing);
+        Intent intent = new Intent(this, ListingDetailActivity.class);
+        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
 
-        startActivity(i);
+        startActivity(intent);
     }
 
     @Override
@@ -115,7 +115,5 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
     public void onListingClick(Listing listing) {
         startListingDetailActivity(listing);
     }
-
-    // Listing ADAPTER STUFF USED TO BE HERE, MOVED TO OWN CLASS
 
 }

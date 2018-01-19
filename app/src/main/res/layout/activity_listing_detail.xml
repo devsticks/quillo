@@ -7,26 +7,33 @@
     android:layout_height="match_parent"
     tools:context=".views.ListingDetailActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tlb_listing_detail"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <ImageView
-        android:id="@+id/imv_colored_background"
+        android:id="@+id/imv_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_above="@+id/div_center"
         android:transitionName="@string/transition_drawable" />
 
-
     <TextView
-        android:id="@+id/lbl_textbook_name"
+        android:id="@+id/lbl_title"
         style="@style/Text.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/lbl_textbook_description"
+        android:layout_above="@+id/lbl_description"
         android:background="@color/transparentBackgroundWhite"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imv_colored_background"
+        app:layout_constraintTop_toBottomOf="@+id/imv_image"
         tools:text="Stewart Calculus" />
 
     <View
@@ -34,19 +41,29 @@
         style="@style/Text.Primary"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_centerVertical="true"
-        android:transitionName="@string/transition_textbook_name" />
+        android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/lbl_textbook_description"
+        android:id="@+id/lbl_author"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/div_center"
         android:padding="16dp"
-        android:transitionName="@string/transition_textbook_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_textbook_name"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_title"
+        tools:text="Textbook about all things maths" />
+
+
+    <TextView
+        android:id="@+id/lbl_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div_center"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_author"
         tools:text="Textbook about all things maths" />
 
     <TextView
@@ -54,12 +71,11 @@
         style="@style/Text.Accent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/lbl_textbook_description"
+        android:layout_above="@+id/lbl_description"
         android:padding="16dp"
-        android:text="R 599"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_textbook_description"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_description"
         tools:text="R 599" />
 
     <android.support.design.widget.FloatingActionButton
@@ -90,7 +106,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/imv_listing_detail_seller_profile_pic"
+            android:id="@+id/imv_seller_profile_pic"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginTop="10dp"
@@ -100,12 +116,12 @@
             app:srcCompat="@mipmap/ic_launcher_round" />
 
         <TextView
-            android:id="@+id/lbl_listing_detail_seller_name"
+            android:id="@+id/lbl_seller_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="20"
-            android:text="@string/seller_name_panel_title" />
+            tools:text="@string/seller_name_panel_title" />
 
     </LinearLayout>
 

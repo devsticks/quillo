@@ -8,7 +8,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.interfaces.ListingCellListener;
@@ -68,7 +67,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
 
         name.setText(listing.getName());
         author.setText(listing.getAuthor());
-        price.setText(String.valueOf(listing.getPrice()));
+        price.setText("R " + String.valueOf(listing.getPrice()));
     }
 
     @Override
