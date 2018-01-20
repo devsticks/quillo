@@ -73,7 +73,7 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
                 break;
             }
             case R.id.my_listings: {
-                Person me = new Person("1", "1Dev", "sticks@gmail.com","08321234");
+                Person me = new Person("1", "Dev", "sticks@gmail.com","08321234");
                 Intent intent = new Intent(this, ProfileActivity.class);
                 intent.putExtra(IntentExtras.EXTRA_SELLER, me);
                 startActivity(intent);
@@ -99,6 +99,11 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
     @Override
     public void onListingLoaded(Listing newListing) {
         adapter.addListing(newListing);
+    }
+
+    @Override
+    public void onListingUpdated(Listing listing) {
+        adapter.updateListing(listing);
     }
 
     @Override

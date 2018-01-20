@@ -34,7 +34,7 @@ public class CustomFirebaseDatabase {
         users = new ArrayList<>();
         users.add(new Person("1", "Dev", "sticks@gmail.com","08321234"));
         users.add(new Person("2", "Amy", "amy@gmail.com","08321234"));
-        users.add(new Person("3", "Tom", "tom@gmail.com","08321234"));
+        users.add(new Person("3", "Tom", "tom@gmail.com",null));
         users.add(new Person("4", "Tamir", "tamir@gmail.com","08321234"));
         users.add(new Person("5", "Senyo", "senyo@gmail.com","0234987298"));
     }
@@ -86,6 +86,8 @@ public class CustomFirebaseDatabase {
 
     public void addListing(Listing listing) {
         listings.add(listing);
+        listingsListener.onListingLoaded(listing);
+        sellerListingsListener.onSellerListingLoaded(listing);
     }
 
     public void deleteListing(Listing listing) {
@@ -97,6 +99,9 @@ public class CustomFirebaseDatabase {
     }
 
     public void updateListing(Listing listing) {
+
+        listingsListener.onListingUpdated(listing);
+        sellerListingsListener.onSellerListingUpdated(listing);
 
     }
 

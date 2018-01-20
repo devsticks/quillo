@@ -10,4 +10,6 @@ public interface ListingsListener {
 
     void onListingLoaded(Listing listing);
 
+    void onListingUpdated(Listing listing);
+
 }

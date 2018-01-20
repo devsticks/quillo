@@ -93,8 +93,8 @@ public class AddEditListingActivity extends AppCompatActivity {
                     titleInput.getText().toString(),
                     descriptionInput.getText().toString(),
                     seller.getUid(),
-                    //TODO Get actual current userUid
-                    "1",
+                    //TODO Get actual listingUid
+                    "6",
                     Integer.parseInt(priceInput.getText().toString().substring(2)),
                     isbnInput.getText().toString().substring(5),
                     authorInput.getText().toString());

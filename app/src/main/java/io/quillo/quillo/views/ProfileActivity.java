@@ -148,6 +148,11 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
         adapter.addListing(newListing);
     }
 
+    @Override
+    public void onSellerListingUpdated(Listing listing) {
+        adapter.updateListing(listing);
+    }
+
     public void deleteListingCellAt(int position) {
         adapter.removeListing(position);
     }

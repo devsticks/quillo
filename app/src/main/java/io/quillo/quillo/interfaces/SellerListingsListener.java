@@ -14,4 +14,6 @@ public interface SellerListingsListener {
 
     void onSellerListingLoaded(Listing listing);
 
+    void onSellerListingUpdated(Listing listing);
+
 }
