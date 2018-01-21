@@ -32,7 +32,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
     public ListingCell(View itemView) {
         super(itemView);
 
-      //  this.icon = (CircleImageView) itemView.findViewById(R.id.imv_cell_listing_icon);
+        this.icon = (ImageView) itemView.findViewById(R.id.imv_cell_listing_icon);
         this.name = (TextView) itemView.findViewById(R.id.lbl_cell_name);
         this.author = (TextView) itemView.findViewById(R.id.lbl_cell_author);
         this.price = (TextView) itemView.findViewById(R.id.lbl_cell_price);

@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         holder.setListing(listing);
         holder.setListingCellListener(listingCellListener);
         if (listing.getImageURL() != null) {
-           // Glide.with(context).load(listing.getImageURL()).into(holder.getIcon());
+           Glide.with(context).load(listing.getImageURL()).into(holder.getIcon());
         }
     }
 
