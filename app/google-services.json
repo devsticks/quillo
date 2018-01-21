@@ -40,15 +40,15 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
+              "client_id": "719156433468-g61agkhufspq72d17ql7c07no9n76tst.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
               "client_id": "719156433468-m1qj61gpi9mtalmk0b6pk9qmskhc7v4t.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "io.Quillo.Quillo"
               }
-            },
-            {
-              "client_id": "719156433468-g61agkhufspq72d17ql7c07no9n76tst.apps.googleusercontent.com",
-              "client_type": 3
             }
           ]
         },
