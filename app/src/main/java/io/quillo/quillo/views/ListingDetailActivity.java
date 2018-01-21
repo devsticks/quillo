@@ -3,13 +3,11 @@ package io.quillo.quillo.views;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +16,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
+import io.quillo.quillo.controllers.ContactOptionsDialogController;
 import io.quillo.quillo.data.CurrentUser;
 import io.quillo.quillo.data.CustomFirebaseDatabase;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.controllers.ContactOptionsDialogController;
 import io.quillo.quillo.interfaces.SellerListener;
 
 /**
@@ -77,7 +75,7 @@ public class ListingDetailActivity extends AppCompatActivity implements SellerLi
 
     public void setUpView() {
         title.setText(listing.getName());
-        author.setText(listing.getAuthor());
+        author.setText("James Stewart");
         description.setText(listing.getDescription());
         price.setText(String.valueOf(listing.getPrice()));
 

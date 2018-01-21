@@ -13,22 +13,33 @@ public class Listing implements Serializable {
     private String uid;
     private int price;
     private String ISBN;
-    private int dateListed;
+    private long dateListed;
+    private String imageURL;
 
-    private String author;
+
     private int numberOfViews;
 
-    public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, String author) { //}, int dateListed, int numberOfViews, int colorResource) {
+    public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, long dateListed, String imageURL) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
         this.description = description;
         this.sellerUid = sellerUid;
         this.uid = uid;
         this.price = price;
         this.ISBN = ISBN;
-        this.author = author;
+        this.dateListed = dateListed;
+        this.imageURL = imageURL;
 //        Date date = new Date();
 //        this.dateListed = date.hashCode();
 //        this.numberOfViews = numberOfViews;
+    }
+    public Listing (String name, String description, String sellerUid, int price, String ISBN, long dateListed) { //}, int dateListed, int numberOfViews, int colorResource) {
+        this.name = name;
+        this.description = description;
+        this.sellerUid = sellerUid;
+        this.price = price;
+        this.ISBN = ISBN;
+        this.dateListed = dateListed;
+
     }
 
     public Listing(){
@@ -67,19 +78,11 @@ public class Listing implements Serializable {
         this.ISBN = ISBN;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public int getDateListed() {
+    public long getDateListed() {
         return dateListed;
     }
 
-    public void setDateListed(int dateListed) {
+    public void setDateListed(long dateListed) {
         this.dateListed = dateListed;
     }
 
@@ -107,4 +110,11 @@ public class Listing implements Serializable {
         this.description = description;
     }
 
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 }

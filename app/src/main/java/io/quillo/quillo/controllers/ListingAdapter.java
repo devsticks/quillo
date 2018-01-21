@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
     private boolean isViewingOwnListings;
     private ListingCellListener listingCellListener;
 
-    public ListingAdapter (ListingCellListener listingCellListener, Context context) {
+    public ListingAdapter(ListingCellListener listingCellListener, Context context) {
         this.listingCellListener = listingCellListener;
         this.context = context;
         listings = new ArrayList<Listing>();
@@ -43,6 +44,9 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         Listing listing = listings.get(position);
         holder.setListing(listing);
         holder.setListingCellListener(listingCellListener);
+        if (listing.getImageURL() != null) {
+           // Glide.with(context).load(listing.getImageURL()).into(holder.getIcon());
+        }
     }
 
     @Override
@@ -62,12 +66,12 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
     }
 
     public void insertListing(int position, Listing listing) {
-        listings.add(position,listing);
+        listings.add(position, listing);
         this.notifyItemInserted(position);
     }
 
     public void updateListing(Listing listing) {
-        for (int i=0; i < listings.size(); i++) {
+        for (int i = 0; i < listings.size(); i++) {
             if (listings.get(i).getUid().equals(listing.getUid())) {
                 listings.set(i, listing);
                 this.notifyItemChanged(i);
@@ -76,7 +80,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         }
     }
 
-    public List<Listing> getListings () {
+    public List<Listing> getListings() {
         return listings;
     }
 

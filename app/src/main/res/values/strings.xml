@@ -130,4 +130,7 @@
     <string name="title_profile">Profile</string>
     <string name="title_splash">Splash</string>
     <string name="title_activity_rand">Rand</string>
+    
+    <!--Dialog Headers -->
+    <string name="dialog_select_photo">Select Photo</string>
 </resources>

@@ -61,7 +61,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
         customFirebaseDatabase = new CustomFirebaseDatabase();
         customFirebaseDatabase.setSellerListingsListener(this);
-        customFirebaseDatabase.observeListingsOfSeller(seller.getUid());
+        //customFirebaseDatabase.observeListingsOfSeller(seller.getUid());
 
         //TODO Fill appropriate currentUser vibe here
         isViewingOwnProfile = seller.getUid().equals(CurrentUser.Uid);
