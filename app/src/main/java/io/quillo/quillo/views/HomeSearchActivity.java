@@ -44,7 +44,7 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
 
         customFirebaseDatabase = new CustomFirebaseDatabase();
         customFirebaseDatabase.setListingsListener(this);
-        customFirebaseDatabase.observeListings();
+        customFirebaseDatabase.queryListings("");
 
         setUpView();
     }

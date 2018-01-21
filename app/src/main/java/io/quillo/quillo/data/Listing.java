@@ -13,9 +13,9 @@ public class Listing implements Serializable {
     private String uid;
     private int price;
     private String ISBN;
-    private String author;
-
     private int dateListed;
+
+    private String author;
     private int numberOfViews;
 
     public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, String author) { //}, int dateListed, int numberOfViews, int colorResource) {
@@ -29,6 +29,10 @@ public class Listing implements Serializable {
 //        Date date = new Date();
 //        this.dateListed = date.hashCode();
 //        this.numberOfViews = numberOfViews;
+    }
+
+    public Listing(){
+
     }
 
     public String getSellerUid() {

@@ -1,11 +1,17 @@
 package io.quillo.quillo.data;
 
-import java.io.Serializable;
+import android.util.Log;
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import io.quillo.quillo.R;
 import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.SellerListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
@@ -23,6 +29,11 @@ public class CustomFirebaseDatabase {
     private SellerListener sellerListener;
     private SellerListingsListener sellerListingsListener;
 
+    private DatabaseReference database;
+    private DatabaseReference databaseListingsRef;
+    private DatabaseReference databaseUserListingsRef;
+    private DatabaseReference databaseUserRef;
+
     public CustomFirebaseDatabase() {
         listings = new ArrayList<Listing> ();
         listings.add( new Listing("1 Calculus 101", "The only maths textbook you'll ever need.", "1", "1", 100, "11111", "Author 1") );
@@ -37,7 +48,57 @@ public class CustomFirebaseDatabase {
         users.add(new Person("3", "Tom", "tom@gmail.com",null));
         users.add(new Person("4", "Tamir", "tamir@gmail.com","08321234"));
         users.add(new Person("5", "Senyo", "senyo@gmail.com","0234987298"));
+
+        database = FirebaseDatabase.getInstance().getReference();
+        databaseListingsRef = database.child(DatabaseContract.FIREBASE_LISTINGS_CHILD_NAME);
+
     }
+
+    public void queryListings(String selection){
+        if (selection.isEmpty()){
+            Query emptySearchQuery = databaseListingsRef.limitToFirst(50);
+            emptySearchQuery.addChildEventListener(getListingChildEventListener());
+        }else{
+
+        }
+    }
+
+    private ChildEventListener getListingChildEventListener(){
+        final ChildEventListener listingEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Listing newListing = dataSnapshot.getValue(Listing.class);
+                Log.d(CustomFirebaseDatabase.class.getName(), "onChildAdded: "+ newListing.getName());
+                listingsListener.onListingLoaded(newListing);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        return listingEventListener;
+    }
+
+
+
 
     public void setListingsListener(ListingsListener listingsListener) {
         this.listingsListener = listingsListener;
