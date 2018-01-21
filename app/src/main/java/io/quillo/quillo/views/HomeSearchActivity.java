@@ -7,38 +7,28 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.Database;
+import io.quillo.quillo.controllers.ListingAdapter;
+import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.handlers.HomeSearchController;
+import io.quillo.quillo.data.Person;
 
-import java.util.List;
+import io.quillo.quillo.interfaces.ListingCellListener;
+import io.quillo.quillo.interfaces.ListingsListener;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import io.quillo.quillo.interfaces.listingsListener;
+public class HomeSearchActivity extends AppCompatActivity implements ListingsListener, ListingCellListener {
 
-public class HomeSearchActivity extends AppCompatActivity implements listingsListener {
-
-    private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
-    private static final String EXTRA_LISTING = "EXTRA_LISTING";
-
-    private LayoutInflater layoutInflater;
-    private RecyclerView mRecyclerView;
-    private CustomAdapter adapter;
+    private RecyclerView recyclerView;
+    private ListingAdapter adapter;
     private android.support.v7.widget.Toolbar toolbar;
 
-    private List<Listing> listings;
-    private Database database;
-    private HomeSearchController controller;
-
-    public static boolean databaseMade = false;
+    private CustomFirebaseDatabase customFirebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,106 +37,88 @@ public class HomeSearchActivity extends AppCompatActivity implements listingsLis
         setContentView(R.layout.activity_home_search);
         ButterKnife.bind(this);
 
-        layoutInflater = getLayoutInflater();
+        toolbar = (Toolbar) findViewById(R.id.tlb_home_search);
+        setSupportActionBar(toolbar);
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tlb_home_search_activity);
-        toolbar.setTitle(R.string.title_activity_search);
-//        toolbar.setLogo(R.drawable.ic_view_list_white_24dp);
-        toolbar.setTitleMarginStart(72);
+        adapter = new ListingAdapter(this, this);
 
-        database = new Database();
-        databaseMade = true;
-
-        controller = new HomeSearchController(this, database);
-        listings = controller.getListings();
+        customFirebaseDatabase = new CustomFirebaseDatabase();
+        customFirebaseDatabase.setListingsListener(this);
+        customFirebaseDatabase.observeListings();
 
         setUpView();
     }
 
     //TODO The majority of this code and functionality is duplicated in ProfileActivity, fix up.
 
-    public void startListingDetailActivity(Listing listing, View viewRoot) {
-        Intent i = new Intent(this, ListingDetailActivity.class);
-        i.putExtra(EXTRA_DATABASE, database);
-        i.putExtra(EXTRA_LISTING, listing);
+    public void startListingDetailActivity(Listing listing) {
+        Intent intent = new Intent(this, ListingDetailActivity.class);
+        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
 
-        startActivity(i);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_bar_overflow_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.splash: {
+                Intent intent = new Intent(this, SplashActivity.class);
+                startActivity(intent);
+                break;
+            }
+            case R.id.my_listings: {
+                Person me = new Person("1", "Dev", "sticks@gmail.com","08321234");
+                Intent intent = new Intent(this, ProfileActivity.class);
+                intent.putExtra(IntentExtras.EXTRA_SELLER, me);
+                startActivity(intent);
+                break;
+            }
+        }
+        return false;
     }
 
     public void setUpView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.rec_home_search_listing_holder);
+        recyclerView = (RecyclerView) findViewById(R.id.rec_home_search_listing_holder);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
-        mRecyclerView.setLayoutManager(layoutManager);
-        adapter = new CustomAdapter();
-        mRecyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), layoutManager.getOrientation());
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(HomeSearchActivity.this, R.drawable.divider_white));
-        mRecyclerView.addItemDecoration(itemDecoration);
+        recyclerView.addItemDecoration(itemDecoration);
     }
 
     @Override
     public void onListingLoaded(Listing newListing) {
-        listings.add(newListing);
-        int endOfList = listings.size() - 1;
-        adapter.notifyItemInserted(endOfList);
-        //mRecyclerView.smoothScrollToPosition(endOfList);
+        adapter.addListing(newListing);
     }
 
-    private class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ListingCellViewHolder> {
+    @Override
+    public void onListingUpdated(Listing listing) {
+        adapter.updateListing(listing);
+    }
 
-        @Override
-        public ListingCellViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = layoutInflater.inflate(R.layout.listing_cell, parent, false);
+    @Override
+    public void onBookmarkClick(Listing listing) {
+        customFirebaseDatabase.addBookmark(listing);
+    }
 
-            return new ListingCellViewHolder(v);
-        }
+    @Override
+    public void onUnBookmarkClick(Listing listing) {
+        customFirebaseDatabase.removeBookmark(listing);
+    }
 
-        @Override
-        public void onBindViewHolder(ListingCellViewHolder holder, int position) {
-            Listing currentItem = listings.get(position);
-
-            holder.mTextbookIcon.setImageResource(currentItem.getColorResource());
-            holder.mTextbookDescription.setText(currentItem.getDescription());
-            holder.mTextbookName.setText(currentItem.getName());
-            holder.mLoading.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        public int getItemCount() {
-            return listings.size();
-        }
-
-        class ListingCellViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-            private CircleImageView mTextbookIcon;
-            private TextView mTextbookDescription;
-            private TextView mTextbookName;
-            private ViewGroup mContainer;
-            private ProgressBar mLoading;
-
-            public ListingCellViewHolder(View itemView) {
-                super(itemView);
-
-                this.mTextbookIcon = (CircleImageView) itemView.findViewById(R.id.imv_cell_listing_icon);
-                this.mTextbookDescription = (TextView) itemView.findViewById(R.id.lbl_cell_textbook_description);
-                this.mTextbookName = (TextView) itemView.findViewById(R.id.lbl_cell_textbook_name);
-                this.mContainer = (ViewGroup) itemView.findViewById(R.id.root_list_item);
-                this.mLoading = (ProgressBar) itemView.findViewById(R.id.pro_item_data);
-
-                this.mContainer.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View view) {
-                Listing listing = listings.get(this.getAdapterPosition());
-
-                controller.handleListingCellClick(listing, view);
-            }
-        }
-
+    @Override
+    public void onListingClick(Listing listing) {
+        startListingDetailActivity(listing);
     }
 
 }

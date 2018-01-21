@@ -1,130 +1,189 @@
 package io.quillo.quillo.views;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.Database;
+import io.quillo.quillo.data.CurrentUser;
+import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.handlers.ContactOptionsDialogController;
-import io.quillo.quillo.handlers.ListingDetailController;
-import io.quillo.quillo.interfaces.sellerListener;
+import io.quillo.quillo.controllers.ContactOptionsDialogController;
+import io.quillo.quillo.interfaces.SellerListener;
 
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class ListingDetailActivity extends AppCompatActivity implements sellerListener {
+public class ListingDetailActivity extends AppCompatActivity implements SellerListener {
 
-    private static final String EXTRA_DATABASE = "EXTRA_DATABASE";
-    private static final String EXTRA_SELLER = "EXTRA_SELLER";
-    private static final String EXTRA_LISTING = "EXTRA_LISTING";
-
-    private ListingDetailController controller;
     private Person seller;
-    private Database database;
+    private CustomFirebaseDatabase customFirebaseDatabase;
     private Listing listing;
-    private ContactOptionsDialogController dialogController;
+    private ContactOptionsDialogController contactDialogController;
 
-    private boolean isViewingOwnListing = false;
+    private boolean isViewingOwnListing;
 
-    @BindView(R.id.fab_contact_seller) FloatingActionButton mContactSeller;
-    @BindView(R.id.btn_seller_profile) LinearLayout mSellerProfileContainer;
-    @BindView(R.id.imv_listing_detail_seller_profile_pic) ImageView mSellerProfilePic;
-    @BindView(R.id.lbl_listing_detail_seller_name) TextView mSellerName;
+    @BindView(R.id.tlb_listing_detail) Toolbar toolbar;
+    @BindView(R.id.fab_contact_seller) FloatingActionButton contactSeller;
+    @BindView(R.id.btn_seller_profile) View sellerContainerButton;
+    @BindView(R.id.div_seller) View sellerContainer;
+    @BindView(R.id.imv_seller_profile_pic) ImageView sellerProfilePic;
+    @BindView(R.id.lbl_seller_name) TextView sellerName;
 
-    @BindView(R.id.lbl_textbook_name) TextView mListingName;
-    @BindView(R.id.lbl_textbook_description) TextView mListingDescription;
-    @BindView(R.id.imv_colored_background) ImageView mListingImage;
+    @BindView(R.id.btn_call) View call;
+    @BindView(R.id.btn_email) View email;
+    @BindView(R.id.btn_text) View text;
+    @BindView(R.id.btn_share) View share;
+
+    @BindView(R.id.lbl_title) TextView title;
+    @BindView(R.id.lbl_author) TextView author;
+    @BindView(R.id.lbl_description) TextView description;
+    @BindView(R.id.lbl_price) TextView price;
+    @BindView(R.id.imv_image) ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listing_detail);
         ButterKnife.bind(this);
 
-        Intent i = getIntent();
-        database = (Database) i.getSerializableExtra(EXTRA_DATABASE);
-        listing = (Listing) i.getSerializableExtra(EXTRA_LISTING);
+        Intent intent = getIntent();
+        listing = (Listing) intent.getSerializableExtra(IntentExtras.EXTRA_LISTING);
+
+        customFirebaseDatabase = new CustomFirebaseDatabase();
+        customFirebaseDatabase.setSellerListener(this);
+        customFirebaseDatabase.observeUser(listing.getSellerUid());
 
         setUpView();
 
-        controller = new ListingDetailController(this, database);
     }
 
-// Fills UI with values from database and sets click handlers, etc
     public void setUpView() {
-    //Listing goodies
-        mListingName.setText(listing.getName());
-        mListingDescription.setText(listing.getDescription());
+        title.setText(listing.getName());
+        author.setText(listing.getAuthor());
+        description.setText(listing.getDescription());
+        price.setText(String.valueOf(listing.getPrice()));
 
-    //Seller goodies
         //TODO How do pictures get fetched and added to the view?
-        // mListingImage.setBackgroundResource( drawableResourceExtra );
+        // image.setBackgroundResource( drawableResourceExtra );
 
-        mSellerProfileContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.handleSellerDetailButtonClick(seller,v);
-            }
-        });
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-     //Contact goodies
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @OnClick(R.id.fab_contact_seller)
     public void handleContactSellerClick (View v) {
-        dialogController.showContactOptionsDialog();
+        contactDialogController.showContactOptionsDialog();
     }
 
-//    @OnClick (R.id.btn_dialog_call)
-//    public void handleDialogCallClick (View v) {
-////        Toast.makeText(v.getContext(), "Calling...", Toast.LENGTH_LONG).show();
-//    }
-//
-//    @OnClick (R.id.btn_dialog_email)
-//    public void handleDialogEmailClick (View v) {
-////        Toast.makeText(v.getContext(), "Emailing...", Toast.LENGTH_LONG).show();
-//    }
-//
-//    @OnClick (R.id.btn_dialog_text)
-//    public void handleDialogTextClick (View v) {
-////        Toast.makeText(v.getContext(), "Texting...", Toast.LENGTH_LONG).show();
-//    }
-
     @Override
-    public void onSellerLoaded(Person seller) {
+    public void onSellerLoaded(final Person seller) {
 
         this.seller = seller;
         //TODO Fill appropriate currentUser vibe here
-        // isViewingOwnListing = seller.getUid().equals(currentUser.getUid());
+        isViewingOwnListing = seller.getUid().equals(CurrentUser.Uid);
+        if (isViewingOwnListing) {
+            sellerContainer.setVisibility(View.GONE);
+        } else {
+            sellerContainer.setVisibility(View.VISIBLE);
+        }
 
-        // mSellerProfilePic.setImageResource( ... );
-        mSellerName.setText(seller.getName());
+        sellerContainerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startProfileActivity(seller,v);
+            }
+        });
 
-        dialogController = new ContactOptionsDialogController(seller, listing, this);
+        //TODO FILL PROFILE PIC AND UNIVERSITY
+        // sellerProfilePic.setImageResource( ... );
+        //sellerUniversity.setText(seller.getUniversity());
+        sellerName.setText(seller.getName());
 
+        if (seller.getPhoneNumber() != null) {
+            call.setVisibility(View.VISIBLE);
+            text.setVisibility(View.VISIBLE);
+
+            call.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent callIntent = new Intent(Intent.ACTION_DIAL);
+
+                    callIntent.setData(Uri.parse("tel:" + seller.getPhoneNumber()));
+
+                    view.getContext().startActivity(callIntent);
+                }
+            });
+
+            text.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        Uri uri = Uri.parse("smsto:" + seller.getPhoneNumber());
+                        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                        smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
+                        view.getContext().startActivity(smsIntent);
+                    } catch (Exception e) {
+                        Toast.makeText(view.getContext(),
+                                "SMS failed, please try again later!",
+                                Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } else {
+            call.setVisibility(View.GONE);
+            text.setVisibility(View.GONE);
+        }
+
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean success = EmailIntentBuilder.from(view.getContext())
+                        .to(seller.getEmail())
+                        .subject("Quillo Enquiry")
+                        .body("Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.")
+                        .start();
+                if (!success) {
+                    Toast.makeText(view.getContext(),
+                            "Email failed, please try again later!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        //OLD
+        contactDialogController = new ContactOptionsDialogController(seller, listing, this);
     }
 
     public void startProfileActivity(Person seller, View viewRoot) {
         Intent i = new Intent(this, ProfileActivity.class);
-        i.putExtra(EXTRA_DATABASE, database);
-        i.putExtra(EXTRA_SELLER, seller);
+        i.putExtra(IntentExtras.EXTRA_SELLER, seller);
 
         startActivity(i);
     }

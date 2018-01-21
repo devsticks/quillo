@@ -4,23 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/root_home_search_activity"
-    tools:context=".views.HomeSearchActivity">
+    tools:context=".views.HomeSearchActivity"
+    android:theme="@style/AppTheme">
 
     <!--7. If you wish, you can specify a LayoutManager in XML instead of Java. Mostly a matter
     of preference, but since the LayoutManager isn't a View/Layout, I prefer to do that in Java.
     -->
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/tlb_home_search_activity"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:background="@color/PrimaryDark"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp"
-        android:layout_marginRight="0dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="0dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:id="@+id/tlb_home_search"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rec_home_search_listing_holder"
@@ -31,7 +29,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/tlb_home_search_activity" />
+        app:layout_constraintTop_toBottomOf="@+id/tlb_home_search" />
 
 </android.support.constraint.ConstraintLayout>
 

@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/Primary</item>
         <item name="colorPrimaryDark">@color/PrimaryDark</item>
         <item name="colorAccent">@color/Accent</item>
@@ -34,6 +34,11 @@
         <item name="android:textColor">@color/Primary</item>
     </style>
 
+    <style name="Text.MenuButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/Primary</item>
+    </style>
+
     <style name="Text">
         <item name="android:gravity">center_vertical</item>
     </style>
@@ -48,9 +53,27 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="Text.PrimaryDark">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/WHITE</item>
+    </style>
+
+    <style name="Text.SecondaryDark">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/WHITE</item>
+    </style>
+
+    <style name="Text.BoldDark">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/WHITE</item>
+    </style>
+
     <style name="Text.Accent">
         <item name="android:fontFamily">sans-serif-bold</item>
-        <item name="android:color">@color/Primary</item>
+        <item name="android:textColor">@color/Primary</item>
         <item name="android:textSize">16sp</item>
     </style>
 

@@ -22,7 +22,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:foregroundGravity="center_vertical"
-            android:src="@drawable/ic_call_black_24dp"
+            android:src="@drawable/ic_call_primary_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -62,7 +62,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:foregroundGravity="center_vertical"
-            android:src="@drawable/ic_email_black_24dp"
+            android:src="@drawable/ic_email_primary_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -102,7 +102,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:foregroundGravity="center_vertical"
-            android:src="@drawable/ic_textsms_black_24dp"
+            android:src="@drawable/ic_textsms_primary_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -22,21 +22,25 @@
             </intent-filter>
         </activity>
         <activity android:name=".views.ListingDetailActivity" />
-        <activity
-            android:name=".views.ProfileActivity"
-            android:label="@string/title_activity_profile"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+        <activity android:name=".views.ProfileActivity" />
         <activity
             android:name=".views.LoginActivity"
-            android:theme="@style/AppTheme.Dark"/>
+            android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".views.SignUpEditActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".views.AddEditListingActivity"
-            android:theme="@style/AppTheme.Dark">
-        </activity>
+            android:theme="@style/AppTheme.Dark" />
+        <activity
+            android:name=".views.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.AppBarOverlay"/>
+        <activity
+            android:name=".views.SplashActivity"
+            android:label="@string/title_splash"
+            android:theme="@style/AppTheme.Dark"/>
+
     </application>
 
 </manifest>
