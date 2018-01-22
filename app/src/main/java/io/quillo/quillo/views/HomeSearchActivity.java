@@ -1,9 +1,9 @@
 package io.quillo.quillo.views;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,11 +18,12 @@ import io.quillo.quillo.data.CustomFirebaseDatabase;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 
 public class HomeSearchActivity extends AppCompatActivity implements ListingsListener, ListingCellListener {
+
+
 
     private RecyclerView recyclerView;
     private ListingAdapter adapter;
@@ -44,7 +45,7 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
 
         customFirebaseDatabase = new CustomFirebaseDatabase();
         customFirebaseDatabase.setListingsListener(this);
-        customFirebaseDatabase.observeListings();
+        customFirebaseDatabase.queryListings("");
 
         setUpView();
     }
@@ -73,7 +74,7 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
                 break;
             }
             case R.id.my_listings: {
-                Person me = new Person("1", "Dev", "sticks@gmail.com","08321234");
+                Person me = new Person("1", "Dev", "sticks@gmail.com", "08321234");
                 Intent intent = new Intent(this, ProfileActivity.class);
                 intent.putExtra(IntentExtras.EXTRA_SELLER, me);
                 startActivity(intent);
@@ -120,5 +121,6 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
     public void onListingClick(Listing listing) {
         startListingDetailActivity(listing);
     }
+
 
 }
