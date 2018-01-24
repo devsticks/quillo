@@ -80,6 +80,11 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
                 startActivity(intent);
                 break;
             }
+            case R.id.signup_login: {
+                Intent intent = new Intent(this, SignUpLoginActivity.class);
+                startActivity(intent);
+                break;
+            }
         }
         return false;
     }

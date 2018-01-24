@@ -1,4 +1,6 @@
 <resources>
+    <style name="Theme"/>
+    <style name="ThemeOverlay"/>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/Primary</item>
@@ -85,5 +87,24 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Widget"/>
+    <style name="Widget.AppCompat"/>
+    <style name="Widget.AppCompat.Button"/>
+
+    <style name="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:background">@color/Primary</item>
+        <item name="android:textColor">@color/WHITE</item>
+    </style>
+
+    <style name="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/Primary</item>
+        <item name="android:background">@color/WHITE</item>
+    </style>
+
+    <style name="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@color/Accent</item>
+        <item name="android:textColor">@color/WHITE</item>
+    </style>
 
 </resources>
