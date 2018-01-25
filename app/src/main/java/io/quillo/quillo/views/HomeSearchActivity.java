@@ -68,8 +68,8 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.splash: {
-                Intent intent = new Intent(this, SplashActivity.class);
+            case R.id.landing: {
+                Intent intent = new Intent(this, LandingActivity.class);
                 startActivity(intent);
                 break;
             }

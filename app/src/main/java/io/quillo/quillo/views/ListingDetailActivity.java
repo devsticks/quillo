@@ -51,6 +51,7 @@ public class ListingDetailActivity extends AppCompatActivity implements SellerLi
 
     @BindView(R.id.lbl_title) TextView title;
     @BindView(R.id.lbl_author) TextView author;
+    @BindView(R.id.lbl_edition) TextView edition;
     @BindView(R.id.lbl_description) TextView description;
     @BindView(R.id.lbl_price) TextView price;
     @BindView(R.id.imv_image) ImageView image;
@@ -75,9 +76,13 @@ public class ListingDetailActivity extends AppCompatActivity implements SellerLi
 
     public void setUpView() {
         title.setText(listing.getName());
-        author.setText("James Stewart");
+        author.setText(listing.getAuthor());
+        String editionText = "Edition " + String.valueOf(listing.getEdition());
+        edition.setText(editionText);
         description.setText(listing.getDescription());
-        price.setText(String.valueOf(listing.getPrice()));
+        //TODO Use local currency symbol
+        String priceText = "R " + String.valueOf(listing.getPrice());
+        price.setText(priceText);
 
         //TODO How do pictures get fetched and added to the view?
         // image.setBackgroundResource( drawableResourceExtra );

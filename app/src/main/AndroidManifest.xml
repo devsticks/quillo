@@ -33,7 +33,7 @@
             android:name=".views.AddEditListingActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity
-            android:name=".views.SplashActivity"
+            android:name=".views.LandingActivity"
             android:label="@string/title_splash"
             android:theme="@style/AppTheme.Dark"/>
 
