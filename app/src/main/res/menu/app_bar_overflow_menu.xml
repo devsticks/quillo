@@ -12,9 +12,9 @@
         android:title="My Listings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/splash"
+        android:id="@+id/landing"
         android:orderInCategory="3"
-        android:title="Splash Screen"
+        android:title="Landing Screen"
         app:showAsAction="never" />
     <item
         android:id="@+id/signup_login"

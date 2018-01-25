@@ -55,16 +55,20 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     TextInputEditText titleInput;
     @BindView(R.id.input_description)
     TextInputEditText descriptionInput;
+    @BindView(R.id.input_author)
+    TextInputEditText authorInput;
+    @BindView(R.id.input_edition)
+    TextInputEditText editionInput;
     @BindView(R.id.input_isbn)
     TextInputEditText isbnInput;
     @BindView(R.id.input_price)
     TextInputEditText priceInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
-    @BindView(R.id.imv_listing_photo_2)
-    ImageView photo2;
-    @BindView(R.id.imv_listing_photo_3)
-    ImageView photo3;
+//    @BindView(R.id.imv_listing_photo_2)
+//    ImageView photo2;
+//    @BindView(R.id.imv_listing_photo_3)
+//    ImageView photo3;
 
     public static AddEditListingFragment newInstance(){
         AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
@@ -98,17 +102,18 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
 
-    @OnClick({R.id.imv_listing_photo_1, R.id.imv_listing_photo_2, R.id.imv_listing_photo_3})
+    @OnClick({R.id.imv_listing_photo_1})//, R.id.imv_listing_photo_2, R.id.imv_listing_photo_3})
     public void handleAddPhotoClick(View v) {
-        if (currentPhotoAdder != null && v.getId() == currentPhotoAdder.getId()) {
-            //TODO add a photo to DB
-            showPhotoDialog();
-            numberOfPhotos++;
-            updatePhotoButtons();
-            if (numberOfPhotos > 2) {
-                currentPhotoAdder = null;
-            }
-        }
+//        if (currentPhotoAdder != null && v.getId() == currentPhotoAdder.getId()) {
+//            showPhotoDialog();
+//            numberOfPhotos++;
+//            updatePhotoButtons();
+//            if (numberOfPhotos > 2) {
+//                currentPhotoAdder = null;
+//            }
+//        }
+
+        showPhotoDialog();
     }
 
     private void showPhotoDialog(){
@@ -117,16 +122,16 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
     private void verifyPermissions() {
-        String[] permisions = {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        String[] permissions = {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA};
 
-        if (ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permisions[0]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permisions[1]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permisions[2]) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permissions[2]) == PackageManager.PERMISSION_GRANTED) {
 
 
         } else {
-            ActivityCompat.requestPermissions(getActivity(), permisions, RC_PERMISSIONS);
+            ActivityCompat.requestPermissions(getActivity(), permissions, RC_PERMISSIONS);
         }
     }
 
@@ -146,6 +151,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             long secondsSince1970 = calendar.getTimeInMillis();
 
             Listing newListing = new Listing(fields.get(DatabaseContract.FIREBASE_LISTING_NAME),
+                    fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR),
+                    fields.get(DatabaseContract.FIREBASE_LISTING_EDITION),
                     fields.get(DatabaseContract.FIREBASE_LISTING_DESCRIPTION),
                     fields.get(DatabaseContract.FIREBASE_LISTING_SELLERUID),
                     Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_PRICE)),
@@ -201,12 +208,11 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
     private void setUpView(View view) {
 
-
         listingImageViews = new ArrayList<>(3);
         listingImageViews.add(photo1);
-        listingImageViews.add(photo2);
-        listingImageViews.add(photo3);
-        currentPhotoAdder = listingImageViews.get(0);
+//        listingImageViews.add(photo2);
+//        listingImageViews.add(photo3);
+//        currentPhotoAdder = listingImageViews.get(0);
 
         priceInput.setText("R ");
         Selection.setSelection(priceInput.getText(), priceInput.getText().length());
@@ -265,6 +271,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
     private void fillViewFields(Listing listing) {
         titleInput.setText(listing.getName());
+        authorInput.setText(listing.getAuthor());
+        editionInput.setText(listing.getEdition());
         descriptionInput.setText(listing.getDescription());
         priceInput.setText("R " + listing.getPrice());
         isbnInput.setText("ISBN " + listing.getISBN());
@@ -274,6 +282,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
 
         String title = titleInput.getText().toString();
+        String author = authorInput.getText().toString();
+        String edition = editionInput.getText().toString();
         String price = priceInput.getText().toString().substring(2);
         String isbn = isbnInput.getText().toString().substring(5);
         String description = descriptionInput.getText().toString();
@@ -283,6 +293,20 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             return null;
         } else {
             titleInput.setError(null);
+        }
+
+        if (author.isEmpty()) {
+            authorInput.setError("enter an author for your listing");
+            return null;
+        } else {
+            authorInput.setError(null);
+        }
+
+        if (edition.isEmpty()) {
+            editionInput.setError("enter an edition for your listing");
+            return null;
+        } else {
+            editionInput.setError(null);
         }
 
         if (description.isEmpty()) {
@@ -308,6 +332,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
         HashMap<String, String> fields = new HashMap<>();
         fields.put(DatabaseContract.FIREBASE_LISTING_NAME, title);
+        fields.put(DatabaseContract.FIREBASE_LISTING_AUTHOR, author);
+        fields.put(DatabaseContract.FIREBASE_LISTING_EDITION, edition);
         fields.put(DatabaseContract.FIREBASE_LISTING_PRICE, price);
         fields.put(DatabaseContract.FIREBASE_LISTING_ISBN, isbn);
         fields.put(DatabaseContract.FIREBASE_LISTING_DESCRIPTION, description);

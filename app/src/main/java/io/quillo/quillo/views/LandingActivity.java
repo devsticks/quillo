@@ -14,13 +14,13 @@ import io.quillo.quillo.R;
  */
 
 
-public class SplashActivity extends AppCompatActivity {
+public class LandingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        setContentView(R.layout.activity_landing);
         ButterKnife.bind(this);
 
     }

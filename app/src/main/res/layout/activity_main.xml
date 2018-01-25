@@ -7,10 +7,8 @@
     android:layout_height="match_parent"
     tools:context="io.quillo.quillo.controllers.MainActivity">
 
-
-
     <FrameLayout
-        android:id="@+id/frame_layout"
+        android:id="@+id/content_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/navigation"

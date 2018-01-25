@@ -84,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
     }
 
     public void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, SignUpLoginActivity.class);
 
         startActivity(intent);
     }
