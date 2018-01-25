@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -18,31 +19,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.quillo.quillo.interfaces.ListingsListener;
-import io.quillo.quillo.interfaces.SellerListener;
+import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
 
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class CustomFirebaseDatabase {
+public class QuilloDatabase {
 
     private List<Listing> listings;
     private List<Person> users;
 
     private ListingsListener listingsListener;
-    private SellerListener sellerListener;
+    private PersonListener personListener;
     private SellerListingsListener sellerListingsListener;
 
     private DatabaseReference database;
     private DatabaseReference databaseListingsRef;
     private DatabaseReference databaseUserListingsRef;
-    private DatabaseReference databaseUserRef;
+    private DatabaseReference databasePersonRef;
 
     private StorageReference storageReference;
     private StorageReference storageListingRef;
 
-    public CustomFirebaseDatabase() {
+    public QuilloDatabase() {
         /*listings = new ArrayList<Listing> ();
         listings.add( new Listing("1 Calculus 101", "The only maths textbook you'll ever need.", "1", "1", 100, "11111", "Author 1") );
         listings.add( new Listing("Intro to Signals & Systems","The textbook for the hardest course you're going to do in your life. Ever.", "2", "2", 200, "22222", "Author 2"));
@@ -59,6 +60,7 @@ public class CustomFirebaseDatabase {
 
         database = FirebaseDatabase.getInstance().getReference();
         databaseListingsRef = database.child(DatabaseContract.FIREBASE_LISTINGS_CHILD_NAME);
+        databasePersonRef = database.child(DatabaseContract.FIREBASE_PERSON_CHILD_NAME);
 
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
@@ -79,7 +81,7 @@ public class CustomFirebaseDatabase {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Listing newListing = dataSnapshot.getValue(Listing.class);
-                Log.d(CustomFirebaseDatabase.class.getName(), "onChildAdded: " + newListing.getName());
+                Log.d(QuilloDatabase.class.getName(), "onChildAdded: " + newListing.getName());
                 listingsListener.onListingLoaded(newListing);
             }
 
@@ -113,8 +115,8 @@ public class CustomFirebaseDatabase {
         this.listingsListener = listingsListener;
     }
 
-    public void setSellerListener(SellerListener sellerListener) {
-        this.sellerListener = sellerListener;
+    public void setPersonListener(PersonListener personListener) {
+        this.personListener = personListener;
     }
 
     public void setSellerListingsListener(SellerListingsListener sellerListingsListener) {
@@ -149,9 +151,29 @@ public class CustomFirebaseDatabase {
     public void observeUser(String userId) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getUid().equals(userId)) {
-                sellerListener.onSellerLoaded(users.get(i));
+                personListener.onPersonLoaded(users.get(i));
             }
         }
+    }
+
+    public void loadPerson(String personUid){
+
+        ValueEventListener personValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Person person = dataSnapshot.getValue(Person.class);
+                personListener.onPersonLoaded(person);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        };
+
+        databasePersonRef.child(personUid).addListenerForSingleValueEvent(personValueListener);
+
     }
 
     public void addListing(final Listing listing, byte[] uploadBytes) {

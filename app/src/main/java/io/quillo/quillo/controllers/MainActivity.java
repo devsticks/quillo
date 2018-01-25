@@ -5,9 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
+import android.view.View;
+
 
 import io.quillo.quillo.Fragments.AddEditListingFragment;
 import io.quillo.quillo.Fragments.BookmarksFragment;
@@ -23,6 +26,16 @@ public class MainActivity extends AppCompatActivity {
     private AddEditListingFragment addEditListingFragment;
     private ProfileFragment profileFragment;
     private Fragment selectedFragment = null;
+    private BottomNavigationView navigation;
+    private Toolbar toolbar;
+
+    public void hideNavBar(){
+        navigation.setVisibility(View.GONE);
+    }
+
+    public void showNavbar(){
+        navigation.setVisibility(View.VISIBLE);
+    }
 
 
 
@@ -69,10 +82,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initBottomNavBar();
         initFragments();
+
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     private void initBottomNavBar(){
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(navigation);
     }
@@ -81,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
         searchFragment = SearchFragment.newInstance();
         bookmarksFragment = BookmarksFragment.newInstance();
         profileFragment = ProfileFragment.newInstance();
-
         selectedFragment = searchFragment;
         changeFragment();
     }

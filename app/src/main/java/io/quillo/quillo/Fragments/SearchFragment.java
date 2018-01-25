@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +16,10 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
-import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.controllers.MainActivity;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 
@@ -38,16 +41,16 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
     private ListingAdapter adapter;
     private android.support.v7.widget.Toolbar toolbar;
 
-    private CustomFirebaseDatabase customFirebaseDatabase;
+    private QuilloDatabase quilloDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(getActivity());
         adapter = new ListingAdapter(this, getContext());
-        customFirebaseDatabase = new CustomFirebaseDatabase();
-        customFirebaseDatabase.setListingsListener(this);
-        customFirebaseDatabase.queryListings("");
+        quilloDatabase = new QuilloDatabase();
+        quilloDatabase.setListingsListener(this);
+        quilloDatabase.queryListings("");
 
 
     }
@@ -55,7 +58,7 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_home_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_home_search, container, false);
         setUpView(view);
         return view;
 
@@ -96,17 +99,38 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        customFirebaseDatabase.addBookmark(listing);
+        quilloDatabase.addBookmark(listing);
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-        customFirebaseDatabase.removeBookmark(listing);
+        quilloDatabase.removeBookmark(listing);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity() ).showNavbar();
     }
 
     @Override
     public void onListingClick(Listing listing) {
-        startListingDetailActivity(listing);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
+
+        ListingDetailFragment listingDetailFragment = new ListingDetailFragment();
+        listingDetailFragment.setArguments(bundle);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, listingDetailFragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .addToBackStack("Search Fragment")
+                    .commit();
+
+        ((MainActivity)getActivity()).hideNavBar();
+
     }
 
 }

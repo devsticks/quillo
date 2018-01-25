@@ -6,6 +6,6 @@ import io.quillo.quillo.data.Person;
  * Created by Stickells on 15/01/2018.
  */
 
-public interface SellerListener {
-    void onSellerLoaded (Person seller);
+public interface PersonListener {
+    void onPersonLoaded(Person person);
 }

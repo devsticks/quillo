@@ -29,7 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
@@ -49,7 +49,7 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
 
     private static final int RC_PERMISSIONS = 1;
 
-    private CustomFirebaseDatabase customFirebaseDatabase;
+    private QuilloDatabase quilloDatabase;
     private Listing listing;
     private Person seller;
 
@@ -82,7 +82,7 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
         setContentView(R.layout.activity_add_edit_listing);
         ButterKnife.bind(this);
 
-        customFirebaseDatabase = new CustomFirebaseDatabase();
+        quilloDatabase = new QuilloDatabase();
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -157,7 +157,7 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
                     fields.get(DatabaseContract.FIREBASE_LISTING_ISBN),
                     secondsSince1970);
             listing = newListing;
-            customFirebaseDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
+            quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
         } else { // Updating listing
 
         }
