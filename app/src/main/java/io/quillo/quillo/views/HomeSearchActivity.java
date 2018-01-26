@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
-import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -29,13 +29,13 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
     private ListingAdapter adapter;
     private android.support.v7.widget.Toolbar toolbar;
 
-    private CustomFirebaseDatabase customFirebaseDatabase;
+    private QuilloDatabase quilloDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_search);
+        setContentView(R.layout.fragment_home_search);
         ButterKnife.bind(this);
 
         toolbar = (Toolbar) findViewById(R.id.tlb_home_search);
@@ -43,9 +43,9 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
 
         adapter = new ListingAdapter(this, this);
 
-        customFirebaseDatabase = new CustomFirebaseDatabase();
-        customFirebaseDatabase.setListingsListener(this);
-        customFirebaseDatabase.queryListings("");
+        quilloDatabase = new QuilloDatabase();
+        quilloDatabase.setListingsListener(this);
+        quilloDatabase.queryListings("");
 
         setUpView();
     }
@@ -80,6 +80,11 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
                 startActivity(intent);
                 break;
             }
+            case R.id.signup_login: {
+                Intent intent = new Intent(this, SignUpLoginActivity.class);
+                startActivity(intent);
+                break;
+            }
         }
         return false;
     }
@@ -109,12 +114,12 @@ public class HomeSearchActivity extends AppCompatActivity implements ListingsLis
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        customFirebaseDatabase.addBookmark(listing);
+        quilloDatabase.addBookmark(listing);
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-        customFirebaseDatabase.removeBookmark(listing);
+        quilloDatabase.removeBookmark(listing);
     }
 
     @Override

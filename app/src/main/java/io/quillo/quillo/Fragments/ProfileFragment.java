@@ -1,38 +1,38 @@
-package io.quillo.quillo.views;
+package io.quillo.quillo.Fragments;
 
-/**
- * Created by Stickells on 15/01/2018.
- */
-
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
-import io.quillo.quillo.data.CurrentUser;
 import io.quillo.quillo.data.QuilloDatabase;
-import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
 
-public class ProfileActivity extends AppCompatActivity implements SellerListingsListener, ListingCellListener, View.OnClickListener {
+/**
+ * Created by shkla on 2018/01/22.
+ */
+
+public class ProfileFragment extends Fragment implements SellerListingsListener, ListingCellListener, View.OnClickListener{
 
     private boolean isViewingOwnProfile = true;
     private boolean isLoggedIn = true;
@@ -42,34 +42,43 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
     private int temporaryListingPosition;
 
     private ListingAdapter adapter;
-    @BindView(R.id.rec_profile_listing_holder) RecyclerView recyclerView;
-    @BindView(R.id.tlb_profile_activity) Toolbar toolbar;
-    @BindView(R.id.lbl_seller_name) TextView name;
-    @BindView(R.id.lbl_seller_university) TextView university;
+    @BindView(R.id.rec_profile_listing_holder)
+    RecyclerView recyclerView;
+    @BindView(R.id.tlb_profile_activity)
+    Toolbar toolbar;
+    @BindView(R.id.lbl_seller_name)
+    TextView name;
+    @BindView(R.id.lbl_seller_university)
+    TextView university;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
-        ButterKnife.bind(this);
-
-        adapter = new ListingAdapter(this, this);
-
-        Intent intent = getIntent();
-        seller = (Person) intent.getSerializableExtra(IntentExtras.EXTRA_SELLER);
-
-        quilloDatabase = new QuilloDatabase();
-        quilloDatabase.setSellerListingsListener(this);
-        //quilloDatabase.observeListingsOfSeller(seller.getUid());
-
-        //TODO Fill appropriate currentUser vibe here
-        isViewingOwnProfile = seller.getUid().equals(CurrentUser.Uid);
-
-        setUpView();
+    public static ProfileFragment newInstance(){
+        ProfileFragment profileFragment = new ProfileFragment();
+        return  profileFragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ButterKnife.bind(getActivity());
+
+        adapter = new ListingAdapter(this, getContext());
+        quilloDatabase = new QuilloDatabase();
+        quilloDatabase.setSellerListingsListener(this);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_profile, container, false);
+        setUpView(view);
+        return view;
+    }
+
+    //TODO Update with fragments
+/*
     public void startListingDetailActivity(Listing listing) {
+
+
         Intent intent = new Intent(this, ListingDetailActivity.class);
         intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
 
@@ -84,24 +93,18 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
     }
 
     public void startLoginActivity() {
-        Intent intent = new Intent(this, SignUpLoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
 
         startActivity(intent);
-    }
+    }*/
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
 
-    public void setUpView() {
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    public void setUpView(View view) {
 
-        FloatingActionButton mAddListingButton = (FloatingActionButton) findViewById(R.id.fab_add_listing);
+        FloatingActionButton mAddListingButton = (FloatingActionButton) view.findViewById(R.id.fab_add_listing);
+        recyclerView = (RecyclerView)view.findViewById(R.id.rec_profile_listing_holder);
+        name = (TextView)view.findViewById(R.id.lbl_seller_name);
         mAddListingButton.setOnClickListener(this);
         if (isViewingOwnProfile) {
             mAddListingButton.setVisibility(View.VISIBLE);
@@ -109,20 +112,20 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
             mAddListingButton.setVisibility(View.INVISIBLE);
         }
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
-        itemDecoration.setDrawable(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.divider_white));
+        itemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider_white));
 
         recyclerView.addItemDecoration(itemDecoration);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        name.setText(seller.getName());
+        name.setText("Tamir Shklaz");
         //TODO get actual university when we have that up and running
         //university = ...
 
@@ -140,7 +143,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
     @Override
     public void onListingClick(Listing listing) {
-        startListingDetailActivity(listing);
+        //startListingDetailActivity(listing);
     }
 
     @Override
@@ -163,7 +166,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
     public void showUndoSnackBar() {
         Snackbar.make(
-                findViewById(R.id.root_profile_activity),
+                getActivity().findViewById(R.id.root_profile_activity),
                 getString(R.string.action_delete_item),
                 Snackbar.LENGTH_LONG
         ).setAction(R.string.action_undo, new View.OnClickListener() {
@@ -189,9 +192,9 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
         if (viewId == R.id.fab_add_listing) {
             if (isLoggedIn) {
-                startAddEditListingActivity();
+               // startAddEditListingActivity();
             } else {
-                startLoginActivity();
+                //startLoginActivity();
             }
         }
     }
@@ -251,8 +254,4 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
     private void handleSnackbarTimeout() {
 
     }
-
 }
-
-
-

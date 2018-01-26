@@ -1,21 +1,22 @@
-package io.quillo.quillo.views;
+package io.quillo.quillo.Fragments;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -31,33 +32,24 @@ import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.DatabaseContract;
-import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.views.SelectPhotoDialog;
 
-public class AddEditListingActivity extends AppCompatActivity implements SelectPhotoDialog.OnPhotoSelectedListener  {
+/**
+ * Created by shkla on 2018/01/22.
+ */
 
-    @Override
-    public void getImagePath(Uri imagePath) {
-        Glide.with(this).load(imagePath).into(photo1);
-    }
-
-    @Override
-    public void getImageBitmap(Bitmap bitmap) {
-        photo1.setImageBitmap(bitmap);
-    }
-
+public class AddEditListingFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener{
     private static final int RC_PERMISSIONS = 1;
 
     private QuilloDatabase quilloDatabase;
     private Listing listing;
     private Person seller;
-
-
     ArrayList<ImageView> listingImageViews;
     ImageView currentPhotoAdder;
     int numberOfPhotos = 0;
-    private boolean addingListing = false;
+    private boolean isInEditMode = false;
 
     @BindView(R.id.input_title)
     TextInputEditText titleInput;
@@ -74,32 +66,37 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
     @BindView(R.id.imv_listing_photo_3)
     ImageView photo3;
 
-
+    public static AddEditListingFragment newInstance(){
+        AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
+        return  addEditListingFragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_edit_listing);
-        ButterKnife.bind(this);
-
         quilloDatabase = new QuilloDatabase();
-
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        seller = (Person) intent.getSerializableExtra(IntentExtras.EXTRA_SELLER);
-        listing = (Listing) intent.getSerializableExtra(IntentExtras.EXTRA_LISTING);
-
-        if (extras.getSerializable(IntentExtras.EXTRA_LISTING) != null) { //includes listing, so we're editing
-            addingListing = false;
-            listing = (Listing) intent.getSerializableExtra(IntentExtras.EXTRA_LISTING);
-            setUpView(addingListing);
-            updatePhotoButtons();
-        } else { //doesn't include listing, so we're adding a new one
-            addingListing = true;
-            setUpView(addingListing);
-            currentPhotoAdder = listingImageViews.get(0);
-        }
     }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.activity_add_edit_listing, container, false);
+        ButterKnife.bind(this, view);
+        setUpView(view);
+        return view;
+    }
+
+    @Override
+    public void getImagePath(Uri imagePath) {
+        Glide.with(this).load(imagePath).into(photo1);
+    }
+
+    @Override
+    public void getImageBitmap(Bitmap bitmap) {
+        photo1.setImageBitmap(bitmap);
+    }
+
 
     @OnClick({R.id.imv_listing_photo_1, R.id.imv_listing_photo_2, R.id.imv_listing_photo_3})
     public void handleAddPhotoClick(View v) {
@@ -116,22 +113,20 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
 
     private void showPhotoDialog(){
         SelectPhotoDialog dialog = new SelectPhotoDialog();
-        dialog.show(getSupportFragmentManager(), "Select Photo");
-
-
+        dialog.show(getFragmentManager(), "Select Photo");
     }
 
     private void verifyPermissions() {
         String[] permisions = {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA};
 
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), permisions[0]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this.getApplicationContext(), permisions[1]) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this.getApplicationContext(), permisions[2]) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permisions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permisions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permisions[2]) == PackageManager.PERMISSION_GRANTED) {
 
 
         } else {
-            ActivityCompat.requestPermissions(AddEditListingActivity.this, permisions, RC_PERMISSIONS);
+            ActivityCompat.requestPermissions(getActivity(), permisions, RC_PERMISSIONS);
         }
     }
 
@@ -143,7 +138,7 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
     @OnClick(R.id.btn_publish)
     public void handlePublishClick(View v) {
         HashMap<String, String> fields = getFields();
-        if (addingListing) {
+        if (isInEditMode) {
             if (fields == null) {
                 return;
             }
@@ -176,10 +171,12 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
     }
 
     public void startListingDetailActivity(View viewRoot) {
-        Intent intent = new Intent(this, ListingDetailActivity.class);
+        //TODO Use fragments
+
+        /*Intent intent = new Intent(this, ListingDetailActivity.class);
         intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
         intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
     private void updatePhotoButtons() {
@@ -202,12 +199,14 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
         }
     }
 
-    private void setUpView(boolean addingListing) {
-        listingImageViews = new ArrayList<>(3);
+    private void setUpView(View view) {
 
+
+        listingImageViews = new ArrayList<>(3);
         listingImageViews.add(photo1);
         listingImageViews.add(photo2);
         listingImageViews.add(photo3);
+        currentPhotoAdder = listingImageViews.get(0);
 
         priceInput.setText("R ");
         Selection.setSelection(priceInput.getText(), priceInput.getText().length());
@@ -258,7 +257,7 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
             }
         });
 
-        if (!addingListing) { //We're editing
+        if (isInEditMode) { //We're editing
             fillViewFields(listing);
         }
 
@@ -276,7 +275,6 @@ public class AddEditListingActivity extends AppCompatActivity implements SelectP
 
         String title = titleInput.getText().toString();
         String price = priceInput.getText().toString().substring(2);
-        Log.e("Wow", "Price: " + price);
         String isbn = isbnInput.getText().toString().substring(5);
         String description = descriptionInput.getText().toString();
 
