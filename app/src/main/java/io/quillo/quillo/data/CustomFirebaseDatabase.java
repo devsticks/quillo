@@ -161,7 +161,7 @@ public class CustomFirebaseDatabase {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                listing.setImageURL(downloadUrl.toString());
+                listing.setImageUrl(downloadUrl.toString());
                 databaseListingsRef.child(listingUid).setValue(listing);
             }
         });

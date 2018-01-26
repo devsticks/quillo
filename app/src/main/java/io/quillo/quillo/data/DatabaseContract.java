@@ -8,6 +8,8 @@ public class DatabaseContract {
 
     public static final String FIREBASE_LISTINGS_CHILD_NAME = "listings";
     public static final String FIREBASE_LISTING_NAME = "name";
+    public static final String FIREBASE_LISTING_AUTHOR = "author";
+    public static final String FIREBASE_LISTING_EDITION = "edition";
     public static final String FIREBASE_LISTING_DESCRIPTION = "description";
     public static final String FIREBASE_LISTING_SELLERUID = "sellerUid";
     public static final String FIREBASE_LISTING_PRICE =  "price";

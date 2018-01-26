@@ -46,8 +46,8 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         Listing listing = listings.get(position);
         holder.setListing(listing);
         holder.setListingCellListener(listingCellListener);
-        if (listing.getImageURL() != null) {
-           Glide.with(context).load(listing.getImageURL()).into(holder.getIcon());
+        if (listing.getImageUrl() != null) {
+           Glide.with(context).load(listing.getImageUrl()).into(holder.getIcon());
         }
     }
 

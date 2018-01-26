@@ -12,41 +12,51 @@ public class Listing implements Serializable {
     private int edition;
     private String description;
     private String sellerUid;
+    private String universityUid;
     private String uid;
     private int price;
-    private String ISBN;
+    private String isbn;
     private long dateListed;
-    private String imageURL;
+    private String imageUrl;
 
 
-    private int numberOfViews;
+//    private int numberOfViews;
 
-    public Listing (String name, String author, int edition, String description, String sellerUid, String uid, int price, String ISBN, long dateListed, String imageURL) { //}, int dateListed, int numberOfViews, int colorResource) {
+    public Listing (String name, String author, int edition, String description, String sellerUid, String universityUid, String uid, int price, String isbn, long dateListed, String imageUrl) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
         this.author = author;
         this.edition = edition;
         this.description = description;
         this.sellerUid = sellerUid;
+        this.universityUid = universityUid;
         this.uid = uid;
         this.price = price;
-        this.ISBN = ISBN;
+        this.isbn = isbn;
         this.dateListed = dateListed;
-        this.imageURL = imageURL;
+        this.imageUrl = imageUrl;
 //        Date date = new Date();
 //        this.dateListed = date.hashCode();
 //        this.numberOfViews = numberOfViews;
     }
 
-    public Listing (String name, String author, int edition, String description, String sellerUid, int price, String ISBN, long dateListed) { //}, int dateListed, int numberOfViews, int colorResource) {
+    public Listing (String name, String author, int edition, String description, String sellerUid, int price, String isbn, long dateListed) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
         this.author = author;
         this.edition = edition;
         this.description = description;
         this.sellerUid = sellerUid;
         this.price = price;
-        this.ISBN = ISBN;
+        this.isbn = isbn;
         this.dateListed = dateListed;
 
+    }
+
+    public String getUniversityUid() {
+        return universityUid;
+    }
+
+    public void setUniversityUid(String universityUid) {
+        this.universityUid = universityUid;
     }
 
     public String getAuthor() {
@@ -93,12 +103,12 @@ public class Listing implements Serializable {
         this.price = price;
     }
 
-    public String getISBN() {
-        return ISBN;
+    public String getIsbn() {
+        return isbn;
     }
 
-    public void setISBN(String ISBN) {
-        this.ISBN = ISBN;
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public long getDateListed() {
@@ -107,14 +117,6 @@ public class Listing implements Serializable {
 
     public void setDateListed(long dateListed) {
         this.dateListed = dateListed;
-    }
-
-    public int getNumberOfViews() {
-        return numberOfViews;
-    }
-
-    public void setNumberOfViews(int numberOfViews) {
-        this.numberOfViews = numberOfViews;
     }
 
     public String getName() {
@@ -133,11 +135,11 @@ public class Listing implements Serializable {
         this.description = description;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

@@ -68,7 +68,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
 
     private void bindListingToViews(){
         name.setText(listing.getName());
-        author.setText("James Stewart");
+        author.setText(listing.getAuthor());
         price.setText("R " + String.valueOf(listing.getPrice()));
     }
 

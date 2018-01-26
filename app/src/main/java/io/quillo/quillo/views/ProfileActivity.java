@@ -76,11 +76,12 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
         startActivity(intent);
     }
 
+    //TODO Delete if working in fragments
     public void startAddEditListingActivity() {
-        Intent intent = new Intent(this, AddEditListingActivity.class);
-        intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
-
-        startActivity(intent);
+//        Intent intent = new Intent(this, AddEditListingActivity.class);
+//        intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
+//
+//        startActivity(intent);
     }
 
     public void startLoginActivity() {

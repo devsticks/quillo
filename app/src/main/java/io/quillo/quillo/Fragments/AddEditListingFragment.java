@@ -49,6 +49,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     ArrayList<ImageView> listingImageViews;
     ImageView currentPhotoAdder;
     int numberOfPhotos = 0;
+
+    //TODO actually check if a listing is being added or edited
     private boolean isInEditMode = false;
 
     @BindView(R.id.input_title)
@@ -143,7 +145,9 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @OnClick(R.id.btn_publish)
     public void handlePublishClick(View v) {
         HashMap<String, String> fields = getFields();
-        if (isInEditMode) {
+        if (isInEditMode) { // Editing Listing
+
+        } else { // Adding Listing
             if (fields == null) {
                 return;
             }
@@ -152,7 +156,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
             Listing newListing = new Listing(fields.get(DatabaseContract.FIREBASE_LISTING_NAME),
                     fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR),
-                    fields.get(DatabaseContract.FIREBASE_LISTING_EDITION),
+                    Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_EDITION)),
                     fields.get(DatabaseContract.FIREBASE_LISTING_DESCRIPTION),
                     fields.get(DatabaseContract.FIREBASE_LISTING_SELLERUID),
                     Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_PRICE)),
@@ -160,10 +164,9 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     secondsSince1970);
             listing = newListing;
             customFirebaseDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
-        } else { // Updating listing
-
         }
-        startListingDetailActivity(v);
+
+        startListingDetailFragment(v);
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){
@@ -177,7 +180,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         return photo1.getDrawingCache();
     }
 
-    public void startListingDetailActivity(View viewRoot) {
+    public void startListingDetailFragment(View viewRoot) {
         //TODO Use fragments
 
         /*Intent intent = new Intent(this, ListingDetailActivity.class);
@@ -187,29 +190,32 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
     private void updatePhotoButtons() {
-        // TODO get real data here
+        // TODO For when you can add more photos...
         // numberOfPhotos = listing.getNumberOfPhotos();
         // ArrayList<int> listingPhotoResIds = listing.getPhotos();
 
         // Fill pics if they already exist
-        for (int i = 0; i < 3; i++) {
-            if (i < numberOfPhotos) {
-                //listingImageViews.get(i).setImageResource(listingPhotoResIds.get(i));
-                //TODO this is a dummy, get rid of it
-                listingImageViews.get(i).setImageResource(R.drawable.ic_photo_primary_light_24dp);
-            } else if (i == numberOfPhotos) {
-                listingImageViews.get(i).setImageResource(R.drawable.ic_add_photo_white_24dp);
-                currentPhotoAdder = listingImageViews.get(i);
-            } else {
-                listingImageViews.get(i).setImageResource(R.drawable.ic_photo_primary_light_24dp);
-            }
-        }
+//        for (int i = 0; i < 3; i++) {
+//            if (i < numberOfPhotos) {
+//                //listingImageViews.get(i).setImageResource(listingPhotoResIds.get(i));
+//                //TODO this is a dummy, get rid of it
+//                listingImageViews.get(i).setImageResource(R.drawable.ic_photo_primary_light_24dp);
+//            } else if (i == numberOfPhotos) {
+//                listingImageViews.get(i).setImageResource(R.drawable.ic_add_photo_white_24dp);
+//                currentPhotoAdder = listingImageViews.get(i);
+//            } else {
+//                listingImageViews.get(i).setImageResource(R.drawable.ic_photo_primary_light_24dp);
+//            }
+//        }
     }
 
     private void setUpView(View view) {
 
         listingImageViews = new ArrayList<>(3);
         listingImageViews.add(photo1);
+
+        //TODO setImageResource here can go when we can add 3 photos. Happens in updatePhotoButtons
+        listingImageViews.get(0).setImageResource(R.drawable.ic_add_photo_primary_24dp);
 //        listingImageViews.add(photo2);
 //        listingImageViews.add(photo3);
 //        currentPhotoAdder = listingImageViews.get(0);
@@ -275,7 +281,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         editionInput.setText(listing.getEdition());
         descriptionInput.setText(listing.getDescription());
         priceInput.setText("R " + listing.getPrice());
-        isbnInput.setText("ISBN " + listing.getISBN());
+        isbnInput.setText("ISBN " + listing.getIsbn());
     }
 
     public HashMap<String, String> getFields() {
