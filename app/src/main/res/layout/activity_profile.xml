@@ -2,11 +2,11 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_profile_activity"
-    tools:context=".views.ProfileActivity"    >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.ProfileActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tlb_profile_activity"
@@ -15,7 +15,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="0dp"
@@ -44,31 +44,61 @@
                     android:layout_height="180dp"
                     android:background="@color/DarkText" />
 
-                <TextView
-                    android:id="@+id/lbl_seller_name"
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imv_profile_picture"
-                    android:gravity="center_vertical"
-                    style="@style/Text.BoldDark"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
-                    tools:text="Tamir" />
+                    android:layout_below="@+id/imv_profile_picture">
 
-                <TextView
-                    android:id="@+id/lbl_seller_university"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/lbl_seller_name"
-                    android:gravity="center_vertical"
-                    style="@style/Text.PrimaryDark"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="University of Cape Town" />
+                    <TextView
+                        android:id="@+id/lbl_seller_name"
+                        style="@style/Text.BoldDark"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="52dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Tamir" />
 
+                    <TextView
+                        android:id="@+id/lbl_seller_university"
+                        style="@style/Text.PrimaryDark"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="52dp"
+                        android:layout_marginStart="16dp"
+                        android:gravity="center_vertical"
+                        android:text="University of Cape Town"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lbl_seller_name" />
+
+                    <ImageView
+                        android:id="@+id/btn_edit_profile"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_toRightOf="@id/lbl_seller_name"
+                        android:gravity="center_vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_edit_white_24dp" />
+
+                </android.support.constraint.ConstraintLayout>
             </RelativeLayout>
 
         </android.support.design.widget.AppBarLayout>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_profile_listing_holder"
             android:layout_width="match_parent"
@@ -93,11 +123,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
-        app:srcCompat="@drawable/ic_add_black_24dp"
         app:elevation="6dp"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:rippleColor="@color/transparentBackgroundBlack" />
+        app:rippleColor="@color/transparentBackgroundBlack"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
 </android.support.constraint.ConstraintLayout>

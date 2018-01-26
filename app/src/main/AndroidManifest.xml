@@ -12,26 +12,26 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_porc_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_porc_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".controllers.MainActivity">
+        <activity
+            android:name=".views.LandingActivity"
+            android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".controllers.MainActivity"/>
+        <activity android:name=".views.ListingDetailActivity" />
+        <activity android:name=".views.ProfileActivity" />
         <activity
             android:name=".views.SignUpLoginActivity"
             android:theme="@style/AppTheme.Dark" />
-        <activity
-            android:name=".views.SplashActivity"
-            android:label="@string/title_splash"
-            android:theme="@style/AppTheme.Dark"/>
-
     </application>
 
 </manifest>
