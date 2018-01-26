@@ -4,12 +4,14 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -17,32 +19,34 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.quillo.quillo.interfaces.BookmarkListener;
 import io.quillo.quillo.interfaces.ListingsListener;
-import io.quillo.quillo.interfaces.SellerListener;
+import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
 
 /**
  * Created by Stickells on 13/01/2018.
  */
 
-public class CustomFirebaseDatabase {
+public class QuilloDatabase {
 
     private List<Listing> listings;
     private List<Person> users;
 
     private ListingsListener listingsListener;
-    private SellerListener sellerListener;
+    private PersonListener personListener;
     private SellerListingsListener sellerListingsListener;
+    private BookmarkListener bookmarkListener;
 
     private DatabaseReference database;
     private DatabaseReference databaseListingsRef;
     private DatabaseReference databaseUserListingsRef;
-    private DatabaseReference databaseUserRef;
+    private DatabaseReference databasePersonRef;
 
     private StorageReference storageReference;
     private StorageReference storageListingRef;
 
-    public CustomFirebaseDatabase() {
+    public QuilloDatabase() {
         /*listings = new ArrayList<Listing> ();
         listings.add( new Listing("1 Calculus 101", "The only maths textbook you'll ever need.", "1", "1", 100, "11111", "Author 1") );
         listings.add( new Listing("Intro to Signals & Systems","The textbook for the hardest course you're going to do in your life. Ever.", "2", "2", 200, "22222", "Author 2"));
@@ -59,10 +63,23 @@ public class CustomFirebaseDatabase {
 
         database = FirebaseDatabase.getInstance().getReference();
         databaseListingsRef = database.child(DatabaseContract.FIREBASE_LISTINGS_CHILD_NAME);
+        databasePersonRef = database.child(DatabaseContract.FIREBASE_PERSON_CHILD_NAME);
 
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
 
+    }
+
+    public void setListingsListener(ListingsListener listingsListener) {
+        this.listingsListener = listingsListener;
+    }
+
+    public void setPersonListener(PersonListener personListener) {
+        this.personListener = personListener;
+    }
+
+    public void setSellerListingsListener(SellerListingsListener sellerListingsListener) {
+        this.sellerListingsListener = sellerListingsListener;
     }
 
     public void queryListings(String selection) {
@@ -79,7 +96,7 @@ public class CustomFirebaseDatabase {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Listing newListing = dataSnapshot.getValue(Listing.class);
-                Log.d(CustomFirebaseDatabase.class.getName(), "onChildAdded: " + newListing.getName());
+                Log.d(QuilloDatabase.class.getName(), "onChildAdded: " + newListing.getName());
                 listingsListener.onListingLoaded(newListing);
             }
 
@@ -108,52 +125,6 @@ public class CustomFirebaseDatabase {
         return listingEventListener;
     }
 
-
-    public void setListingsListener(ListingsListener listingsListener) {
-        this.listingsListener = listingsListener;
-    }
-
-    public void setSellerListener(SellerListener sellerListener) {
-        this.sellerListener = sellerListener;
-    }
-
-    public void setSellerListingsListener(SellerListingsListener sellerListingsListener) {
-        this.sellerListingsListener = sellerListingsListener;
-    }
-
-    // Fetches the info for a specific listing from Firebase and returns a Listing object
-    public Listing getListingById(String listingId) {
-        for (int i = 0; i < listings.size(); i++) {
-            if (listings.get(i).getUid().equals(listingId)) {
-                return listings.get(i);
-            }
-        }
-
-        return null;
-    }
-
-    public void observeListings() {
-        for (int i = 0; i < listings.size(); i++) {
-            listingsListener.onListingLoaded(listings.get(i));
-        }
-    }
-
-    public void observeListingsOfSeller(String sellerId) {
-        for (int i = 0; i < listings.size(); i++) {
-            if (listings.get(i).getSellerUid().equals(sellerId)) {
-                sellerListingsListener.onSellerListingLoaded(listings.get(i));
-            }
-        }
-    }
-
-    public void observeUser(String userId) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUid().equals(userId)) {
-                sellerListener.onSellerLoaded(users.get(i));
-            }
-        }
-    }
-
     public void addListing(final Listing listing, byte[] uploadBytes) {
         final String listingUid = databaseListingsRef.push().getKey();
         listing.setUid(listingUid);
@@ -161,20 +132,49 @@ public class CustomFirebaseDatabase {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                listing.setImageUrl(downloadUrl.toString());
+                listing.setImageURL(downloadUrl.toString());
                 databaseListingsRef.child(listingUid).setValue(listing);
             }
         });
 
     }
 
+    public void observeUser(String userId) {
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUid().equals(userId)) {
+                personListener.onPersonLoaded(users.get(i));
+            }
+        }
+    }
 
+    public void loadPerson(String personUid){
 
-    public void deleteListing(Listing listing) {
+        ValueEventListener personValueListener = new ValueEventListener() {
+            @Override
+
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                listing.setImageUrl(downloadUrl.toString());
+                databaseListingsRef.child(listingUid).setValue(listing);
+
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Person person = dataSnapshot.getValue(Person.class);
+                personListener.onPersonLoaded(person);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        };
+
+        databasePersonRef.child(personUid).addListenerForSingleValueEvent(personValueListener);
 
     }
 
-    public void insertListing(Listing listing) {
+
+    public void deleteListing(Listing listing) {
 
     }
 
@@ -182,6 +182,42 @@ public class CustomFirebaseDatabase {
 
         listingsListener.onListingUpdated(listing);
         sellerListingsListener.onSellerListingUpdated(listing);
+
+    }
+
+    public void observeBookmarks(){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+        if (currentUser!= null) {
+            final ChildEventListener bookmarkEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Listing listing = dataSnapshot.getValue(Listing.class);
+                    bookmarkListener.onBookmarkAdded(listing);
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    Listing listing = dataSnapshot.getValue(Listing.class);
+                    bookmarkListener.onBookmarkRemoved(listing);
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+        }
 
     }
 

@@ -22,9 +22,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
-import io.quillo.quillo.data.CustomFirebaseDatabase;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
 
@@ -37,7 +37,7 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     private boolean isViewingOwnProfile = true;
     private boolean isLoggedIn = true;
     private Person seller;
-    private CustomFirebaseDatabase customFirebaseDatabase;
+    private QuilloDatabase quilloDatabase;
     private Listing temporaryListing;
     private int temporaryListingPosition;
 
@@ -59,20 +59,23 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(getActivity());
+
 
         adapter = new ListingAdapter(this, getContext());
-        customFirebaseDatabase = new CustomFirebaseDatabase();
-        customFirebaseDatabase.setSellerListingsListener(this);
+        quilloDatabase = new QuilloDatabase();
+        quilloDatabase.setSellerListingsListener(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_profile, container, false);
+        ButterKnife.bind(this, view);
         setUpView(view);
         return view;
     }
+
+
 
     //TODO Update with fragments
 /*
@@ -133,18 +136,20 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        customFirebaseDatabase.addBookmark(listing);
+        quilloDatabase.addBookmark(listing);
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-        customFirebaseDatabase.removeBookmark(listing);
+        quilloDatabase.removeBookmark(listing);
     }
 
     @Override
     public void onListingClick(Listing listing) {
         //startListingDetailActivity(listing);
     }
+
+
 
     @Override
     public void onSellerListingLoaded(Listing newListing) {
@@ -232,7 +237,7 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     }
 
     private void handleListingSwiped(int position, Listing listing) {
-        customFirebaseDatabase.deleteListing(listing);
+        quilloDatabase.deleteListing(listing);
         deleteListingCellAt(position);
 
         temporaryListing = listing;
@@ -243,7 +248,7 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
 
     private void handleUndoDeleteConfirmed() {
         if (temporaryListing != null) {
-            customFirebaseDatabase.insertListing(temporaryListing);
+            //quilloDatabase.insertListing(temporaryListing);
             insertListingCellAt(temporaryListingPosition, temporaryListing);
 
             temporaryListing = null;

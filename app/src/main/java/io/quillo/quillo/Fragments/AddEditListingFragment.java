@@ -30,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -43,7 +43,7 @@ import io.quillo.quillo.views.SelectPhotoDialog;
 public class AddEditListingFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener{
     private static final int RC_PERMISSIONS = 1;
 
-    private CustomFirebaseDatabase customFirebaseDatabase;
+    private QuilloDatabase quilloDatabase;
     private Listing listing;
     private Person seller;
     ArrayList<ImageView> listingImageViews;
@@ -80,7 +80,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        customFirebaseDatabase = new CustomFirebaseDatabase();
+        quilloDatabase = new QuilloDatabase();
     }
 
     @Nullable
@@ -163,7 +163,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     fields.get(DatabaseContract.FIREBASE_LISTING_ISBN),
                     secondsSince1970);
             listing = newListing;
-            customFirebaseDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
+            quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
         }
 
         startListingDetailFragment(v);

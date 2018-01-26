@@ -1,12 +1,16 @@
-package io.quillo.quillo.views;
+package io.quillo.quillo.Fragments;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,18 +21,19 @@ import butterknife.OnClick;
 import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ContactOptionsDialogController;
-import io.quillo.quillo.data.CurrentUser;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.PersonListener;
 
 /**
- * Created by Stickells on 13/01/2018.
+ * Created by shkla on 2018/01/25.
  */
 
-public class ListingDetailActivity extends AppCompatActivity implements PersonListener {
+public class ListingDetailFragment extends Fragment {
+
+
 
     private Person seller;
     private QuilloDatabase quilloDatabase;
@@ -37,12 +42,18 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
 
     private boolean isViewingOwnListing;
 
-    @BindView(R.id.tlb_listing_detail) Toolbar toolbar;
-    @BindView(R.id.fab_contact_seller) FloatingActionButton contactSeller;
+    //TODO: Add edition field
+
+    @BindView(R.id.tlb_listing_detail)
+    Toolbar toolbar;
+    @BindView(R.id.fab_contact_seller)
+    FloatingActionButton contactSeller;
     @BindView(R.id.btn_seller_profile) View sellerContainerButton;
     @BindView(R.id.div_seller) View sellerContainer;
-    @BindView(R.id.imv_seller_profile_pic) ImageView sellerProfilePic;
-    @BindView(R.id.lbl_seller_name) TextView sellerName;
+    @BindView(R.id.imv_seller_profile_pic)
+    ImageView sellerProfilePic;
+    @BindView(R.id.lbl_seller_name)
+    TextView sellerName;
 
     @BindView(R.id.btn_call) View call;
     @BindView(R.id.btn_email) View email;
@@ -51,65 +62,55 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
 
     @BindView(R.id.lbl_title) TextView title;
     @BindView(R.id.lbl_author) TextView author;
-    @BindView(R.id.lbl_edition) TextView edition;
     @BindView(R.id.lbl_description) TextView description;
     @BindView(R.id.lbl_price) TextView price;
     @BindView(R.id.imv_image) ImageView image;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_listing_detail);
-        ButterKnife.bind(this);
-
-        Intent intent = getIntent();
-        listing = (Listing) intent.getSerializableExtra(IntentExtras.EXTRA_LISTING);
 
         quilloDatabase = new QuilloDatabase();
-        quilloDatabase.setPersonListener(this);
-        quilloDatabase.observeUser(listing.getSellerUid());
-
-        setUpView();
-
     }
 
-    public void setUpView() {
-        title.setText(listing.getName());
-        author.setText(listing.getAuthor());
-        String editionText = "Edition " + String.valueOf(listing.getEdition());
-        edition.setText(editionText);
-        description.setText(listing.getDescription());
-        //TODO Use local currency symbol
-        String priceText = "R " + String.valueOf(listing.getPrice());
-        price.setText(priceText);
-
-        //TODO How do pictures get fetched and added to the view?
-        // image.setBackgroundResource( drawableResourceExtra );
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-    }
-
+    @Nullable
     @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_listing_detail, container, false);
+
+        Bundle bundle = this.getArguments();
+        ButterKnife.bind(this, view);
+
+        listing = (Listing)bundle.getSerializable(IntentExtras.EXTRA_LISTING);
+        bindListingToViews();
+
+        return view;
     }
+
+    
 
     @OnClick(R.id.fab_contact_seller)
     public void handleContactSellerClick (View v) {
         contactDialogController.showContactOptionsDialog();
     }
 
-    @Override
-    public void onPersonLoaded(final Person person) {
+    public void loadSeller(){
+        if (listing != null) {
+            quilloDatabase.loadPerson(listing.getUid());
+            quilloDatabase.setPersonListener(new PersonListener() {
+                @Override
+                public void onPersonLoaded(Person person) {
+                    seller = person;
+                    bindSellerToViews();
+                }
+            });
+        }
+    }
 
-        this.seller = person;
-        //TODO Fill appropriate currentUser vibe here
-        isViewingOwnListing = person.getUid().equals(CurrentUser.Uid);
+    private void bindSellerToViews(){
+
+        isViewingOwnListing = seller.getUid().equals(listing.getUid());
         if (isViewingOwnListing) {
             sellerContainer.setVisibility(View.GONE);
         } else {
@@ -119,16 +120,11 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
         sellerContainerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startProfileActivity(person,v);
+                startProfileActivity(seller,v);
             }
         });
 
-        //TODO FILL PROFILE PIC AND UNIVERSITY
-        // sellerProfilePic.setImageResource( ... );
-        //sellerUniversity.setText(seller.getUniversity());
-        sellerName.setText(person.getName());
-
-        if (person.getPhoneNumber() != null) {
+        if (seller.getPhoneNumber() != null) {
             call.setVisibility(View.VISIBLE);
             text.setVisibility(View.VISIBLE);
 
@@ -137,7 +133,7 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
                 public void onClick(View view) {
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
 
-                    callIntent.setData(Uri.parse("tel:" + person.getPhoneNumber()));
+                    callIntent.setData(Uri.parse("tel:" + seller.getPhoneNumber()));
 
                     view.getContext().startActivity(callIntent);
                 }
@@ -147,9 +143,9 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
                 @Override
                 public void onClick(View view) {
                     try {
-                        Uri uri = Uri.parse("smsto:" + person.getPhoneNumber());
+                        Uri uri = Uri.parse("smsto:" + seller.getPhoneNumber());
                         Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
-                        smsIntent.putExtra("sms_body", "Hi " + person.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
+                        smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
                         view.getContext().startActivity(smsIntent);
                     } catch (Exception e) {
                         Toast.makeText(view.getContext(),
@@ -168,9 +164,9 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
             @Override
             public void onClick(View view) {
                 boolean success = EmailIntentBuilder.from(view.getContext())
-                        .to(person.getEmail())
+                        .to(seller.getEmail())
                         .subject("Quillo Enquiry")
-                        .body("Hi " + person.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.")
+                        .body("Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.")
                         .start();
                 if (!success) {
                     Toast.makeText(view.getContext(),
@@ -180,15 +176,25 @@ public class ListingDetailActivity extends AppCompatActivity implements PersonLi
             }
         });
 
-        //OLD
-        contactDialogController = new ContactOptionsDialogController(person, listing, this);
+
+
     }
+
+    private void  bindListingToViews(){
+        title.setText(listing.getName());
+        author.setText("James");
+        description.setText(listing.getDescription());
+        price.setText("R" + listing.getPrice());
+    }
+
+
 
     public void startProfileActivity(Person seller, View viewRoot) {
-        Intent i = new Intent(this, ProfileActivity.class);
+       //TODO: Implement fragments
+
+       /* Intent i = new Intent(this, ProfileActivity.class);
         i.putExtra(IntentExtras.EXTRA_SELLER, seller);
 
-        startActivity(i);
+        startActivity(i);*/
     }
-
 }

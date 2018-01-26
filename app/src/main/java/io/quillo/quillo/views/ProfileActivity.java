@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.data.CurrentUser;
-import io.quillo.quillo.data.CustomFirebaseDatabase;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -37,7 +37,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
     private boolean isViewingOwnProfile = true;
     private boolean isLoggedIn = true;
     private Person seller;
-    private CustomFirebaseDatabase customFirebaseDatabase;
+    private QuilloDatabase quilloDatabase;
     private Listing temporaryListing;
     private int temporaryListingPosition;
 
@@ -59,9 +59,9 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
         Intent intent = getIntent();
         seller = (Person) intent.getSerializableExtra(IntentExtras.EXTRA_SELLER);
 
-        customFirebaseDatabase = new CustomFirebaseDatabase();
-        customFirebaseDatabase.setSellerListingsListener(this);
-        //customFirebaseDatabase.observeListingsOfSeller(seller.getUid());
+        quilloDatabase = new QuilloDatabase();
+        quilloDatabase.setSellerListingsListener(this);
+        //quilloDatabase.observeListingsOfSeller(seller.getUid());
 
         //TODO Fill appropriate currentUser vibe here
         isViewingOwnProfile = seller.getUid().equals(CurrentUser.Uid);
@@ -131,12 +131,12 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        customFirebaseDatabase.addBookmark(listing);
+        quilloDatabase.addBookmark(listing);
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-        customFirebaseDatabase.removeBookmark(listing);
+        quilloDatabase.removeBookmark(listing);
     }
 
     @Override
@@ -230,7 +230,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
     }
 
     private void handleListingSwiped(int position, Listing listing) {
-        customFirebaseDatabase.deleteListing(listing);
+        quilloDatabase.deleteListing(listing);
         deleteListingCellAt(position);
 
         temporaryListing = listing;
@@ -241,7 +241,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
     private void handleUndoDeleteConfirmed() {
         if (temporaryListing != null) {
-            customFirebaseDatabase.insertListing(temporaryListing);
+            //quilloDatabase.insertListing(temporaryListing);
             insertListingCellAt(temporaryListingPosition, temporaryListing);
 
             temporaryListing = null;
