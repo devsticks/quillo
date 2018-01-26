@@ -27,8 +27,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".controllers.MainActivity"/>
-        <activity android:name=".views.ListingDetailActivity" />
-        <activity android:name=".views.ProfileActivity" />
         <activity
             android:name=".views.SignUpLoginActivity"
             android:theme="@style/AppTheme.Dark" />

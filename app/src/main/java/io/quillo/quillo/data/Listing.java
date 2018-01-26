@@ -19,6 +19,8 @@ public class Listing implements Serializable {
     private long dateListed;
     private String imageUrl;
 
+    private boolean isBookmarked;
+
 
 //    private int numberOfViews;
 
@@ -141,5 +143,13 @@ public class Listing implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public boolean isBookmarked() {
+        return isBookmarked;
+    }
+
+    public void setBookmarked(boolean bookmarked) {
+        isBookmarked = bookmarked;
     }
 }

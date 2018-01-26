@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         listingDetailFragment.setArguments(bundle);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, listingDetailFragment)
+        transaction.replace(R.id.content_holder, listingDetailFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack("Search Fragment")
                 .commit();
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         hideNavBar();
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, loginSignupFragment)
+                .replace(R.id.content_holder, loginSignupFragment)
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         hideNavBar();
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, loginSignupFragment)
+                .replace(R.id.content_holder, loginSignupFragment)
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
