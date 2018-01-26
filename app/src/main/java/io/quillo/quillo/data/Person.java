@@ -13,18 +13,21 @@ public class Person implements Serializable {
     private String email;
     private String phoneNumber;
     private String universityUid;
+    private String photoUrl;
+
+
 
     //TODO Add in universityUid and majorId when these get implemented
-    public Person(String uid, String name, String email, String phoneNumber) { //, String universityUid, String majorId) {
-
+    public Person(String uid, String name, String email, String universityUid) {
         this.uid = uid;
         this.name = name;
         this.email = email;
-        this.phoneNumber = phoneNumber;
-//        this.universityUid = universityUid;
-//        this.majorId = majorId;
+        this.universityUid = universityUid;
+    }
 
-}
+    public Person(){
+
+    }
 
     public String getUid() {
         return uid;
@@ -50,11 +53,11 @@ public class Person implements Serializable {
         this.email = email;
     }
 
-    public String getPhoneNumber () {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber (String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

@@ -9,6 +9,6 @@ import io.quillo.quillo.data.Listing;
 public interface BookmarkListener {
 
     public void onBookmarkAdded(Listing listing);
-    public void onBookmarkRemoved(Listing listing);
+    public void onBookmarkRemoved(String listingUid);
 
 }

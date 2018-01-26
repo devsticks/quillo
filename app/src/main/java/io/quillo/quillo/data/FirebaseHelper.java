@@ -13,4 +13,13 @@ public class FirebaseHelper {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    public static String getCurrentUserUid(){
+        FirebaseUser user = getCurrentFirebaseUser();
+        if(user != null){
+            return user.getUid();
+        }else{
+            return null;
+        }
+    }
+
 }

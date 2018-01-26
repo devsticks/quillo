@@ -67,6 +67,23 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         this.notifyItemRemoved(position);
     }
 
+    public void removeListing(String listingUid){
+        int pos = indexOfListing(listingUid);
+        if (pos != -1){
+            listings.remove(pos);
+            this.notifyItemRemoved(pos);
+        }
+    }
+
+    private int indexOfListing(String listingUid){
+        for (int i = 0; i < listings.size(); i++){
+            if(listings.get(i).getUid().equals(listingUid)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void insertListing(int position, Listing listing) {
         listings.add(position, listing);
         this.notifyItemInserted(position);

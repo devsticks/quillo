@@ -12,4 +12,6 @@ public interface ListingsListener {
 
     void onListingUpdated(Listing listing);
 
+    void onListingRemoved(Listing listing);
+
 }

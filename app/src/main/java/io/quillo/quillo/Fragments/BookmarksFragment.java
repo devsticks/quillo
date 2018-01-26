@@ -16,15 +16,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
+import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.QuilloDatabase;
+import io.quillo.quillo.interfaces.BookmarkListener;
 import io.quillo.quillo.interfaces.ListingCellListener;
 
 /**
  * Created by shkla on 2018/01/22.
  */
 
-public class BookmarksFragment extends Fragment implements ListingCellListener {
+public class BookmarksFragment extends Fragment implements ListingCellListener, BookmarkListener {
 
 
     @BindView(R.id.rec_home_search_listing_holder)
@@ -43,6 +45,12 @@ public class BookmarksFragment extends Fragment implements ListingCellListener {
         super.onCreate(savedInstanceState);
         quilloDatabase = new QuilloDatabase();
         adapter = new ListingAdapter(this, getContext());
+        setupDatabase();
+    }
+
+    public void setupDatabase(){
+        quilloDatabase.setBookmarkListener(this);
+        quilloDatabase.observeBookmarks();
     }
 
     @Nullable
@@ -52,26 +60,40 @@ public class BookmarksFragment extends Fragment implements ListingCellListener {
         ButterKnife.bind(this, view);
         setupView(view);
         return view;
-
+    }
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).showNavbar();
     }
 
     @Override
     public void onListingClick(Listing listing) {
-
+        ((MainActivity)getActivity()).showListingDetailFragment(listing);
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-
+        quilloDatabase.removeBookmark(listing);
     }
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        
+
+    }
+
+    @Override
+    public void onBookmarkAdded(Listing listing) {
+        listing.setBookmarked(true);
+        adapter.addListing(listing);
+    }
+
+    @Override
+    public void onBookmarkRemoved(String listingUid) {
+        adapter.removeListing(listingUid);
+
     }
 
     private void setupView(View view){
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -81,4 +103,5 @@ public class BookmarksFragment extends Fragment implements ListingCellListener {
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
     }
+
 }

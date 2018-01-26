@@ -12,8 +12,9 @@ public class DatabaseContract {
     public static final String FIREBASE_LISTING_SELLERUID = "sellerUid";
     public static final String FIREBASE_LISTING_PRICE =  "price";
     public static final String FIREBASE_LISTING_UID =  "uid";
-    public static final String FIREBASE_LISTING_ISBN = "ISBN";
+    public static final String FIREBASE_LISTING_ISBN = "isbn";
     public static final String FIREBASE_LISTING_DATELISTED = "dateListed";
+    public static final String FIREBASE_LISTING_UNIVERSITY_UID = "universityUid";
 
     public static final String FIREBASE_PERSON_CHILD_NAME = "people";
     public static final String FIREBASE_PERSON_EMAIL = "email";
@@ -21,7 +22,8 @@ public class DatabaseContract {
     public static final String FIREBASE_PERSON_NAME = "name";
     public static final String FIREBASE_PERSON_PHONE = "phone";
 
-    public static final String FIREBASE_USER_LISTINGS_CHILD_NAME = "user_listings";
+    public static final String FIREBASE_PERSON_LISTINGS_CHILD_NAME = "user_listings";
+    public static final String FIREBASE_USER_BOOKMARKS_CHILD_NAME = "user_bookmarks";
 
     public static final String FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME = "listings";
 }

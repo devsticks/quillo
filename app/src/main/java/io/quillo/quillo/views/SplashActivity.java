@@ -1,6 +1,5 @@
 package io.quillo.quillo.views;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_start)
     public void handleStartClick (View v) {
-        Intent i = new Intent(this, HomeSearchActivity.class);
-        startActivity(i);
+        //Intent i = new Intent(this, HomeSearchActivity.class);
+        //startActivity(i);
     }
 }

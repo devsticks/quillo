@@ -1,7 +1,6 @@
 package io.quillo.quillo.data;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,13 +15,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.quillo.quillo.interfaces.BookmarkListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.PersonListener;
-import io.quillo.quillo.interfaces.SellerListingsListener;
+import io.quillo.quillo.interfaces.PersonListingsListener;
 
 /**
  * Created by Stickells on 13/01/2018.
@@ -35,35 +33,24 @@ public class QuilloDatabase {
 
     private ListingsListener listingsListener;
     private PersonListener personListener;
-    private SellerListingsListener sellerListingsListener;
+    private PersonListingsListener personListingsListener;
     private BookmarkListener bookmarkListener;
 
     private DatabaseReference database;
     private DatabaseReference databaseListingsRef;
-    private DatabaseReference databaseUserListingsRef;
+    private DatabaseReference databasePersonListingsRef;
     private DatabaseReference databasePersonRef;
+    private DatabaseReference databaseBookmarksRef;
 
     private StorageReference storageReference;
     private StorageReference storageListingRef;
 
     public QuilloDatabase() {
-        /*listings = new ArrayList<Listing> ();
-        listings.add( new Listing("1 Calculus 101", "The only maths textbook you'll ever need.", "1", "1", 100, "11111", "Author 1") );
-        listings.add( new Listing("Intro to Signals & Systems","The textbook for the hardest course you're going to do in your life. Ever.", "2", "2", 200, "22222", "Author 2"));
-        listings.add( new Listing("Philosophy for Geniuses","Blah blah blah blah blah blah blah blah blah", "3", "3", 300, "333333", "Author 3"));
-        listings.add( new Listing("A Guide to Cryptocurrencies", "Cryptos are the future. Learn how to HODL to the moon, buy your lambo, invest in ICOs and sell during a crash.", "3", "4", 400, "444444", "Author 4"));
-        listings.add( new Listing("Random Book Five", "This is a lengthy description which is intended to fill views and test the UI. lakjsfdlkajsdlkjadlkj lkajsdlk lkjlkj lkd lkj lkj jk lakjs dlkj  ljksadklj  alkja skjdl lksjad lkjsdj alkdjs askdjla lksjadlakjsdlkajsd alksdk", "3", "5", 500, "555555", "Author 5"));
-*/
-        users = new ArrayList<>();
-        users.add(new Person("1", "Dev", "sticks@gmail.com", "08321234"));
-        users.add(new Person("2", "Amy", "amy@gmail.com", "08321234"));
-        users.add(new Person("3", "Tom", "tom@gmail.com", null));
-        users.add(new Person("4", "Tamir", "tamir@gmail.com", "08321234"));
-        users.add(new Person("5", "Senyo", "senyo@gmail.com", "0234987298"));
-
         database = FirebaseDatabase.getInstance().getReference();
         databaseListingsRef = database.child(DatabaseContract.FIREBASE_LISTINGS_CHILD_NAME);
         databasePersonRef = database.child(DatabaseContract.FIREBASE_PERSON_CHILD_NAME);
+        databasePersonListingsRef = database.child(DatabaseContract.FIREBASE_PERSON_LISTINGS_CHILD_NAME);
+        databaseBookmarksRef = database.child(DatabaseContract.FIREBASE_USER_BOOKMARKS_CHILD_NAME);
 
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
@@ -78,26 +65,48 @@ public class QuilloDatabase {
         this.personListener = personListener;
     }
 
-    public void setSellerListingsListener(SellerListingsListener sellerListingsListener) {
-        this.sellerListingsListener = sellerListingsListener;
+    public void setPersonListingsListener(PersonListingsListener personListingsListener) {
+        this.personListingsListener = personListingsListener;
     }
 
-    public void queryListings(String selection) {
-        if (selection.isEmpty()) {
-            Query emptySearchQuery = databaseListingsRef.limitToFirst(50);
-            emptySearchQuery.addChildEventListener(getListingChildEventListener());
-        } else {
-
-        }
+    public void setBookmarkListener(BookmarkListener bookmarkListener){
+        this.bookmarkListener = bookmarkListener;
     }
 
-    private ChildEventListener getListingChildEventListener() {
-        final ChildEventListener listingEventListener = new ChildEventListener() {
+
+    public void observeListings(String universityUid){
+        Query query = databaseListingsRef.limitToFirst(50);
+
+
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Listing newListing = dataSnapshot.getValue(Listing.class);
-                Log.d(QuilloDatabase.class.getName(), "onChildAdded: " + newListing.getName());
-                listingsListener.onListingLoaded(newListing);
+
+                final Listing listing = dataSnapshot.getValue(Listing.class);
+
+                String currentUserUid = FirebaseHelper.getCurrentUserUid();
+
+                if (currentUserUid != null){
+                    databaseBookmarksRef.child(currentUserUid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChild(listing.getUid())){
+                                listing.setBookmarked(true);
+                            }else{
+                                listing.setBookmarked(false);
+                            }
+                            listingsListener.onListingLoaded(listing);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }else{
+                    listingsListener.onListingLoaded(listing);
+                }
+
             }
 
             @Override
@@ -108,7 +117,7 @@ public class QuilloDatabase {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                listingsListener.onListingRemoved(dataSnapshot.getValue(Listing.class));
             }
 
             @Override
@@ -120,9 +129,8 @@ public class QuilloDatabase {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
+        });
 
-        return listingEventListener;
     }
 
     public void addListing(final Listing listing, byte[] uploadBytes) {
@@ -134,17 +142,145 @@ public class QuilloDatabase {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 listing.setImageURL(downloadUrl.toString());
                 databaseListingsRef.child(listingUid).setValue(listing);
+                addListingToPersonListingTree(listingUid);
             }
         });
 
     }
 
-    public void observeUser(String userId) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUid().equals(userId)) {
-                personListener.onPersonLoaded(users.get(i));
-            }
+    private void addListingToPersonListingTree(String listingUid){
+        String currentUserUid = FirebaseHelper.getCurrentUserUid();
+        if (currentUserUid != null){
+            databasePersonListingsRef.child(currentUserUid).child(listingUid).setValue(listingUid);
         }
+    }
+
+    public void deleteListing(Listing listing) {
+
+    }
+
+    public void updateListing(Listing listing) {
+
+        listingsListener.onListingUpdated(listing);
+        personListingsListener.onPersonListingUpdated(listing);
+
+    }
+
+    public void observePersonListings(String personUid){
+        databasePersonListingsRef.child(personUid).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Listing listing = dataSnapshot.getValue(Listing.class);
+                personListingsListener.onPersonListingLoaded(listing);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Listing listing = dataSnapshot.getValue(Listing.class);
+                personListingsListener.onPersonListingRemoved(listing);
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void observeBookmarks(){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+        if (currentUser!= null) {
+            final ChildEventListener bookmarkEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                    databaseListingsRef.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Listing listing = dataSnapshot.getValue(Listing.class);
+                            bookmarkListener.onBookmarkAdded(listing);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    String listingUid = dataSnapshot.getKey();
+                    bookmarkListener.onBookmarkRemoved(listingUid);
+
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            databaseBookmarksRef.child(currentUser.getUid()).addChildEventListener(bookmarkEventListener);
+        }
+
+    }
+
+
+    public void addBookmark(Listing listing) {
+        FirebaseUser user = FirebaseHelper.getCurrentFirebaseUser();
+        if (user != null) {
+            databaseBookmarksRef.child(user.getUid()).child(listing.getUid()).setValue(listing.getUid());
+        }
+    }
+
+
+    public void removeBookmark(Listing listing) {
+        String currentUserUid = FirebaseHelper.getCurrentUserUid();
+        if (currentUserUid != null){
+            databaseBookmarksRef.child(currentUserUid).child(listing.getUid()).removeValue();
+        }
+    }
+
+    public void observePerson(String personUid) {
+        ValueEventListener personValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Person person = dataSnapshot.getValue(Person.class);
+                personListener.onPersonLoaded(person);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        databasePersonRef.child(personUid).addValueEventListener(personValueEventListener);
+
     }
 
     public void loadPerson(String personUid){
@@ -167,59 +303,16 @@ public class QuilloDatabase {
 
     }
 
-
-    public void deleteListing(Listing listing) {
-
-    }
-
-    public void updateListing(Listing listing) {
-
-        listingsListener.onListingUpdated(listing);
-        sellerListingsListener.onSellerListingUpdated(listing);
-
-    }
-
-    public void observeBookmarks(){
+    public void addPerson(Person person){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
-        if (currentUser!= null) {
-            final ChildEventListener bookmarkEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Listing listing = dataSnapshot.getValue(Listing.class);
-                    bookmarkListener.onBookmarkAdded(listing);
 
-                }
 
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    Listing listing = dataSnapshot.getValue(Listing.class);
-                    bookmarkListener.onBookmarkRemoved(listing);
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            };
+        if (currentUser != null){
+            databasePersonRef.child(person.getUid()).setValue(person);
         }
 
-    }
 
-    public void addBookmark(Listing listing) {
 
     }
 
-    public void removeBookmark(Listing listing) {
-
-    }
 }

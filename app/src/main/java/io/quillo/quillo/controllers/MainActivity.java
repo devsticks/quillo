@@ -17,10 +17,14 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import io.quillo.quillo.Fragments.AddEditListingFragment;
 import io.quillo.quillo.Fragments.BookmarksFragment;
+import io.quillo.quillo.Fragments.ListingDetailFragment;
 import io.quillo.quillo.Fragments.LoginSignupFragment;
 import io.quillo.quillo.Fragments.ProfileFragment;
 import io.quillo.quillo.Fragments.SearchFragment;
 import io.quillo.quillo.R;
+import io.quillo.quillo.data.IntentExtras;
+import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.utils.BottomNavigationViewHelper;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView navigation;
     private Toolbar toolbar;
 
+    private QuilloDatabase quilloDatabase;
+
     private FirebaseAuth auth;
+
 
     public void hideNavBar(){
         navigation.setVisibility(View.GONE);
@@ -80,6 +87,20 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+
+
     private void changeFragment(){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, selectedFragment)
@@ -100,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             return  false;
         }
     }
+
     //TODO: Made a nice looking dialog
     private void showLoginAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -109,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                dialogInterface.cancel();
             }
         });
 
@@ -129,11 +151,26 @@ public class MainActivity extends AppCompatActivity {
                 dialogInterface.cancel();
             }
         });
-
-
         alertDialog.show();
-
     }
+
+    public void showListingDetailFragment(Listing listing){
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
+
+        ListingDetailFragment listingDetailFragment = new ListingDetailFragment();
+        listingDetailFragment.setArguments(bundle);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, listingDetailFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack("Search Fragment")
+                .commit();
+
+        hideNavBar();
+    }
+
 
     private void showLoginScreen(){
         hideNavBar();
@@ -155,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
     }
+
+
 
 
     @Override
@@ -190,7 +229,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.app_drawer_items, menu);
+        getMenuInflater().inflate(R.menu.app_bar_overflow_menu, menu);
+
+
+
         return true;
     }
 
@@ -200,6 +242,11 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == R.id.logout){
+            auth.signOut();
+            showLoginScreen();
+        }
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {

@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,6 @@ import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
@@ -49,7 +48,8 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
         adapter = new ListingAdapter(this, getContext());
         quilloDatabase = new QuilloDatabase();
         quilloDatabase.setListingsListener(this);
-        quilloDatabase.queryListings("");
+        //TODO: Use users current university
+        quilloDatabase.observeListings("UCT");
     }
 
     @Nullable
@@ -58,7 +58,6 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
         View view = inflater.inflate(R.layout.fragment_home_search, container, false);
         setUpView(view);
         return view;
-
     }
 
     //TODO The majority of this code and functionality is duplicated in ProfileActivity, fix up.
@@ -86,11 +85,17 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
     @Override
     public void onListingLoaded(Listing newListing) {
         adapter.addListing(newListing);
+        Log.i(SearchFragment.class.getName(), "Listing added: " + newListing.getUid());
     }
 
     @Override
     public void onListingUpdated(Listing listing) {
         adapter.updateListing(listing);
+    }
+
+    @Override
+    public void onListingRemoved(Listing listing) {
+
     }
 
     @Override
@@ -112,21 +117,7 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
     @Override
     public void onListingClick(Listing listing) {
 
-        Bundle bundle = new Bundle();
-
-        bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
-
-        ListingDetailFragment listingDetailFragment = new ListingDetailFragment();
-        listingDetailFragment.setArguments(bundle);
-
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, listingDetailFragment)
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .addToBackStack("Search Fragment")
-                    .commit();
-
-        ((MainActivity)getActivity()).hideNavBar();
-
+        ((MainActivity)getActivity()).showListingDetailFragment(listing);
     }
 
 }

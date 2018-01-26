@@ -22,17 +22,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
+import io.quillo.quillo.controllers.MainActivity;
+import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
-import io.quillo.quillo.interfaces.SellerListingsListener;
+import io.quillo.quillo.interfaces.PersonListener;
+import io.quillo.quillo.interfaces.PersonListingsListener;
 
 /**
  * Created by shkla on 2018/01/22.
  */
 
-public class ProfileFragment extends Fragment implements SellerListingsListener, ListingCellListener, View.OnClickListener{
+public class ProfileFragment extends Fragment implements PersonListingsListener, PersonListener, ListingCellListener, View.OnClickListener{
 
     private boolean isViewingOwnProfile = true;
     private boolean isLoggedIn = true;
@@ -47,9 +50,9 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     @BindView(R.id.tlb_profile_activity)
     Toolbar toolbar;
     @BindView(R.id.lbl_seller_name)
-    TextView name;
+    TextView nameLabel;
     @BindView(R.id.lbl_seller_university)
-    TextView university;
+    TextView universityLabel;
 
     public static ProfileFragment newInstance(){
         ProfileFragment profileFragment = new ProfileFragment();
@@ -59,11 +62,10 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         adapter = new ListingAdapter(this, getContext());
+
         quilloDatabase = new QuilloDatabase();
-        quilloDatabase.setSellerListingsListener(this);
+        setupDatabase();
     }
 
     @Nullable
@@ -75,39 +77,24 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).showNavbar();
+    }
 
+    public void setupDatabase(){
+        quilloDatabase.setPersonListingsListener(this);
+        quilloDatabase.setPersonListener(this);
+        quilloDatabase.observePerson(FirebaseHelper.getCurrentFirebaseUser().getUid());
+    }
 
     //TODO Update with fragments
-/*
-    public void startListingDetailActivity(Listing listing) {
-
-
-        Intent intent = new Intent(this, ListingDetailActivity.class);
-        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
-
-        startActivity(intent);
-    }
-
-    public void startAddEditListingActivity() {
-        Intent intent = new Intent(this, AddEditListingActivity.class);
-        intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
-
-        startActivity(intent);
-    }
-
-    public void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-
-        startActivity(intent);
-    }*/
-
-
 
     public void setUpView(View view) {
-
         FloatingActionButton mAddListingButton = (FloatingActionButton) view.findViewById(R.id.fab_add_listing);
         recyclerView = (RecyclerView)view.findViewById(R.id.rec_profile_listing_holder);
-        name = (TextView)view.findViewById(R.id.lbl_seller_name);
+
         mAddListingButton.setOnClickListener(this);
         if (isViewingOwnProfile) {
             mAddListingButton.setVisibility(View.VISIBLE);
@@ -127,11 +114,8 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        name.setText("Tamir Shklaz");
-        //TODO get actual university when we have that up and running
-        //university = ...
-
+        //TODO get actual universityLabel when we have that up and running
+        //universityLabel = ...
     }
 
     @Override
@@ -146,19 +130,33 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
 
     @Override
     public void onListingClick(Listing listing) {
-        //startListingDetailActivity(listing);
+        ((MainActivity)getActivity()).showListingDetailFragment(listing);
     }
 
-
-
     @Override
-    public void onSellerListingLoaded(Listing newListing) {
+    public void onPersonListingLoaded(Listing newListing) {
         adapter.addListing(newListing);
     }
 
     @Override
-    public void onSellerListingUpdated(Listing listing) {
+    public void onPersonLoaded(Person person) {
+        bindSellerToViews(person);
+    }
+
+
+    public void bindSellerToViews(Person seller){
+        nameLabel.setText(seller.getName());
+        universityLabel.setText(seller.getUniversityUid());
+    }
+
+    @Override
+    public void onPersonListingUpdated(Listing listing) {
         adapter.updateListing(listing);
+    }
+
+    @Override
+    public void onPersonListingRemoved(Listing listing) {
+        adapter.removeListing(listing.getUid());
     }
 
     public void deleteListingCellAt(int position) {
@@ -256,7 +254,11 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
         }
     }
 
+
+
     private void handleSnackbarTimeout() {
 
     }
+
+
 }

@@ -16,8 +16,10 @@ public class Listing implements Serializable {
     private long dateListed;
     private String imageURL;
 
+    private boolean isBookmarked;
 
-    private int numberOfViews;
+
+
 
     public Listing (String name, String description, String sellerUid, String uid, int price, String ISBN, long dateListed, String imageURL) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
@@ -28,9 +30,7 @@ public class Listing implements Serializable {
         this.ISBN = ISBN;
         this.dateListed = dateListed;
         this.imageURL = imageURL;
-//        Date date = new Date();
-//        this.dateListed = date.hashCode();
-//        this.numberOfViews = numberOfViews;
+
     }
     public Listing (String name, String description, String sellerUid, int price, String ISBN, long dateListed) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
@@ -39,7 +39,6 @@ public class Listing implements Serializable {
         this.price = price;
         this.ISBN = ISBN;
         this.dateListed = dateListed;
-
     }
 
     public Listing(){
@@ -86,14 +85,6 @@ public class Listing implements Serializable {
         this.dateListed = dateListed;
     }
 
-    public int getNumberOfViews() {
-        return numberOfViews;
-    }
-
-    public void setNumberOfViews(int numberOfViews) {
-        this.numberOfViews = numberOfViews;
-    }
-
     public String getName() {
         return name;
     }
@@ -116,5 +107,12 @@ public class Listing implements Serializable {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public boolean isBookmarked(){
+        return isBookmarked;
+    }
+    public void setBookmarked(Boolean bookmarked){
+        isBookmarked = bookmarked;
     }
 }

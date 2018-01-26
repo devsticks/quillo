@@ -17,12 +17,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
+import io.quillo.quillo.data.Person;
+import io.quillo.quillo.data.QuilloDatabase;
 
 /**
  * Created by shkla on 2018/01/26.
@@ -130,19 +133,29 @@ public class LoginSignupFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
-                            .setDisplayName(name)
-                            .build();
-                    onSignupSuccess();
+                    updateUserName(name);
+                    progressDialog.cancel();
                 }else{
                     onSignupFailed();
+                    progressDialog.cancel();
                 }
 
             }
         });
+    }
 
-
-
+    private void updateUserName(String name){
+        UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build();
+        auth.getCurrentUser().updateProfile(profileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()) {
+                    onSignupSuccess();
+                }
+            }
+        });
     }
 
     public void login() {
@@ -169,8 +182,10 @@ public class LoginSignupFragment extends Fragment {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     onLoginSuccess();
+                    progressDialog.cancel();
                 }else{
                     onLoginFailed();
+                    progressDialog.cancel();
                 }
             }
         });
@@ -183,6 +198,13 @@ public class LoginSignupFragment extends Fragment {
         signupLoginButton.setEnabled(true);
 
         getActivity().getSupportFragmentManager().popBackStack();
+
+        QuilloDatabase quilloDatabase = new QuilloDatabase();
+
+        FirebaseUser user = auth.getCurrentUser();
+        //TODO Link with an actual uni UID
+        Person person = new Person(user.getUid(), user.getDisplayName(), user.getEmail(), "1");
+        quilloDatabase.addPerson(person);
 
         Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
     }

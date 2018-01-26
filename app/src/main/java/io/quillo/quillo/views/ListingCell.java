@@ -48,10 +48,10 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
             public void onClick(View v) {
                 if(bookmarkButton.isChecked())
                 {
-                    listingCellListener.onUnBookmarkClick(listing);
+                    listingCellListener.onBookmarkClick(listing);
                 }
                 else {
-                    listingCellListener.onBookmarkClick(listing);
+                    listingCellListener.onUnBookmarkClick(listing);
                 }
             }
         });
@@ -70,6 +70,10 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         name.setText(listing.getName());
         author.setText("James Stewart");
         price.setText("R " + String.valueOf(listing.getPrice()));
+
+        if (listing.isBookmarked()){
+            bookmarkButton.toggle();
+        }
     }
 
     public ImageView getIcon(){
