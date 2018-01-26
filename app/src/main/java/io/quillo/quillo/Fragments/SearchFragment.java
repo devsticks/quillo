@@ -39,7 +39,6 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
 
     private RecyclerView recyclerView;
     private ListingAdapter adapter;
-    private android.support.v7.widget.Toolbar toolbar;
 
     private QuilloDatabase quilloDatabase;
 
@@ -51,8 +50,6 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
         quilloDatabase = new QuilloDatabase();
         quilloDatabase.setListingsListener(this);
         quilloDatabase.queryListings("");
-
-
     }
 
     @Nullable
@@ -61,7 +58,6 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
         View view = inflater.inflate(R.layout.fragment_home_search, container, false);
         setUpView(view);
         return view;
-
 
     }
 

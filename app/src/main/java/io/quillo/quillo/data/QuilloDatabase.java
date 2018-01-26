@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,6 +19,7 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.quillo.quillo.interfaces.BookmarkListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
@@ -34,6 +36,7 @@ public class QuilloDatabase {
     private ListingsListener listingsListener;
     private PersonListener personListener;
     private SellerListingsListener sellerListingsListener;
+    private BookmarkListener bookmarkListener;
 
     private DatabaseReference database;
     private DatabaseReference databaseListingsRef;
@@ -65,6 +68,18 @@ public class QuilloDatabase {
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
 
+    }
+
+    public void setListingsListener(ListingsListener listingsListener) {
+        this.listingsListener = listingsListener;
+    }
+
+    public void setPersonListener(PersonListener personListener) {
+        this.personListener = personListener;
+    }
+
+    public void setSellerListingsListener(SellerListingsListener sellerListingsListener) {
+        this.sellerListingsListener = sellerListingsListener;
     }
 
     public void queryListings(String selection) {
@@ -110,42 +125,18 @@ public class QuilloDatabase {
         return listingEventListener;
     }
 
-
-    public void setListingsListener(ListingsListener listingsListener) {
-        this.listingsListener = listingsListener;
-    }
-
-    public void setPersonListener(PersonListener personListener) {
-        this.personListener = personListener;
-    }
-
-    public void setSellerListingsListener(SellerListingsListener sellerListingsListener) {
-        this.sellerListingsListener = sellerListingsListener;
-    }
-
-    // Fetches the info for a specific listing from Firebase and returns a Listing object
-    public Listing getListingById(String listingId) {
-        for (int i = 0; i < listings.size(); i++) {
-            if (listings.get(i).getUid().equals(listingId)) {
-                return listings.get(i);
+    public void addListing(final Listing listing, byte[] uploadBytes) {
+        final String listingUid = databaseListingsRef.push().getKey();
+        listing.setUid(listingUid);
+        storageListingRef.child(listingUid).putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                listing.setImageURL(downloadUrl.toString());
+                databaseListingsRef.child(listingUid).setValue(listing);
             }
-        }
+        });
 
-        return null;
-    }
-
-    public void observeListings() {
-        for (int i = 0; i < listings.size(); i++) {
-            listingsListener.onListingLoaded(listings.get(i));
-        }
-    }
-
-    public void observeListingsOfSeller(String sellerId) {
-        for (int i = 0; i < listings.size(); i++) {
-            if (listings.get(i).getSellerUid().equals(sellerId)) {
-                sellerListingsListener.onSellerListingLoaded(listings.get(i));
-            }
-        }
     }
 
     public void observeUser(String userId) {
@@ -176,27 +167,8 @@ public class QuilloDatabase {
 
     }
 
-    public void addListing(final Listing listing, byte[] uploadBytes) {
-        final String listingUid = databaseListingsRef.push().getKey();
-        listing.setUid(listingUid);
-        storageListingRef.child(listingUid).putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                listing.setImageURL(downloadUrl.toString());
-                databaseListingsRef.child(listingUid).setValue(listing);
-            }
-        });
-
-    }
-
-
 
     public void deleteListing(Listing listing) {
-
-    }
-
-    public void insertListing(Listing listing) {
 
     }
 
@@ -204,6 +176,42 @@ public class QuilloDatabase {
 
         listingsListener.onListingUpdated(listing);
         sellerListingsListener.onSellerListingUpdated(listing);
+
+    }
+
+    public void observeBookmarks(){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+        if (currentUser!= null) {
+            final ChildEventListener bookmarkEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Listing listing = dataSnapshot.getValue(Listing.class);
+                    bookmarkListener.onBookmarkAdded(listing);
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    Listing listing = dataSnapshot.getValue(Listing.class);
+                    bookmarkListener.onBookmarkRemoved(listing);
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+        }
 
     }
 

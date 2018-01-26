@@ -1,19 +1,23 @@
 package io.quillo.quillo.controllers;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
 
 import io.quillo.quillo.Fragments.AddEditListingFragment;
 import io.quillo.quillo.Fragments.BookmarksFragment;
+import io.quillo.quillo.Fragments.LoginSignupFragment;
 import io.quillo.quillo.Fragments.ProfileFragment;
 import io.quillo.quillo.Fragments.SearchFragment;
 import io.quillo.quillo.R;
@@ -28,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private Fragment selectedFragment = null;
     private BottomNavigationView navigation;
     private Toolbar toolbar;
+
+    private FirebaseAuth auth;
 
     public void hideNavBar(){
         navigation.setVisibility(View.GONE);
@@ -50,16 +56,22 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment =  searchFragment;
                     break;
                 case R.id.btn_bookmarks:
-                    selectedFragment = bookmarksFragment;
+                    if(userIsLoggedIn()) {
+                        selectedFragment = bookmarksFragment;
+                    }
                     break;
 
                 case R.id.btn_add_listing:
-                    selectedFragment = AddEditListingFragment.newInstance();
+                    if (userIsLoggedIn()) {
+                        selectedFragment = AddEditListingFragment.newInstance();
+                    }
                     break;
 
 
                 case R.id.btn_profile:
-                    selectedFragment = profileFragment;
+                    if (userIsLoggedIn()) {
+                        selectedFragment = profileFragment;
+                    }
                     break;
 
             }
@@ -75,6 +87,75 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    private boolean userIsLoggedIn(){
+        if (auth.getCurrentUser() != null){
+            return true;
+        }else{
+
+            showLoginAlert();
+            //TODO: Find out how to manualy reset the selected tab button to search
+            View view = navigation.findViewById(R.id.btn_search);
+            view.performClick();
+            showLoginAlert();
+            return  false;
+        }
+    }
+    //TODO: Made a nice looking dialog
+    private void showLoginAlert(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        alertDialog.setTitle("Whoops you are not logged in");
+
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        alertDialog.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                showLoginScreen();
+                dialogInterface.cancel();
+
+            }
+        });
+
+        alertDialog.setNeutralButton("Register", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                showRegisterScreen();
+                dialogInterface.cancel();
+            }
+        });
+
+
+        alertDialog.show();
+
+    }
+
+    private void showLoginScreen(){
+        hideNavBar();
+        LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout, loginSignupFragment)
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+    }
+
+    private void showRegisterScreen(){
+        hideNavBar();
+        LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout, loginSignupFragment)
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initBottomNavBar();
         initFragments();
+
+        auth = FirebaseAuth.getInstance();
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,13 +180,12 @@ public class MainActivity extends AppCompatActivity {
         searchFragment = SearchFragment.newInstance();
         bookmarksFragment = BookmarksFragment.newInstance();
         profileFragment = ProfileFragment.newInstance();
+
         selectedFragment = searchFragment;
         changeFragment();
     }
 
-    private void loadFirstFragment(){
 
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

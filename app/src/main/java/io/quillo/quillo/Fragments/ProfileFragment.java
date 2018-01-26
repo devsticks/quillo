@@ -22,9 +22,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.SellerListingsListener;
 
@@ -59,7 +59,7 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(getActivity());
+
 
         adapter = new ListingAdapter(this, getContext());
         quilloDatabase = new QuilloDatabase();
@@ -70,9 +70,12 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_profile, container, false);
+        ButterKnife.bind(this, view);
         setUpView(view);
         return view;
     }
+
+
 
     //TODO Update with fragments
 /*
@@ -145,6 +148,8 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
     public void onListingClick(Listing listing) {
         //startListingDetailActivity(listing);
     }
+
+
 
     @Override
     public void onSellerListingLoaded(Listing newListing) {
@@ -243,7 +248,7 @@ public class ProfileFragment extends Fragment implements SellerListingsListener,
 
     private void handleUndoDeleteConfirmed() {
         if (temporaryListing != null) {
-            quilloDatabase.insertListing(temporaryListing);
+            //quilloDatabase.insertListing(temporaryListing);
             insertListingCellAt(temporaryListingPosition, temporaryListing);
 
             temporaryListing = null;

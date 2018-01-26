@@ -240,7 +240,7 @@ public class ProfileActivity extends AppCompatActivity implements SellerListings
 
     private void handleUndoDeleteConfirmed() {
         if (temporaryListing != null) {
-            quilloDatabase.insertListing(temporaryListing);
+            //quilloDatabase.insertListing(temporaryListing);
             insertListingCellAt(temporaryListingPosition, temporaryListing);
 
             temporaryListing = null;
