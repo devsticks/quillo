@@ -32,8 +32,8 @@ public class QuilloDatabase {
     private List<Person> users;
 
 
-    private PersonListener personListener;
-    private PersonListingsListener personListingsListener;
+
+
     private BookmarkListener bookmarkListener;
 
     private DatabaseReference database;
@@ -55,15 +55,6 @@ public class QuilloDatabase {
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
 
-    }
-
-
-    public void setPersonListener(PersonListener personListener) {
-        this.personListener = personListener;
-    }
-
-    public void setPersonListingsListener(PersonListingsListener personListingsListener) {
-        this.personListingsListener = personListingsListener;
     }
 
     public void setBookmarkListener(BookmarkListener bookmarkListener){
@@ -165,13 +156,28 @@ public class QuilloDatabase {
     }
 
 
-    public void observePersonListings(String personUid){
-        databasePersonListingsRef.child(personUid).addChildEventListener(new ChildEventListener() {
+    private ChildEventListener personListingsEventListener;
+
+    public void observePersonListings(String personUid, final PersonListingsListener personListingsListener){
+
+
+         personListingsEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                databaseListingsRef.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Listing listing = dataSnapshot.getValue(Listing.class);
+                        personListingsListener.onPersonListingLoaded(listing);
+                    }
 
-                Listing listing = dataSnapshot.getValue(Listing.class);
-                personListingsListener.onPersonListingLoaded(listing);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
             }
 
             @Override
@@ -181,8 +187,18 @@ public class QuilloDatabase {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Listing listing = dataSnapshot.getValue(Listing.class);
-                personListingsListener.onPersonListingRemoved(listing);
+                databaseListingsRef.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Listing listing = dataSnapshot.getValue(Listing.class);
+                        personListingsListener.onPersonListingRemoved(listing);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -194,7 +210,10 @@ public class QuilloDatabase {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+
+         databasePersonListingsRef.child(personUid).addChildEventListener(personListingsEventListener);
+
     }
 
     public void observeBookmarks(){
@@ -265,7 +284,7 @@ public class QuilloDatabase {
         }
     }
 
-    public void observePerson(String personUid) {
+    public void observePerson(String personUid, final PersonListener personListener) {
         ValueEventListener personValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
