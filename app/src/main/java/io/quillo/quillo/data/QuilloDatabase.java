@@ -1,9 +1,13 @@
 package io.quillo.quillo.data;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -329,6 +333,30 @@ public class QuilloDatabase {
             databasePersonRef.child(person.getUid()).setValue(person);
         }
 
+    }
+
+    public void updatePerson(Person person){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+
+        if(!currentUser.getDisplayName().equals(person.getName())){
+            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(person.getName())
+                    .build();
+           currentUser.updateProfile(profileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+
+                    }
+                }
+            });
+        }
+
+        if(!currentUser.getEmail().equals(person.getEmail())){
+            currentUser.updateEmail(person.getEmail());
+        }
+
+        databasePersonRef.child(person.getUid()).setValue(person);
 
 
     }

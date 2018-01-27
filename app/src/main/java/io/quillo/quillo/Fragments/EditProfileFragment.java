@@ -9,10 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.quillo.quillo.R;
+import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Person;
 
@@ -63,6 +69,55 @@ public class EditProfileFragment extends Fragment {
             phoneInput.setText(person.getPhoneNumber());
         }
         universityInput.setText(person.getUniversityUid());
+    }
+
+
+    @OnClick(R.id.save_btn)
+    public void handleSaveButtonClick(){
+        if(fieldsAreValid()){
+            person.setName(nameInput.getText().toString());
+            person.setEmail(emailInput.getText().toString());
+            person.setPhoneNumber(phoneInput.getText().toString());
+            person.setUniversityUid(universityInput.getText().toString());
+
+            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person);
+
+            Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+
+    }
+
+
+    private boolean fieldsAreValid(){
+        String name = nameInput.getText().toString();
+        String email = emailInput.getText().toString();
+        String number = phoneInput.getText().toString();
+        String university = universityInput.getText().toString();
+
+        //TODO: Error handling with floating text labels
+
+        ArrayList<String> supportedUniversities = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.universities)));
+
+        if(name.isEmpty()){
+            return false;
+        }
+
+        if(email.isEmpty()){
+            return  false;
+        }
+
+        if(number.isEmpty()){
+            return  false;
+        }
+
+        if(university.isEmpty()|| !supportedUniversities.contains(university)){
+            return  false;
+
+        }
+
+        return  true;
+
 
     }
 
