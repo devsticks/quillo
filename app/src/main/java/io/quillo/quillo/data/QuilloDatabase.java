@@ -31,7 +31,7 @@ public class QuilloDatabase {
     private List<Listing> listings;
     private List<Person> users;
 
-    private ListingsListener listingsListener;
+
     private PersonListener personListener;
     private PersonListingsListener personListingsListener;
     private BookmarkListener bookmarkListener;
@@ -57,9 +57,6 @@ public class QuilloDatabase {
 
     }
 
-    public void setListingsListener(ListingsListener listingsListener) {
-        this.listingsListener = listingsListener;
-    }
 
     public void setPersonListener(PersonListener personListener) {
         this.personListener = personListener;
@@ -73,12 +70,14 @@ public class QuilloDatabase {
         this.bookmarkListener = bookmarkListener;
     }
 
+    private Query listingQuery;
+    private ChildEventListener listingChildEventListener;
 
-    public void observeListings(String universityUid){
-        Query query = databaseListingsRef.limitToFirst(50);
+    public void observeListings(String universityUid, final ListingsListener listingsListener){
+       listingQuery = databaseListingsRef.limitToFirst(50);
 
 
-        query.addChildEventListener(new ChildEventListener() {
+        listingChildEventListener =  new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -129,8 +128,14 @@ public class QuilloDatabase {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
 
+        listingQuery.addChildEventListener(listingChildEventListener);
+
+    }
+
+    public void stopObservingListings(){
+        listingQuery.removeEventListener(listingChildEventListener);
     }
 
     public void addListing(final Listing listing, byte[] uploadBytes) {
@@ -159,12 +164,6 @@ public class QuilloDatabase {
 
     }
 
-    public void updateListing(Listing listing) {
-
-        listingsListener.onListingUpdated(listing);
-        personListingsListener.onPersonListingUpdated(listing);
-
-    }
 
     public void observePersonListings(String personUid){
         databasePersonListingsRef.child(personUid).addChildEventListener(new ChildEventListener() {

@@ -1,5 +1,7 @@
 package io.quillo.quillo.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,12 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 
@@ -28,35 +30,30 @@ import io.quillo.quillo.interfaces.ListingsListener;
  *
  */
 
-public class SearchFragment extends Fragment implements ListingsListener, ListingCellListener {
+public class SearchFragment extends Fragment implements ListingCellListener {
 
+
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
 
     public static SearchFragment newInstance(){
         SearchFragment searchFragment = new SearchFragment();
         return  searchFragment;
     }
 
-    private RecyclerView recyclerView;
     private ListingAdapter adapter;
 
-    private QuilloDatabase quilloDatabase;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(getActivity());
+
         adapter = new ListingAdapter(this, getContext());
         setHasOptionsMenu(true);
-        quilloDatabase = new QuilloDatabase();
-        quilloDatabase.setListingsListener(this);
         //TODO: Use users current university
-        quilloDatabase.observeListings("UCT");
+       setupDatabase();
     }
-
-    private void setupDatabase(){
-
-    }
-
 
 
     @Nullable
@@ -64,23 +61,48 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_search, container, false);
 
-
+        ButterKnife.bind(this, view);
         setUpView(view);
         return view;
     }
 
-    //TODO The majority of this code and functionality is duplicated in ProfileActivity, fix up.
-
-    public void startListingDetailActivity(Listing listing) {
-        //TODO Update nav to use fragments
-        /*Intent intent = new Intent(this, ListingDetailActivity.class);
-        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
-
-        startActivity(intent);*/
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        clearDatabase();
     }
 
+    private void setupDatabase(){
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+
+        ((MainActivity)getActivity()).quilloDatabase.observeListings(universityUid, new ListingsListener() {
+            @Override
+            public void onListingLoaded(Listing listing) {
+                adapter.addListing(listing);
+                Log.i(SearchFragment.class.getName(), "Listing added: " + listing.getUid());
+            }
+
+            @Override
+            public void onListingUpdated(Listing listing) {
+
+            }
+
+            @Override
+            public void onListingRemoved(Listing listing) {
+
+            }
+        });
+    }
+
+    private void clearDatabase(){
+        Log.d(SearchFragment.class.getName(), "Detatching listing event listener");
+        ((MainActivity)getActivity()).quilloDatabase.stopObservingListings();
+    }
+
+
     public void setUpView(View view) {
-        recyclerView = (RecyclerView) view.findViewById(R.id.rec_home_search_listing_holder);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -91,30 +113,16 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
         recyclerView.addItemDecoration(itemDecoration);
     }
 
-    @Override
-    public void onListingLoaded(Listing newListing) {
-        adapter.addListing(newListing);
-        Log.i(SearchFragment.class.getName(), "Listing added: " + newListing.getUid());
-    }
 
-    @Override
-    public void onListingUpdated(Listing listing) {
-        adapter.updateListing(listing);
-    }
-
-    @Override
-    public void onListingRemoved(Listing listing) {
-
-    }
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        quilloDatabase.addBookmark(listing);
+        ((MainActivity)getActivity()).quilloDatabase.addBookmark(listing);
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-        quilloDatabase.removeBookmark(listing);
+        ((MainActivity)getActivity()).quilloDatabase.removeBookmark(listing);
     }
 
     @Override

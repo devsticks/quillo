@@ -32,7 +32,6 @@ import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.PersonListener;
 
 /**
@@ -215,14 +214,14 @@ public class LoginSignupFragment extends Fragment {
     public void onSignupSuccess() {
         signupLoginButton.setEnabled(true);
 
-        QuilloDatabase quilloDatabase = new QuilloDatabase();
+
 
         String university = inputUniversity.getText().toString();
 
         FirebaseUser user = auth.getCurrentUser();
         //TODO Link with an actual uni UID
         Person person = new Person(user.getUid(), user.getDisplayName(), user.getEmail(), university);
-        quilloDatabase.addPerson(person);
+        ((MainActivity)getActivity()).quilloDatabase.addPerson(person);
 
         Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
         ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(university);
@@ -238,16 +237,14 @@ public class LoginSignupFragment extends Fragment {
 
     public void onLoginSuccess() {
         signupLoginButton.setEnabled(true);
-        String personUid = null;
-        //TODO: Find out if this is alright
-        FirebaseHelper.loadPerson(personUid, new PersonListener() {
+        final String personUid = FirebaseHelper.getCurrentUserUid();
+
+        ((MainActivity)getActivity()).quilloDatabase.loadPerson(personUid, new PersonListener() {
             @Override
             public void onPersonLoaded(Person person) {
-                Log.d(LoginSignupFragment.class.getName(), "Person: " + person.getName() + "loaded with university uid: " + person.getUniversityUid());
-                ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(person.getUniversityUid());
+                String universityUid = person.getUniversityUid();
+                ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(universityUid);
                 getActivity().getSupportFragmentManager().popBackStack();
-
-                Toast.makeText(getActivity(), "Welcome back: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
             }
         });
     }
