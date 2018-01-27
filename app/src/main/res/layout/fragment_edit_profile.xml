@@ -12,7 +12,7 @@
         android:layout_width="148dp"
         android:layout_height="148dp"
         android:layout_marginStart="116dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="80dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_account_circle_black_24dp" />
