@@ -49,9 +49,11 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
                 if(bookmarkButton.isChecked())
                 {
                     listingCellListener.onBookmarkClick(listing);
+                    listing.setBookmarked(true);
                 }
                 else {
                     listingCellListener.onUnBookmarkClick(listing);
+                    listing.setBookmarked(false);
                 }
             }
         });

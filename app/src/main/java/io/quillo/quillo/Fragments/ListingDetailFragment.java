@@ -15,16 +15,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
-import io.quillo.quillo.controllers.ContactOptionsDialogController;
+import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.PersonListener;
 
 /**
@@ -32,13 +33,11 @@ import io.quillo.quillo.interfaces.PersonListener;
  */
 
 public class ListingDetailFragment extends Fragment {
-
-
+    //TODO: Fix image scaling
 
     private Person seller;
-    private QuilloDatabase quilloDatabase;
     private Listing listing;
-    private ContactOptionsDialogController contactDialogController;
+
 
     private boolean isViewingOwnListing;
 
@@ -46,14 +45,16 @@ public class ListingDetailFragment extends Fragment {
 
     @BindView(R.id.tlb_listing_detail)
     Toolbar toolbar;
-    @BindView(R.id.fab_contact_seller)
-    FloatingActionButton contactSeller;
+    @BindView(R.id.fab_bookmark)
+    FloatingActionButton bookmarkFAB;
     @BindView(R.id.btn_seller_profile) View sellerContainerButton;
     @BindView(R.id.div_seller) View sellerContainer;
     @BindView(R.id.imv_seller_profile_pic)
     ImageView sellerProfilePic;
     @BindView(R.id.lbl_seller_name)
-    TextView sellerName;
+    TextView sellerNameTV;
+    @BindView(R.id.lbl_seller_university)
+    TextView sellerUniversityTV;
 
     @BindView(R.id.btn_call) View call;
     @BindView(R.id.btn_email) View email;
@@ -64,14 +65,13 @@ public class ListingDetailFragment extends Fragment {
     @BindView(R.id.lbl_author) TextView author;
     @BindView(R.id.lbl_description) TextView description;
     @BindView(R.id.lbl_price) TextView price;
-    @BindView(R.id.imv_image) ImageView image;
+    @BindView(R.id.imv_listing_image) ImageView listingImage;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        quilloDatabase = new QuilloDatabase();
     }
 
     @Nullable
@@ -89,20 +89,21 @@ public class ListingDetailFragment extends Fragment {
         return view;
     }
 
-    
-
-    @OnClick(R.id.fab_contact_seller)
-    public void handleContactSellerClick (View v) {
-        contactDialogController.showContactOptionsDialog();
-    }
 
     public void loadSeller(){
         if (listing != null) {
-            quilloDatabase.loadPerson(listing.getUid(), new PersonListener() {
+            ((MainActivity)getActivity()).quilloDatabase.loadPerson(listing.getSellerUid(), new PersonListener() {
                 @Override
                 public void onPersonLoaded(Person person) {
                     seller = person;
-                    bindSellerToViews();
+
+                    isViewingOwnListing = seller.getUid().equals(listing.getUid());
+                    if (isViewingOwnListing) {
+                        sellerContainer.setVisibility(View.GONE);
+                    } else {
+                        sellerContainer.setVisibility(View.VISIBLE);
+                        bindSellerToViews();
+                    }
                 }
             });
         }
@@ -110,17 +111,32 @@ public class ListingDetailFragment extends Fragment {
 
     private void bindSellerToViews(){
 
-        isViewingOwnListing = seller.getUid().equals(listing.getUid());
-        if (isViewingOwnListing) {
-            sellerContainer.setVisibility(View.GONE);
-        } else {
-            sellerContainer.setVisibility(View.VISIBLE);
-        }
+        sellerNameTV.setText(seller.getName());
+        sellerUniversityTV.setText(seller.getUniversityUid());
 
+        setupSellerContainerButtons();
+    }
+
+    @OnClick(R.id.fab_bookmark)
+    public void handleBookmarkClick(){
+        if(listing.isBookmarked()){
+            bookmarkFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_border_black_24dp));
+            listing.setBookmarked(false);
+            ((MainActivity)getActivity()).quilloDatabase.removeBookmark(listing);
+        }else{
+            bookmarkFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
+            listing.setBookmarked(true);
+            ((MainActivity)getActivity()).quilloDatabase.addBookmark(listing);
+
+        }
+    }
+
+
+    private void setupSellerContainerButtons(){
         sellerContainerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startProfileActivity(seller,v);
+
             }
         });
 
@@ -175,9 +191,6 @@ public class ListingDetailFragment extends Fragment {
                 }
             }
         });
-
-
-
     }
 
     private void  bindListingToViews(){
@@ -185,16 +198,12 @@ public class ListingDetailFragment extends Fragment {
         author.setText("James");
         description.setText(listing.getDescription());
         price.setText("R" + listing.getPrice());
+
+        if(listing.isBookmarked()){
+            bookmarkFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
+        }
+
+        Glide.with(getContext()).load(listing.getImageUrl()).into(listingImage);
     }
 
-
-
-    public void startProfileActivity(Person seller, View viewRoot) {
-       //TODO: Implement fragments
-
-       /* Intent i = new Intent(this, ProfileActivity.class);
-        i.putExtra(IntentExtras.EXTRA_SELLER, seller);
-
-        startActivity(i);*/
-    }
 }
