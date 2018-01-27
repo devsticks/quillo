@@ -16,10 +16,12 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
@@ -50,6 +52,8 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     TextView nameLabel;
     @BindView(R.id.lbl_seller_university)
     TextView universityLabel;
+    @BindView(R.id.btn_edit_profile)
+    ImageView editProfileBtn;
 
     public static ProfileFragment newInstance(){
         ProfileFragment profileFragment = new ProfileFragment();
@@ -66,7 +70,7 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
         setUpView(view);
         return view;
@@ -109,6 +113,13 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
             });
 
         }
+
+
+
+    }
+
+    @OnClick(R.id.btn_edit_profile)
+    public void handleEditProfileButtonClick(){
 
 
 
