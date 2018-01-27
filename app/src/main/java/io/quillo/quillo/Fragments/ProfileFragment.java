@@ -136,6 +136,23 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
         ((MainActivity)getActivity()).hideBottomNavBar();
     }
 
+    @OnClick(R.id.btn_edit_profile)
+    public void handleEditProfileButtonClick(){
+        EditProfileFragment editProfileFragment = new EditProfileFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(IntentExtras.EXTRA_SELLER, seller);
+        editProfileFragment.setArguments(bundle);
+
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, editProfileFragment)
+                .addToBackStack(null)
+                .commit();
+
+        ((MainActivity)getActivity()).hideBottomNavBar();
+    }
+
     //TODO Update with fragments
 
     public void setUpView(View view) {
