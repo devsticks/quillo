@@ -37,7 +37,6 @@ import io.quillo.quillo.interfaces.PersonListingsListener;
 public class ProfileFragment extends Fragment implements  ListingCellListener, View.OnClickListener{
 
     private boolean isViewingOwnProfile = true;
-    private boolean isLoggedIn = true;
     private Person seller;
     private Listing temporaryListing;
     private int temporaryListingPosition;
@@ -60,7 +59,7 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new ListingAdapter(this, getContext());
+        adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
         setupDatabase();
     }
 
@@ -199,13 +198,7 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     public void onClick(View view) {
         int viewId = view.getId();
 
-        if (viewId == R.id.fab_add_listing) {
-            if (isLoggedIn) {
-               // startAddEditListingActivity();
-            } else {
-                //startLoginActivity();
-            }
-        }
+
     }
 
     private ItemTouchHelper.Callback createHelperCallback () {

@@ -49,7 +49,7 @@ public class SearchFragment extends Fragment implements ListingCellListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adapter = new ListingAdapter(this, getContext());
+        adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
         //TODO: Use users current university
        setupDatabase();
