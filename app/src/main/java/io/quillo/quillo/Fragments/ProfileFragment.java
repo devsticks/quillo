@@ -26,6 +26,7 @@ import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
@@ -95,9 +96,19 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
 
     @OnClick(R.id.btn_edit_profile)
     public void handleEditProfileButtonClick(){
+        EditProfileFragment editProfileFragment = new EditProfileFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(IntentExtras.EXTRA_SELLER, seller);
+        editProfileFragment.setArguments(bundle);
 
 
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, editProfileFragment)
+                .addToBackStack(null)
+                .commit();
 
+        ((MainActivity)getActivity()).hideBottomNavBar();
     }
 
     //TODO Update with fragments
