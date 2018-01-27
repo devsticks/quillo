@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true"
-    tools:context="io.quillo.quillo.views.AddEditListingActivity">
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,20 +14,13 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/imv_listing_photo_1"
-                app:srcCompat="@drawable/ic_add_photo_white_24dp"
-                android:layout_width="wrap_content"
-                android:layout_height="64dp"
-                android:layout_weight="1" />
-
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/imv_listing_photo_1"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            app:srcCompat="@android:drawable/ic_menu_camera" />
 
         <!-- Title Label -->
         <android.support.design.widget.TextInputLayout

@@ -1,4 +1,4 @@
-package io.quillo.quillo.views;
+package io.quillo.quillo.Fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,10 +10,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 
@@ -21,7 +25,7 @@ import io.quillo.quillo.R;
  * Created by shkla on 2018/01/21.
  */
 
-public class SelectPhotoDialog extends android.support.v4.app.DialogFragment{
+public class SelectPhotoDialog extends DialogFragment{
 
     private static final String TAG = SelectPhotoDialog.class.getName();
 
@@ -42,40 +46,25 @@ public class SelectPhotoDialog extends android.support.v4.app.DialogFragment{
     @BindView(R.id.camera_tv)
     TextView cameraTextView;
 
-    public SelectPhotoDialog(){
-
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final CharSequence[] options =  {"Chose from gallery", "Take Photo"};
-        //TODO: Find out why this does not work
-        /*builder.setMessage(R.string.dialog_select_photo)
 
-                .setItems(options, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (i == 0){
-                            handleGalleryClick();
-                        }else if (i ==  1){
-                            handleCameraClick();
-                        }
-                    }
-                });*/
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_select_photo, null);
+        ButterKnife.bind(this, view);
+        builder.setView(view);
 
-        handleGalleryClick();
         return builder.create();
-
     }
+
+
 
     @Override
     public void onAttach(Context context) {
         try{
-            onPhotoSelectedListener = (OnPhotoSelectedListener) getActivity();
+            onPhotoSelectedListener = (OnPhotoSelectedListener) getTargetFragment();
         }catch(ClassCastException e){
             Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage());
         }

@@ -1,6 +1,7 @@
 package io.quillo.quillo.data;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by Stickells on 13/01/2018.
@@ -43,7 +44,7 @@ public class Listing implements Serializable {
 //        this.numberOfViews = numberOfViews;
     }
 
-    public Listing (String name, String author, int edition, String description, String sellerUid, int price, String isbn, long dateListed) { //}, int dateListed, int numberOfViews, int colorResource) {
+    public Listing (String name, String author, int edition, String description, String sellerUid, int price, String isbn, long dateListed, String universityUid) { //}, int dateListed, int numberOfViews, int colorResource) {
         this.name = name;
         this.author = author;
         this.edition = edition;
@@ -52,6 +53,7 @@ public class Listing implements Serializable {
         this.price = price;
         this.isbn = isbn;
         this.dateListed = dateListed;
+        this.universityUid = universityUid;
 
     }
 
@@ -154,4 +156,22 @@ public class Listing implements Serializable {
     public void setBookmarked(boolean bookmarked) {
         isBookmarked = bookmarked;
     }
+
+    public HashMap<String, Object> toMap(){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(DatabaseContract.FIREBASE_LISTING_UID, uid);
+        map.put(DatabaseContract.FIREBASE_LISTING_ISBN, isbn);
+        map.put(DatabaseContract.FIREBASE_LISTING_SELLER_UID, uid);
+        map.put(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID, universityUid);
+        map.put(DatabaseContract.FIREBASE_LISTING_PRICE, price);
+        map.put(DatabaseContract.FIREBASE_LISTING_DATELISTED, dateListed);
+        map.put(DatabaseContract.FIREBASE_LISTING_DESCRIPTION, description);
+        map.put(DatabaseContract.FIREBASE_LISTING_IMAGE_URL, imageUrl);
+        map.put(DatabaseContract.FIREBASE_LISTING_NAME, name);
+        map.put(DatabaseContract.FIREBASE_LISTING_AUTHOR, author);
+        map.put(DatabaseContract.FIREBASE_LISTING_EDITION, edition);
+
+        return map;
+    }
+
 }

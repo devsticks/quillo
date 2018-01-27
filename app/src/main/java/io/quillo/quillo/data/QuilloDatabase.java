@@ -141,7 +141,7 @@ public class QuilloDatabase {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 listing.setImageUrl(downloadUrl.toString());
-                databaseListingsRef.child(listingUid).setValue(listing);
+                databaseListingsRef.child(listingUid).setValue(listing.toMap());
                 addListingToPersonListingTree(listingUid);
             }
         });

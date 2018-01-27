@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -36,21 +37,18 @@ import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
-import io.quillo.quillo.views.SelectPhotoDialog;
 
 /**
  * Created by shkla on 2018/01/22.
  */
-
+//TODO: Make this class look nice
 public class AddEditListingFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener{
     private static final int RC_PERMISSIONS = 1;
 
     private QuilloDatabase quilloDatabase;
     private Listing listing;
     private Person seller;
-    ArrayList<ImageView> listingImageViews;
-    ImageView currentPhotoAdder;
-    int numberOfPhotos = 0;
+
 
     //TODO actually check if a listing is being added or edited
     private boolean isInEditMode = false;
@@ -71,10 +69,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     TextInputEditText universityInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
-//    @BindView(R.id.imv_listing_photo_2)
-//    ImageView photo2;
-//    @BindView(R.id.imv_listing_photo_3)
-//    ImageView photo3;
 
     public static AddEditListingFragment newInstance(){
         AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
@@ -108,23 +102,17 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
 
-    @OnClick({R.id.imv_listing_photo_1})//, R.id.imv_listing_photo_2, R.id.imv_listing_photo_3})
-    public void handleAddPhotoClick(View v) {
-//        if (currentPhotoAdder != null && v.getId() == currentPhotoAdder.getId()) {
-//            showPhotoDialog();
-//            numberOfPhotos++;
-//            updatePhotoButtons();
-//            if (numberOfPhotos > 2) {
-//                currentPhotoAdder = null;
-//            }
-//        }
-
+    @OnClick({R.id.imv_listing_photo_1})
+    public void handleAddPhotoClick() {
         showPhotoDialog();
     }
 
     private void showPhotoDialog(){
         SelectPhotoDialog dialog = new SelectPhotoDialog();
-        dialog.show(getFragmentManager(), "Select Photo");
+        dialog.setTargetFragment(AddEditListingFragment.this, 1);
+        dialog.show(getActivity().getSupportFragmentManager(), "Select Photo");
+
+
     }
 
     private void verifyPermissions() {
@@ -162,15 +150,16 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR),
                     Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_EDITION)),
                     fields.get(DatabaseContract.FIREBASE_LISTING_DESCRIPTION),
-                    fields.get(DatabaseContract.FIREBASE_LISTING_SELLERUID),
+                    fields.get(DatabaseContract.FIREBASE_LISTING_SELLER_UID),
                     Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_PRICE)),
                     fields.get(DatabaseContract.FIREBASE_LISTING_ISBN),
-                    secondsSince1970);
+                    secondsSince1970,
+                    fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
             listing = newListing;
             quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
         }
 
-        startListingDetailFragment(v);
+
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){
@@ -184,50 +173,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         return photo1.getDrawingCache();
     }
 
-    public void startListingDetailFragment(View viewRoot) {
-        //TODO Use fragments
 
-        /*Intent intent = new Intent(this, ListingDetailActivity.class);
-        intent.putExtra(IntentExtras.EXTRA_LISTING, listing);
-        intent.putExtra(IntentExtras.EXTRA_SELLER, seller);
-        startActivity(intent);*/
-    }
-
-    private void updatePhotoButtons() {
-        // TODO For when you can add more photos...
-        // numberOfPhotos = listing.getNumberOfPhotos();
-        // ArrayList<int> listingPhotoResIds = listing.getPhotos();
-
-        // Fill pics if they already exist
-//        for (int i = 0; i < 3; i++) {
-//            if (i < numberOfPhotos) {
-//                //listingImageViews.get(i).setImageResource(listingPhotoResIds.get(i));
-//                //TODO this is a dummy, get rid of it
-//                listingImageViews.get(i).setImageResource(R.drawable.ic_photo_primary_light_24dp);
-//            } else if (i == numberOfPhotos) {
-//                listingImageViews.get(i).setImageResource(R.drawable.ic_add_photo_white_24dp);
-//                currentPhotoAdder = listingImageViews.get(i);
-//            } else {
-//                listingImageViews.get(i).setImageResource(R.drawable.ic_photo_primary_light_24dp);
-//            }
-//        }
-    }
-
-    private void setUpView() {
-
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
-
-        if(universityUid != null){
-            universityInput.setText(universityUid);
-        }
-
-        //TODO setImageResource here can go when we can add 3 photos. Happens in updatePhotoButtons
-   
-//        listingImageViews.add(photo2);
-//        listingImageViews.add(photo3);
-//        currentPhotoAdder = listingImageViews.get(0);
-
+    private void setupPriceInput(){
         priceInput.setText("R ");
         Selection.setSelection(priceInput.getText(), priceInput.getText().length());
 
@@ -253,7 +200,18 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
             }
         });
+    }
 
+    private void setupUniversityInput(){
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+        if(universityUid != null){
+            universityInput.setText(universityUid);
+        }
+
+    }
+
+    private void setupISBNInput(){
         isbnInput.setText("ISBN ");
         Selection.setSelection(isbnInput.getText(), isbnInput.getText().length());
 
@@ -276,6 +234,12 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
             }
         });
+    }
+
+    private void setUpView() {
+        setupUniversityInput();
+        setupPriceInput();
+        setupISBNInput();
 
         if (isInEditMode) { //We're editing
             fillViewFields(listing);
@@ -294,6 +258,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
     public HashMap<String, String> getFields() {
 
+        //TODO: Verify that a photo was selected
+
 
         String title = titleInput.getText().toString();
         String author = authorInput.getText().toString();
@@ -301,6 +267,9 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         String price = priceInput.getText().toString().substring(2);
         String isbn = isbnInput.getText().toString().substring(5);
         String description = descriptionInput.getText().toString();
+        String university = universityInput.getText().toString();
+
+        ArrayList<String> supportedUniversities  = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.universities)));
 
         if (title.isEmpty()) {
             titleInput.setError("enter a title for your listing");
@@ -344,6 +313,13 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             isbnInput.setError(null);
         }
 
+        if(university.isEmpty()|| !supportedUniversities.contains(university)){
+            universityInput.setError("Invalid University");
+            return null;
+        }else{
+            universityInput.setError(null);
+        }
+
         HashMap<String, String> fields = new HashMap<>();
         fields.put(DatabaseContract.FIREBASE_LISTING_NAME, title);
         fields.put(DatabaseContract.FIREBASE_LISTING_AUTHOR, author);
@@ -351,9 +327,14 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         fields.put(DatabaseContract.FIREBASE_LISTING_PRICE, price);
         fields.put(DatabaseContract.FIREBASE_LISTING_ISBN, isbn);
         fields.put(DatabaseContract.FIREBASE_LISTING_DESCRIPTION, description);
+        fields.put(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID, university);
 
         return fields;
     }
+
+    //Image handling
+
+
 
 
 }
