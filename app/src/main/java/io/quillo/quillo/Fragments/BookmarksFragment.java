@@ -44,7 +44,7 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         quilloDatabase = new QuilloDatabase();
-        adapter = new ListingAdapter(this, getContext());
+        adapter = new ListingAdapter(this, getContext(), false);
         setupDatabase();
     }
 

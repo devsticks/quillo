@@ -26,7 +26,6 @@ import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.PersonListingsListener;
@@ -35,12 +34,10 @@ import io.quillo.quillo.interfaces.PersonListingsListener;
  * Created by shkla on 2018/01/22.
  */
 
-public class ProfileFragment extends Fragment implements PersonListingsListener, PersonListener, ListingCellListener, View.OnClickListener{
+public class ProfileFragment extends Fragment implements  ListingCellListener, View.OnClickListener{
 
     private boolean isViewingOwnProfile = true;
-    private boolean isLoggedIn = true;
     private Person seller;
-    private QuilloDatabase quilloDatabase;
     private Listing temporaryListing;
     private int temporaryListingPosition;
 
@@ -62,9 +59,7 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new ListingAdapter(this, getContext());
-
-        quilloDatabase = new QuilloDatabase();
+        adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
         setupDatabase();
     }
 
@@ -84,9 +79,39 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
     }
 
     public void setupDatabase(){
-        quilloDatabase.setPersonListingsListener(this);
-        quilloDatabase.setPersonListener(this);
-        quilloDatabase.observePerson(FirebaseHelper.getCurrentFirebaseUser().getUid());
+
+        String currentUserUid = FirebaseHelper.getCurrentUserUid();
+        if (currentUserUid != null){
+            ((MainActivity)getActivity()).quilloDatabase.observePerson(currentUserUid, new PersonListener() {
+                @Override
+                public void onPersonLoaded(Person person) {
+                    seller = person;
+                    bindSellerToViews();
+                }
+            });
+
+
+            ((MainActivity)getActivity()).quilloDatabase.observePersonListings(currentUserUid, new PersonListingsListener() {
+                @Override
+                public void onPersonListingLoaded(Listing listing) {
+                    adapter.addListing(listing);
+                }
+
+                @Override
+                public void onPersonListingUpdated(Listing listing) {
+
+                }
+
+                @Override
+                public void onPersonListingRemoved(Listing listing) {
+
+                }
+            });
+
+        }
+
+
+
     }
 
     //TODO Update with fragments
@@ -120,12 +145,12 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
 
     @Override
     public void onBookmarkClick(Listing listing) {
-        quilloDatabase.addBookmark(listing);
+
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-        quilloDatabase.removeBookmark(listing);
+
     }
 
     @Override
@@ -133,30 +158,10 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
         ((MainActivity)getActivity()).showListingDetailFragment(listing);
     }
 
-    @Override
-    public void onPersonListingLoaded(Listing newListing) {
-        adapter.addListing(newListing);
-    }
 
-    @Override
-    public void onPersonLoaded(Person person) {
-        bindSellerToViews(person);
-    }
-
-
-    public void bindSellerToViews(Person seller){
+    public void bindSellerToViews(){
         nameLabel.setText(seller.getName());
         universityLabel.setText(seller.getUniversityUid());
-    }
-
-    @Override
-    public void onPersonListingUpdated(Listing listing) {
-        adapter.updateListing(listing);
-    }
-
-    @Override
-    public void onPersonListingRemoved(Listing listing) {
-        adapter.removeListing(listing.getUid());
     }
 
     public void deleteListingCellAt(int position) {
@@ -193,13 +198,7 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
     public void onClick(View view) {
         int viewId = view.getId();
 
-        if (viewId == R.id.fab_add_listing) {
-            if (isLoggedIn) {
-               // startAddEditListingActivity();
-            } else {
-                //startLoginActivity();
-            }
-        }
+
     }
 
     private ItemTouchHelper.Callback createHelperCallback () {
@@ -235,7 +234,7 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
     }
 
     private void handleListingSwiped(int position, Listing listing) {
-        quilloDatabase.deleteListing(listing);
+
         deleteListingCellAt(position);
 
         temporaryListing = listing;

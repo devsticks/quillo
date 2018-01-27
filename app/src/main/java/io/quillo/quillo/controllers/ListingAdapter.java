@@ -27,9 +27,10 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
     private boolean isViewingOwnListings;
     private ListingCellListener listingCellListener;
 
-    public ListingAdapter(ListingCellListener listingCellListener, Context context) {
+    public ListingAdapter(ListingCellListener listingCellListener, Context context, boolean isViewingOwnListings) {
         this.listingCellListener = listingCellListener;
         this.context = context;
+        this.isViewingOwnListings = isViewingOwnListings;
         listings = new ArrayList<Listing>();
     }
 
@@ -45,6 +46,11 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
     public void onBindViewHolder(ListingCell holder, int position) {
         Listing listing = listings.get(position);
         holder.setListing(listing);
+
+        if(isViewingOwnListings){
+            holder.hideBookmark();
+        }
+
         holder.setListingCellListener(listingCellListener);
         if (listing.getImageUrl() != null) {
            Glide.with(context).load(listing.getImageUrl()).into(holder.getIcon());

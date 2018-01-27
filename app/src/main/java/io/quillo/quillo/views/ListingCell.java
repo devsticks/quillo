@@ -68,6 +68,10 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         bindListingToViews();
     }
 
+    public void hideBookmark(){
+        bookmarkButton.setVisibility(View.GONE);
+    }
+
     private void bindListingToViews(){
         name.setText(listing.getName());
         author.setText(listing.getAuthor());
