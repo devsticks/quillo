@@ -21,7 +21,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rec_home_search_listing_holder"
+        android:id="@+id/recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -161,7 +161,7 @@ public class Listing implements Serializable {
         HashMap<String, Object> map = new HashMap<>();
         map.put(DatabaseContract.FIREBASE_LISTING_UID, uid);
         map.put(DatabaseContract.FIREBASE_LISTING_ISBN, isbn);
-        map.put(DatabaseContract.FIREBASE_LISTING_SELLER_UID, uid);
+        map.put(DatabaseContract.FIREBASE_LISTING_SELLER_UID, sellerUid);
         map.put(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID, universityUid);
         map.put(DatabaseContract.FIREBASE_LISTING_PRICE, price);
         map.put(DatabaseContract.FIREBASE_LISTING_DATELISTED, dateListed);

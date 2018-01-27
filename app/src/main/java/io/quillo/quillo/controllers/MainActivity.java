@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
 
-    private QuilloDatabase quilloDatabase;
+    public QuilloDatabase quilloDatabase;
 
 
     @Override
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         quilloDatabase = new QuilloDatabase();
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         checkIfUniversityIsKnown();
     }
 

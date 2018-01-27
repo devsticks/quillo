@@ -35,6 +35,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.DatabaseContract;
+import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
@@ -339,6 +340,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         fields.put(DatabaseContract.FIREBASE_LISTING_EDITION, edition);
         fields.put(DatabaseContract.FIREBASE_LISTING_PRICE, price);
         fields.put(DatabaseContract.FIREBASE_LISTING_ISBN, isbn);
+        fields.put(DatabaseContract.FIREBASE_LISTING_SELLER_UID, FirebaseHelper.getCurrentUserUid());
         fields.put(DatabaseContract.FIREBASE_LISTING_DESCRIPTION, description);
         fields.put(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID, university);
 

@@ -29,7 +29,7 @@ import io.quillo.quillo.interfaces.ListingCellListener;
 public class BookmarksFragment extends Fragment implements ListingCellListener, BookmarkListener {
 
 
-    @BindView(R.id.rec_home_search_listing_holder)
+    @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
     private ListingAdapter adapter;
