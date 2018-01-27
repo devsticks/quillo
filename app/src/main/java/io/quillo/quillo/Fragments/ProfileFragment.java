@@ -80,7 +80,7 @@ public class ProfileFragment extends Fragment implements PersonListingsListener,
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).showNavbar();
+        ((MainActivity)getActivity()).showBottomNavbar();
     }
 
     public void setupDatabase(){

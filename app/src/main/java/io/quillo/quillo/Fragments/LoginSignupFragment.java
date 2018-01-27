@@ -1,6 +1,8 @@
 package io.quillo.quillo.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,12 +22,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
+import io.quillo.quillo.controllers.MainActivity;
+import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
+import io.quillo.quillo.interfaces.PersonListener;
 
 /**
  * Created by shkla on 2018/01/26.
@@ -39,6 +47,8 @@ public class LoginSignupFragment extends Fragment {
     @BindView(R.id.input_name)
     EditText inputName;
     @BindView(R.id.input_name_holder) View inputNameHolder;
+    @BindView(R.id.input_university_holder) View inputUniversityHolder;
+    @BindView(R.id.input_university) EditText inputUniversity;
     @BindView(R.id.input_email) EditText inputEmail;
     @BindView(R.id.input_email_holder) View inputEmailHolder;
     @BindView(R.id.input_password) EditText inputPassword;
@@ -57,7 +67,7 @@ public class LoginSignupFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_signup_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_signup_login, container, false);
         ButterKnife.bind(this, view);
         setUpView(view);
         return view;
@@ -74,6 +84,12 @@ public class LoginSignupFragment extends Fragment {
                 }
             }
         });
+
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+        if(universityUid != null){
+            inputUniversity.setText(universityUid);
+        }
     }
 
     @OnClick(R.id.btn_register_toggle)
@@ -86,6 +102,7 @@ public class LoginSignupFragment extends Fragment {
         signupToggle.setTextColor(v.getContext().getResources().getColor(R.color.Primary));
 
         inputNameHolder.setVisibility(View.VISIBLE);
+        inputUniversityHolder.setVisibility(View.VISIBLE);
 //        TODO GET FOCUS SWAPPING TO WORK
 //        inputNameHolder.requestFocus();
 //        inputName.requestFocus();
@@ -104,13 +121,14 @@ public class LoginSignupFragment extends Fragment {
 //        TODO GET FOCUS SWAPPING TO WORK
 //        inputEmail.requestFocus();
         inputNameHolder.setVisibility(View.GONE);
+        inputUniversityHolder.setVisibility(View.GONE);
         signupLoginButton.setText("LOGIN");
     }
 
     public void signup() {
         Log.d(TAG, "Signup");
 
-        if (!validate()) {
+        if (!registerFieldsAreValid()) {
             onSignupFailed();
             return;
         }
@@ -161,7 +179,7 @@ public class LoginSignupFragment extends Fragment {
     public void login() {
         Log.d(TAG, "Login");
 
-        if (!validate()) {
+        if (!loginFieldsAreValid()) {
             onLoginFailed();
             return;
         }
@@ -197,16 +215,19 @@ public class LoginSignupFragment extends Fragment {
     public void onSignupSuccess() {
         signupLoginButton.setEnabled(true);
 
-        getActivity().getSupportFragmentManager().popBackStack();
-
         QuilloDatabase quilloDatabase = new QuilloDatabase();
+
+        String university = inputUniversity.getText().toString();
 
         FirebaseUser user = auth.getCurrentUser();
         //TODO Link with an actual uni UID
-        Person person = new Person(user.getUid(), user.getDisplayName(), user.getEmail(), "1");
+        Person person = new Person(user.getUid(), user.getDisplayName(), user.getEmail(), university);
         quilloDatabase.addPerson(person);
 
         Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+        ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(university);
+
+        getActivity().getSupportFragmentManager().popBackStack();
     }
 
     public void onSignupFailed() {
@@ -217,47 +238,84 @@ public class LoginSignupFragment extends Fragment {
 
     public void onLoginSuccess() {
         signupLoginButton.setEnabled(true);
+        String personUid = null;
+        //TODO: Find out if this is alright
+        FirebaseHelper.loadPerson(personUid, new PersonListener() {
+            @Override
+            public void onPersonLoaded(Person person) {
+                Log.d(LoginSignupFragment.class.getName(), "Person: " + person.getName() + "loaded with university uid: " + person.getUniversityUid());
+                ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(person.getUniversityUid());
+                getActivity().getSupportFragmentManager().popBackStack();
 
-        getActivity().getSupportFragmentManager().popBackStack();
-
-        Toast.makeText(getActivity(), "Welcome back: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Welcome back: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void onLoginFailed() {
         Toast.makeText(getActivity(), "Login failed", Toast.LENGTH_LONG).show();
-
         signupLoginButton.setEnabled(true);
     }
 
-    public boolean validate() {
-        boolean valid = true;
+    private boolean loginFieldsAreValid(){
 
-        String name = inputName.getText().toString();
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
 
-        if (!isLoggingIn && (name.isEmpty() || name.length() < 3)) {
-            inputName.setError("at least 3 characters");
-            valid = false;
-        } else {
-            inputName.setError(null);
-        }
-
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             inputEmail.setError("enter a valid email address");
-            valid = false;
+            return false;
         } else {
             inputEmail.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
             inputPassword.setError("between 4 and 10 alphanumeric characters");
-            valid = false;
+            return false;
         } else {
             inputPassword.setError(null);
         }
 
-        return valid;
+
+        return true;
+
     }
+    //TODO : Make a method for checking password and email to minimise code re use
+    private boolean registerFieldsAreValid(){
+        String email = inputEmail.getText().toString();
+        String password = inputPassword.getText().toString();
+        String name = inputName.getText().toString();
+        String university = inputName.getText().toString();
+
+        ArrayList<String> supportedUniversities  = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.universities)));
+
+        if (name.isEmpty() || name.length() < 3){
+            inputName.setError("at least 3 characters");
+            return false;
+        }
+
+        if(!supportedUniversities.contains(university)){
+            inputUniversity.setError("Not a supported uni");
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            inputEmail.setError("enter a valid email address");
+            return false;
+        } else {
+            inputEmail.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            inputPassword.setError("between 4 and 10 alphanumeric characters");
+            return false;
+        } else {
+            inputPassword.setError(null);
+        }
+
+        return true;
+
+    }
+
+
 
 }

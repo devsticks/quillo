@@ -283,13 +283,13 @@ public class QuilloDatabase {
 
     }
 
-    public void loadPerson(String personUid){
+    public void loadPerson(String personUid, final PersonListener oneTimePersonListener){
 
         ValueEventListener personValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Person person = dataSnapshot.getValue(Person.class);
-                personListener.onPersonLoaded(person);
+                oneTimePersonListener.onPersonLoaded(person);
             }
 
             @Override

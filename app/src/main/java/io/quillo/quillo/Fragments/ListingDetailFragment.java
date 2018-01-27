@@ -84,6 +84,7 @@ public class ListingDetailFragment extends Fragment {
 
         listing = (Listing)bundle.getSerializable(IntentExtras.EXTRA_LISTING);
         bindListingToViews();
+        loadSeller();
 
         return view;
     }
@@ -97,8 +98,7 @@ public class ListingDetailFragment extends Fragment {
 
     public void loadSeller(){
         if (listing != null) {
-            quilloDatabase.loadPerson(listing.getUid());
-            quilloDatabase.setPersonListener(new PersonListener() {
+            quilloDatabase.loadPerson(listing.getUid(), new PersonListener() {
                 @Override
                 public void onPersonLoaded(Person person) {
                     seller = person;
