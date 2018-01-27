@@ -256,7 +256,7 @@ public class LoginSignupFragment extends Fragment {
         Toast.makeText(getActivity(), "Login failed", Toast.LENGTH_LONG).show();
         signupLoginButton.setEnabled(true);
     }
-    
+
     private boolean loginFieldsAreValid(){
 
         String email = inputEmail.getText().toString();

@@ -1,6 +1,8 @@
 package io.quillo.quillo.Fragments;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -30,10 +32,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.views.SelectPhotoDialog;
 
 /**
@@ -65,6 +67,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     TextInputEditText isbnInput;
     @BindView(R.id.input_price)
     TextInputEditText priceInput;
+    @BindView(R.id.input_university)
+    TextInputEditText universityInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
 //    @BindView(R.id.imv_listing_photo_2)
@@ -87,9 +91,9 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_add_edit_listing, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_edit_listing, container, false);
         ButterKnife.bind(this, view);
-        setUpView(view);
+        setUpView();
         return view;
     }
 
@@ -209,13 +213,17 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 //        }
     }
 
-    private void setUpView(View view) {
+    private void setUpView() {
 
-        listingImageViews = new ArrayList<>(3);
-        listingImageViews.add(photo1);
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+
+        if(universityUid != null){
+            universityInput.setText(universityUid);
+        }
 
         //TODO setImageResource here can go when we can add 3 photos. Happens in updatePhotoButtons
-        listingImageViews.get(0).setImageResource(R.drawable.ic_add_photo_primary_24dp);
+   
 //        listingImageViews.add(photo2);
 //        listingImageViews.add(photo3);
 //        currentPhotoAdder = listingImageViews.get(0);
