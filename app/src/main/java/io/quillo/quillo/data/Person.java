@@ -69,4 +69,11 @@ public class Person implements Serializable {
         this.universityUid = universityUid;
     }
 
+    public void setPhotoUrl(String photoUrl){
+        this.photoUrl = photoUrl;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
 }

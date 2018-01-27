@@ -48,6 +48,7 @@ public class QuilloDatabase {
 
     private StorageReference storageReference;
     private StorageReference storageListingRef;
+    private StorageReference storagePeopleRef;
 
     public QuilloDatabase() {
         database = FirebaseDatabase.getInstance().getReference();
@@ -58,6 +59,7 @@ public class QuilloDatabase {
 
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
+        storagePeopleRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_PEOPLE_PHOTOS_CHILD_NAME);
 
     }
 
@@ -325,7 +327,7 @@ public class QuilloDatabase {
 
     }
 
-    public void addPerson(Person person){
+    public void addPerson(final Person person){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
 
 
@@ -335,7 +337,7 @@ public class QuilloDatabase {
 
     }
 
-    public void updatePerson(Person person){
+    public void updatePerson(final Person person, byte[] uploadBytes){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
 
         if(!currentUser.getDisplayName().equals(person.getName())){
@@ -356,7 +358,16 @@ public class QuilloDatabase {
             currentUser.updateEmail(person.getEmail());
         }
 
-        databasePersonRef.child(person.getUid()).setValue(person);
+        storagePeopleRef.putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                person.setPhotoUrl(downloadUrl.toString());
+                databasePersonRef.child(person.getUid()).setValue(person);
+            }
+        });
+
+
 
 
     }

@@ -29,4 +29,5 @@ public class DatabaseContract {
     public static final String FIREBASE_USER_BOOKMARKS_CHILD_NAME = "user_bookmarks";
 
     public static final String FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME = "listings";
+    public static final String FIREBASE_STORAGE_PEOPLE_PHOTOS_CHILD_NAME = "people";
 }
