@@ -53,6 +53,12 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
         quilloDatabase.observeListings("UCT");
     }
 
+    private void setupDatabase(){
+
+    }
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

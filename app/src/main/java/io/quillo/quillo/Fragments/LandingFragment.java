@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -50,6 +51,15 @@ public class LandingFragment extends Fragment{
         decorView.setSystemUiVisibility(uiOptions);
 
         return view;
+    }
+
+    //TODO: Find a way to do auto complete
+    private void setupUniversityTextField(){
+        String[] universities = getResources().getStringArray(R.array.universities);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.fragment_landing, universities);
+
+      //  universityInput.setAdapter(adapter);
     }
 
     @OnClick(R.id.btn_start)

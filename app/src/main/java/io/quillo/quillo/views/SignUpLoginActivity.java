@@ -35,7 +35,7 @@ public class SignUpLoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup_login);
+        setContentView(R.layout.fragment_signup_login);
         ButterKnife.bind(this);
 
         signupLoginButton.setOnClickListener(new View.OnClickListener() {
