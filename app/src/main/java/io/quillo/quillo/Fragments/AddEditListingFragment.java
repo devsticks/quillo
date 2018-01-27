@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -108,6 +109,16 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
     private void showPhotoDialog(){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{Manifest.permission.CAMERA},
+                        1);
+            }
+        }
+
         SelectPhotoDialog dialog = new SelectPhotoDialog();
         dialog.setTargetFragment(AddEditListingFragment.this, 1);
         dialog.show(getActivity().getSupportFragmentManager(), "Select Photo");
@@ -210,6 +221,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         }
 
     }
+
+
 
     private void setupISBNInput(){
         isbnInput.setText("ISBN ");
