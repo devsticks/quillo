@@ -36,6 +36,7 @@ import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.BottomNavigationViewHelper;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int RC_PERMISSIONS = 1;
 
     private SearchFragment searchFragment;
     private BookmarksFragment bookmarksFragment;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         selectedFragment = searchFragment;
         changeFragment();
     }
+
 
 
 

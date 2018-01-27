@@ -11,12 +11,13 @@ public class DatabaseContract {
     public static final String FIREBASE_LISTING_AUTHOR = "author";
     public static final String FIREBASE_LISTING_EDITION = "edition";
     public static final String FIREBASE_LISTING_DESCRIPTION = "description";
-    public static final String FIREBASE_LISTING_SELLERUID = "sellerUid";
+    public static final String FIREBASE_LISTING_SELLER_UID = "sellerUid";
     public static final String FIREBASE_LISTING_PRICE =  "price";
     public static final String FIREBASE_LISTING_UID =  "uid";
     public static final String FIREBASE_LISTING_ISBN = "isbn";
     public static final String FIREBASE_LISTING_DATELISTED = "dateListed";
     public static final String FIREBASE_LISTING_UNIVERSITY_UID = "universityUid";
+    public static final String FIREBASE_LISTING_IMAGE_URL = "imageUrl";
 
     public static final String FIREBASE_PERSON_CHILD_NAME = "people";
     public static final String FIREBASE_PERSON_EMAIL = "email";
