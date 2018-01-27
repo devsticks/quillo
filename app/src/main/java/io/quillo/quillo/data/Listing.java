@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 
 public class Listing implements Serializable {
+
+
     private String name;
     private String author;
     private int edition;

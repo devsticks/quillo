@@ -114,7 +114,7 @@ public class SearchFragment extends Fragment implements ListingsListener, Listin
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity() ).showNavbar();
+        ((MainActivity) getActivity() ).showBottomNavbar();
     }
 
     @Override

@@ -63,7 +63,7 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     }
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).showNavbar();
+        ((MainActivity)getActivity()).showBottomNavbar();
     }
 
     @Override

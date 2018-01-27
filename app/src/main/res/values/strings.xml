@@ -12,6 +12,8 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="seller_name_panel_title">Devdawg</string>
     <string name="title_activity_login">Sign in</string>
+    
+    <string name="shared_pref_university_key">university</string>
 
     <!-- Strings for AddEditListing Activity-->
     <string name="add_listing_header">Add Listing</string>
@@ -133,4 +135,16 @@
     
     <!--Dialog Headers -->
     <string name="dialog_select_photo">Select Photo</string>
+
+    <!--Supported Universities-->
+    <string-array name="universities">
+        <item>University of Cape Town</item>
+        <item>WITS</item>
+        <item>CPUT</item>
+
+    </string-array>
+
+
+
+
 </resources>
