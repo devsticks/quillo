@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -55,6 +57,8 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     TextView universityLabel;
     @BindView(R.id.btn_edit_profile)
     ImageView editProfileBtn;
+    @BindView(R.id.imv_profile_picture)
+    ImageView profilePicture;
 
     public static ProfileFragment newInstance(){
         ProfileFragment profileFragment = new ProfileFragment();
@@ -186,6 +190,10 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     public void bindSellerToViews(){
         nameLabel.setText(seller.getName());
         universityLabel.setText(seller.getUniversityUid());
+
+        if(seller.getPhotoUrl() != null){
+            Glide.with(getContext()).load(seller.getPhotoUrl()).into(profilePicture);
+        }
     }
 
     public void deleteListingCellAt(int position) {

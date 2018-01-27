@@ -114,6 +114,10 @@ public class ListingDetailFragment extends Fragment {
         sellerNameTV.setText(seller.getName());
         sellerUniversityTV.setText(seller.getUniversityUid());
 
+        if(seller.getPhotoUrl()!= null){
+            Glide.with(getContext()).load(seller.getPhotoUrl()).into(sellerProfilePic);
+        }
+
         setupSellerContainerButtons();
     }
 
