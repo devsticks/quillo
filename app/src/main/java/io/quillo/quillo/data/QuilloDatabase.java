@@ -1,9 +1,13 @@
 package io.quillo.quillo.data;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,6 +48,7 @@ public class QuilloDatabase {
 
     private StorageReference storageReference;
     private StorageReference storageListingRef;
+    private StorageReference storagePeopleRef;
 
     public QuilloDatabase() {
         database = FirebaseDatabase.getInstance().getReference();
@@ -54,6 +59,7 @@ public class QuilloDatabase {
 
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
+        storagePeopleRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_PEOPLE_PHOTOS_CHILD_NAME);
 
     }
 
@@ -167,8 +173,30 @@ public class QuilloDatabase {
                 databaseListingsRef.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Listing listing = dataSnapshot.getValue(Listing.class);
-                        personListingsListener.onPersonListingLoaded(listing);
+                        final Listing listing = dataSnapshot.getValue(Listing.class);
+
+                        String currentUserUid = FirebaseHelper.getCurrentUserUid();
+
+                        if (currentUserUid != null){
+                            databaseBookmarksRef.child(currentUserUid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.hasChild(listing.getUid())){
+                                        listing.setBookmarked(true);
+                                    }else{
+                                        listing.setBookmarked(false);
+                                    }
+                                    personListingsListener.onPersonListingLoaded(listing);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }else{
+                            personListingsListener.onPersonListingLoaded(listing);
+                        }
                     }
 
                     @Override
@@ -214,6 +242,10 @@ public class QuilloDatabase {
 
          databasePersonListingsRef.child(personUid).addChildEventListener(personListingsEventListener);
 
+    }
+
+    public void stopObservingPersonListings(String personUid){
+        databasePersonListingsRef.child(personUid).removeEventListener(personListingsEventListener);
     }
 
     public void observeBookmarks(){
@@ -298,8 +330,11 @@ public class QuilloDatabase {
             }
         };
         databasePersonRef.child(personUid).addValueEventListener(personValueEventListener);
-
     }
+
+
+
+
 
     public void loadPerson(String personUid, final PersonListener oneTimePersonListener){
 
@@ -321,7 +356,7 @@ public class QuilloDatabase {
 
     }
 
-    public void addPerson(Person person){
+    public void addPerson(final Person person){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
 
 
@@ -329,8 +364,38 @@ public class QuilloDatabase {
             databasePersonRef.child(person.getUid()).setValue(person);
         }
 
-
-
     }
 
+    public void updatePerson(final Person person, byte[] uploadBytes, final OnSuccessListener onSuccessListener){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+
+        if(!currentUser.getDisplayName().equals(person.getName())){
+            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(person.getName())
+                    .build();
+           currentUser.updateProfile(profileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+
+                    }
+                }
+            });
+        }
+
+        if(!currentUser.getEmail().equals(person.getEmail())){
+            currentUser.updateEmail(person.getEmail());
+        }
+
+        storagePeopleRef.putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                person.setPhotoUrl(downloadUrl.toString());
+                databasePersonRef.child(person.getUid()).setValue(person);
+                onSuccessListener.onSuccess(true);
+            }
+        });
+
+    }
 }
