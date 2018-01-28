@@ -17,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +51,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
     private Listing listing;
     private boolean isInEditMode = false;
-    private EditListingListener editListingListener;
-
-    public interface EditListingListener{
-        public void onListingUpdated();
-    }
 
     @BindView(R.id.input_title)
     TextInputEditText titleInput;
@@ -105,16 +99,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         return view;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        try{
-            editListingListener = (EditListingListener) getTargetFragment();
-        }catch(ClassCastException e){
-            Log.e(AddEditListingFragment.class.getName(), "onAttach: ClassCastException: " + e.getMessage());
-        }
 
-        super.onAttach(context);
-    }
 
     @Override
     public void getImagePath(Uri imagePath) {

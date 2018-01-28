@@ -36,11 +36,12 @@ import io.quillo.quillo.interfaces.PersonListener;
  * Created by shkla on 2018/01/25.
  */
 
-public class ListingDetailFragment extends Fragment implements AddEditListingFragment.EditListingListener {
+public class ListingDetailFragment extends Fragment  {
     //TODO: Fix image scaling
 
     private Person seller;
     private Listing listing;
+    private String listingUid;
 
 
     private boolean isViewingOwnListing = false;
@@ -97,33 +98,17 @@ public class ListingDetailFragment extends Fragment implements AddEditListingFra
         Bundle bundle = this.getArguments();
         ButterKnife.bind(this, view);
 
-        listing = (Listing) bundle.getSerializable(IntentExtras.EXTRA_LISTING);
-        bindListingToViews();
+        listingUid = bundle.getString(IntentExtras.EXTRA_LISTING_UID);
+
+
         loadSeller();
+        loadListing();
 
         return view;
     }
 
 
-    public void loadSeller() {
-        if (listing != null) {
-            ((MainActivity) getActivity()).quilloDatabase.loadPerson(listing.getSellerUid(), new PersonListener() {
-                @Override
-                public void onPersonLoaded(Person person) {
-                    seller = person;
 
-                    isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
-                    if (isViewingOwnListing) {
-                        sellerContainer.setVisibility(View.GONE);
-                        listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit_black_24dp));
-                    } else {
-                        sellerContainer.setVisibility(View.VISIBLE);
-                        bindSellerToViews();
-                    }
-                }
-            });
-        }
-    }
 
     private void bindSellerToViews() {
 
@@ -160,10 +145,12 @@ public class ListingDetailFragment extends Fragment implements AddEditListingFra
                 listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_border_black_24dp));
                 listing.setBookmarked(false);
                 ((MainActivity) getActivity()).quilloDatabase.removeBookmark(listing);
+                Toast.makeText(getContext(), "Removed from bookmarks", Toast.LENGTH_SHORT).show();
             } else {
                 listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
                 listing.setBookmarked(true);
                 ((MainActivity) getActivity()).quilloDatabase.addBookmark(listing);
+                Toast.makeText(getContext(), "Added to bookmarks", Toast.LENGTH_SHORT).show();
 
             }
         }
@@ -259,13 +246,13 @@ public class ListingDetailFragment extends Fragment implements AddEditListingFra
 
         Glide.with(getContext()).load(listing.getImageUrl()).into(listingImage);
     }
-    public void setListing(Listing listing){
+
+    public void setListing(Listing listing) {
         this.listing = listing;
     }
 
-    @Override
-    public void onListingUpdated() {
-        ((MainActivity)getActivity()).quilloDatabase.loadListing(listing.getUid(), new ListingsListener() {
+    public void loadListing() {
+        ((MainActivity) getActivity()).quilloDatabase.loadListing(listingUid, new ListingsListener() {
             @Override
             public void onListingLoaded(Listing listing) {
                 setListing(listing);
@@ -283,4 +270,26 @@ public class ListingDetailFragment extends Fragment implements AddEditListingFra
             }
         });
     }
+    
+    public void loadSeller() {
+        if (listing != null) {
+            ((MainActivity) getActivity()).quilloDatabase.loadPerson(listing.getSellerUid(), new PersonListener() {
+                @Override
+                public void onPersonLoaded(Person person) {
+                    seller = person;
+
+                    isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
+                    if (isViewingOwnListing) {
+                        sellerContainer.setVisibility(View.GONE);
+                        listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit_black_24dp));
+                    } else {
+                        sellerContainer.setVisibility(View.VISIBLE);
+                        bindSellerToViews();
+                    }
+                }
+            });
+        }
+    }
 }
+
+

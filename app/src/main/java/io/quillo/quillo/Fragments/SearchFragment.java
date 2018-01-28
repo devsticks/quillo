@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +52,7 @@ public class SearchFragment extends Fragment implements ListingCellListener {
 
         adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
-        //TODO: Use users current university
+
        setupDatabase();
     }
 
@@ -118,11 +119,13 @@ public class SearchFragment extends Fragment implements ListingCellListener {
     @Override
     public void onBookmarkClick(Listing listing) {
         ((MainActivity)getActivity()).quilloDatabase.addBookmark(listing);
+        Toast.makeText(getContext(), "Added to bookmarks", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
         ((MainActivity)getActivity()).quilloDatabase.removeBookmark(listing);
+        Toast.makeText(getContext(), "Removed from bookmarks", Toast.LENGTH_SHORT).show();
     }
 
     @Override
