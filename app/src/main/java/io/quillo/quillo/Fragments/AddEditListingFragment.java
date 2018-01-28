@@ -17,12 +17,15 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -34,11 +37,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
+import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.data.Person;
-import io.quillo.quillo.data.QuilloDatabase;
 
 /**
  * Created by shkla on 2018/01/22.
@@ -47,13 +50,13 @@ import io.quillo.quillo.data.QuilloDatabase;
 public class AddEditListingFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener{
     private static final int RC_PERMISSIONS = 1;
 
-    private QuilloDatabase quilloDatabase;
     private Listing listing;
-    private Person seller;
-
-
-    //TODO actually check if a listing is being added or edited
     private boolean isInEditMode = false;
+    private EditListingListener editListingListener;
+
+    public interface EditListingListener{
+        public void onListingUpdated();
+    }
 
     @BindView(R.id.input_title)
     TextInputEditText titleInput;
@@ -80,7 +83,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        quilloDatabase = new QuilloDatabase();
+
     }
 
     @Nullable
@@ -90,7 +93,27 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         View view = inflater.inflate(R.layout.fragment_add_edit_listing, container, false);
         ButterKnife.bind(this, view);
         setUpView();
+
+        Bundle bundle = getArguments();
+
+        if(bundle != null && bundle.containsKey(IntentExtras.EXTRA_LISTING)){
+            listing = (Listing)bundle.getSerializable(IntentExtras.EXTRA_LISTING);
+            isInEditMode = true;
+            bindListingToViews();
+
+        }
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        try{
+            editListingListener = (EditListingListener) getTargetFragment();
+        }catch(ClassCastException e){
+            Log.e(AddEditListingFragment.class.getName(), "onAttach: ClassCastException: " + e.getMessage());
+        }
+
+        super.onAttach(context);
     }
 
     @Override
@@ -150,6 +173,25 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     public void handlePublishClick(View v) {
         HashMap<String, String> fields = getFields();
         if (isInEditMode) { // Editing Listing
+            if(fields == null){
+                return;
+            }
+
+            listing.setName(fields.get(DatabaseContract.FIREBASE_LISTING_NAME));
+            listing.setAuthor(fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR));
+            listing.setEdition(Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_EDITION)));
+            listing.setDescription(fields.get(DatabaseContract.FIREBASE_LISTING_DESCRIPTION));
+            listing.setPrice(Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_PRICE)));
+            listing.setIsbn(fields.get(DatabaseContract.FIREBASE_LISTING_ISBN));
+            listing.setUniversityUid(fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
+
+            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 50), new OnSuccessListener() {
+                @Override
+                public void onSuccess(Object o) {
+                    Toast.makeText(getContext(), "Listing updated", Toast.LENGTH_SHORT);
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
 
         } else { // Adding Listing
             if (fields == null) {
@@ -168,7 +210,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     secondsSince1970,
                     fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
             listing = newListing;
-            quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
+            ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
         }
 
 
@@ -254,22 +296,22 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         setupUniversityInput();
         setupPriceInput();
         setupISBNInput();
-
-        if (isInEditMode) { //We're editing
-            fillViewFields(listing);
-        }
-
     }
 
-    private void fillViewFields(Listing listing) {
+    private void bindListingToViews() {
+        if (listing.getImageUrl() != null){
+            Glide.with(getContext()).load(listing.getImageUrl()).into(photo1);
+        }
+
         titleInput.setText(listing.getName());
         authorInput.setText(listing.getAuthor());
-        editionInput.setText(listing.getEdition());
+        editionInput.setText(String.valueOf(listing.getEdition()));
         descriptionInput.setText(listing.getDescription());
         priceInput.setText("R " + listing.getPrice());
         isbnInput.setText("ISBN " + listing.getIsbn());
+        universityInput.setText(listing.getUniversityUid());
     }
-
+    //TODO: Remove this function and replace it with fieldsAreValid -> Bool
     public HashMap<String, String> getFields() {
 
         //TODO: Verify that a photo was selected
