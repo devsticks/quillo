@@ -97,13 +97,9 @@ public class ListingDetailFragment extends Fragment  {
 
         Bundle bundle = this.getArguments();
         ButterKnife.bind(this, view);
-
         listingUid = bundle.getString(IntentExtras.EXTRA_LISTING_UID);
-
-
-        loadSeller();
         loadListing();
-
+        
         return view;
     }
 
@@ -256,6 +252,7 @@ public class ListingDetailFragment extends Fragment  {
             @Override
             public void onListingLoaded(Listing listing) {
                 setListing(listing);
+                loadSeller();
                 bindListingToViews();
             }
 
