@@ -64,13 +64,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         ProfileFragment profileFragment = new ProfileFragment();
         return profileFragment;
     }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
-
-    }
+    
 
     @Nullable
     @Override
@@ -85,6 +79,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
             isViewingOwnProfile = false;
             editProfileBtn.setVisibility(View.GONE);
         }
+        adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
 
         setupDatabase();
         setUpView(view);

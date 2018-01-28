@@ -344,7 +344,7 @@ public class QuilloDatabase {
 
     }
 
-    public void updatePerson(final Person person, byte[] uploadBytes){
+    public void updatePerson(final Person person, byte[] uploadBytes, final OnSuccessListener onSuccessListener){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
 
         if(!currentUser.getDisplayName().equals(person.getName())){
@@ -371,12 +371,9 @@ public class QuilloDatabase {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 person.setPhotoUrl(downloadUrl.toString());
                 databasePersonRef.child(person.getUid()).setValue(person);
+                onSuccessListener.onSuccess(true);
             }
         });
 
-
-
-
     }
-
 }

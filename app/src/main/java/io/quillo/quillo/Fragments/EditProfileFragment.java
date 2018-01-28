@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -102,16 +103,21 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
     @OnClick(R.id.save_btn)
     public void handleSaveButtonClick(){
+        //TODO: Put a progress bar
         if(fieldsAreValid()){
             person.setName(nameInput.getText().toString());
             person.setEmail(emailInput.getText().toString());
             person.setPhoneNumber(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
-            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 50));
-
-            Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
-            getActivity().getSupportFragmentManager().popBackStack();
+            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 50), new OnSuccessListener() {
+                @Override
+                public void onSuccess(Object o) {
+                    Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
+                    getActivity().getSupportFragmentManager().popBackStack();
+                    //Hide progress bar
+                }
+            });
         }
 
     }
@@ -135,9 +141,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             return  false;
         }
 
-        if(number.isEmpty()){
-            return  false;
-        }
+
 
         if(university.isEmpty()|| !supportedUniversities.contains(university)){
             return  false;
