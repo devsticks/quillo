@@ -7,7 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,6 +135,22 @@ public class ListingDetailFragment extends Fragment {
             ((MainActivity)getActivity()).quilloDatabase.addBookmark(listing);
 
         }
+    }
+
+    @OnClick(R.id.seller_view_container)
+    public void handleSellerProfileClick(){
+        Log.d(ListingDetailFragment.class.getName(), "Seller profile click");
+
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(IntentExtras.EXTRA_SELLER, seller);
+        profileFragment.setArguments(bundle);
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, profileFragment)
+                .setTransition(FragmentTransaction.TRANSIT_ENTER_MASK)
+                .addToBackStack(null)
+                .commit();
     }
 
 

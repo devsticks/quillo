@@ -39,7 +39,7 @@ import io.quillo.quillo.interfaces.PersonListingsListener;
  * Created by shkla on 2018/01/22.
  */
 
-public class ProfileFragment extends Fragment implements  ListingCellListener, View.OnClickListener{
+public class ProfileFragment extends Fragment implements ListingCellListener, View.OnClickListener {
 
     private boolean isViewingOwnProfile = true;
     private Person seller;
@@ -60,16 +60,16 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     @BindView(R.id.imv_profile_picture)
     ImageView profilePicture;
 
-    public static ProfileFragment newInstance(){
+    public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
-        return  profileFragment;
+        return profileFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
-        setupDatabase();
+
     }
 
     @Nullable
@@ -77,6 +77,15 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
+
+        Bundle bundle = getArguments();
+
+        if(bundle != null && bundle.containsKey(IntentExtras.EXTRA_SELLER)){
+            seller = (Person) getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
+            isViewingOwnProfile = false;
+        }
+
+        setupDatabase();
         setUpView(view);
         return view;
     }
@@ -84,49 +93,57 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).showBottomNavbar();
+        if (isViewingOwnProfile) {
+            ((MainActivity) getActivity()).showBottomNavbar();
+        }
     }
 
-    public void setupDatabase(){
+    public void setupDatabase() {
+        String personUid;
+        if (seller == null) {
+            personUid = FirebaseHelper.getCurrentUserUid();
+            if (personUid != null) {
+                ((MainActivity) getActivity()).quilloDatabase.loadPerson(personUid, new PersonListener() {
+                    @Override
+                    public void onPersonLoaded(Person person) {
+                        seller = person;
+                        bindSellerToViews();
+                    }
+                });
+            }
 
-        String currentUserUid = FirebaseHelper.getCurrentUserUid();
-        if (currentUserUid != null){
-            ((MainActivity)getActivity()).quilloDatabase.observePerson(currentUserUid, new PersonListener() {
-                @Override
-                public void onPersonLoaded(Person person) {
-                    seller = person;
-                    bindSellerToViews();
-                }
-            });
-
-
-            ((MainActivity)getActivity()).quilloDatabase.observePersonListings(currentUserUid, new PersonListingsListener() {
-                @Override
-                public void onPersonListingLoaded(Listing listing) {
-                    adapter.addListing(listing);
-                }
-
-                @Override
-                public void onPersonListingUpdated(Listing listing) {
-
-                }
-
-                @Override
-                public void onPersonListingRemoved(Listing listing) {
-
-                }
-            });
-
+        }else{
+            personUid = seller.getUid();
+            bindSellerToViews();
         }
 
+        ((MainActivity) getActivity()).quilloDatabase.observePersonListings(personUid, new PersonListingsListener() {
+            @Override
+            public void onPersonListingLoaded(Listing listing) {
+                adapter.addListing(listing);
+            }
 
+            @Override
+            public void onPersonListingUpdated(Listing listing) {
 
+            }
+
+            @Override
+            public void onPersonListingRemoved(Listing listing) {
+
+            }
+        });
     }
 
-
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.removeAllListings();
+        ((MainActivity)getActivity()).quilloDatabase.stopObservingPersonListings(seller.getUid());
+    }
 
     @OnClick(R.id.btn_edit_profile)
-    public void handleEditProfileButtonClick(){
+    public void handleEditProfileButtonClick() {
         EditProfileFragment editProfileFragment = new EditProfileFragment();
 
         Bundle bundle = new Bundle();
@@ -139,14 +156,14 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
                 .addToBackStack(null)
                 .commit();
 
-        ((MainActivity)getActivity()).hideBottomNavBar();
+        ((MainActivity) getActivity()).hideBottomNavBar();
     }
 
     //TODO Update with fragments
 
     public void setUpView(View view) {
         FloatingActionButton mAddListingButton = (FloatingActionButton) view.findViewById(R.id.fab_add_listing);
-        recyclerView = (RecyclerView)view.findViewById(R.id.rec_profile_listing_holder);
+
 
         mAddListingButton.setOnClickListener(this);
         if (isViewingOwnProfile) {
@@ -183,15 +200,15 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
 
     @Override
     public void onListingClick(Listing listing) {
-        ((MainActivity)getActivity()).showListingDetailFragment(listing);
+        ((MainActivity) getActivity()).showListingDetailFragment(listing);
     }
 
 
-    public void bindSellerToViews(){
+    public void bindSellerToViews() {
         nameLabel.setText(seller.getName());
         universityLabel.setText(seller.getUniversityUid());
 
-        if(seller.getPhotoUrl() != null){
+        if (seller.getPhotoUrl() != null) {
             Glide.with(getContext()).load(seller.getPhotoUrl()).into(profilePicture);
         }
     }
@@ -233,7 +250,7 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
 
     }
 
-    private ItemTouchHelper.Callback createHelperCallback () {
+    private ItemTouchHelper.Callback createHelperCallback() {
                 /*First Param is for Up/Down motion, second is for Left/Right.
         Note that we can supply 0, one constant (e.g. ItemTouchHelper.LEFT), or two constants (e.g.
         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) to specify what directions are allowed.
@@ -284,7 +301,6 @@ public class ProfileFragment extends Fragment implements  ListingCellListener, V
             temporaryListingPosition = 0;
         }
     }
-
 
 
     private void handleSnackbarTimeout() {

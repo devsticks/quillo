@@ -222,6 +222,10 @@ public class QuilloDatabase {
 
     }
 
+    public void stopObservingPersonListings(String personUid){
+        databasePersonListingsRef.child(personUid).removeEventListener(personListingsEventListener);
+    }
+
     public void observeBookmarks(){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
         if (currentUser!= null) {
@@ -304,8 +308,11 @@ public class QuilloDatabase {
             }
         };
         databasePersonRef.child(personUid).addValueEventListener(personValueEventListener);
-
     }
+
+
+
+
 
     public void loadPerson(String personUid, final PersonListener oneTimePersonListener){
 
