@@ -173,8 +173,30 @@ public class QuilloDatabase {
                 databaseListingsRef.child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Listing listing = dataSnapshot.getValue(Listing.class);
-                        personListingsListener.onPersonListingLoaded(listing);
+                        final Listing listing = dataSnapshot.getValue(Listing.class);
+
+                        String currentUserUid = FirebaseHelper.getCurrentUserUid();
+
+                        if (currentUserUid != null){
+                            databaseBookmarksRef.child(currentUserUid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.hasChild(listing.getUid())){
+                                        listing.setBookmarked(true);
+                                    }else{
+                                        listing.setBookmarked(false);
+                                    }
+                                    personListingsListener.onPersonListingLoaded(listing);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }else{
+                            personListingsListener.onPersonListingLoaded(listing);
+                        }
                     }
 
                     @Override

@@ -64,7 +64,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         ProfileFragment profileFragment = new ProfileFragment();
         return profileFragment;
     }
-    
+
 
     @Nullable
     @Override
