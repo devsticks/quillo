@@ -135,6 +135,22 @@ public class QuilloDatabase {
         listingQuery.removeEventListener(listingChildEventListener);
     }
 
+    public void loadListing(String listingUid, final ListingsListener listingsListener){
+        databaseListingsRef.child(listingUid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Listing listing = dataSnapshot.getValue(Listing.class);
+                listingsListener.onListingLoaded(listing);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
     public void addListing(final Listing listing, byte[] uploadBytes) {
         final String listingUid = databaseListingsRef.push().getKey();
         listing.setUid(listingUid);
@@ -147,7 +163,6 @@ public class QuilloDatabase {
                 addListingToPersonListingTree(listingUid);
             }
         });
-
     }
 
     private void addListingToPersonListingTree(String listingUid){
@@ -158,6 +173,19 @@ public class QuilloDatabase {
     }
 
     public void deleteListing(Listing listing) {
+
+    }
+
+    public void updateListing(final Listing listing, byte[] uploadBytes, final OnSuccessListener successListener){
+        storageListingRef.child(listing.getUid()).putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                listing.setImageUrl(downloadUrl.toString());
+                databaseListingsRef.child(listing.getUid()).setValue(listing.toMap());
+                successListener.onSuccess(true);
+            }
+        });
 
     }
 

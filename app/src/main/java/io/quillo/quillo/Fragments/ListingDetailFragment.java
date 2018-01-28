@@ -29,13 +29,14 @@ import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.PersonListener;
 
 /**
  * Created by shkla on 2018/01/25.
  */
 
-public class ListingDetailFragment extends Fragment {
+public class ListingDetailFragment extends Fragment implements AddEditListingFragment.EditListingListener {
     //TODO: Fix image scaling
 
     private Person seller;
@@ -141,6 +142,7 @@ public class ListingDetailFragment extends Fragment {
         if (isViewingOwnListing) {
             //Edit listing action
             AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
+            addEditListingFragment.setTargetFragment(this, 1);
             Bundle bundle = new Bundle();
             bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
             addEditListingFragment.setArguments(bundle);
@@ -257,5 +259,28 @@ public class ListingDetailFragment extends Fragment {
 
         Glide.with(getContext()).load(listing.getImageUrl()).into(listingImage);
     }
+    public void setListing(Listing listing){
+        this.listing = listing;
+    }
 
+    @Override
+    public void onListingUpdated() {
+        ((MainActivity)getActivity()).quilloDatabase.loadListing(listing.getUid(), new ListingsListener() {
+            @Override
+            public void onListingLoaded(Listing listing) {
+                setListing(listing);
+                bindListingToViews();
+            }
+
+            @Override
+            public void onListingUpdated(Listing listing) {
+
+            }
+
+            @Override
+            public void onListingRemoved(Listing listing) {
+
+            }
+        });
+    }
 }
