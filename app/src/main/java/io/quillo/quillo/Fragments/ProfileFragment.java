@@ -83,6 +83,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         if(bundle != null && bundle.containsKey(IntentExtras.EXTRA_SELLER)){
             seller = (Person) getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
             isViewingOwnProfile = false;
+            editProfileBtn.setVisibility(View.GONE);
         }
 
         setupDatabase();
