@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     public void showListingDetailFragment(Listing listing){
         Bundle bundle = new Bundle();
 
-        bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
+        bundle.putSerializable(IntentExtras.EXTRA_LISTING_UID, listing.getUid());
 
         ListingDetailFragment listingDetailFragment = new ListingDetailFragment();
         listingDetailFragment.setArguments(bundle);
