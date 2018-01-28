@@ -36,6 +36,7 @@ import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
@@ -52,7 +53,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     private Person seller;
 
 
-    //TODO actually check if a listing is being added or edited
+
+
     private boolean isInEditMode = false;
 
     @BindView(R.id.input_title)
@@ -80,7 +82,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        quilloDatabase = new QuilloDatabase();
+
     }
 
     @Nullable
@@ -90,6 +92,15 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         View view = inflater.inflate(R.layout.fragment_add_edit_listing, container, false);
         ButterKnife.bind(this, view);
         setUpView();
+
+        Bundle bundle = getArguments();
+
+        if(bundle != null && bundle.containsKey(IntentExtras.EXTRA_LISTING)){
+            listing = (Listing)bundle.getSerializable(IntentExtras.EXTRA_LISTING);
+            isInEditMode = true;
+            bindListingToViews();
+
+        }
         return view;
     }
 
@@ -254,20 +265,20 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         setupUniversityInput();
         setupPriceInput();
         setupISBNInput();
-
-        if (isInEditMode) { //We're editing
-            fillViewFields(listing);
-        }
-
     }
 
-    private void fillViewFields(Listing listing) {
+    private void bindListingToViews() {
+        if (listing.getImageUrl() != null){
+            Glide.with(getContext()).load(listing.getImageUrl()).into(photo1);
+        }
+
         titleInput.setText(listing.getName());
         authorInput.setText(listing.getAuthor());
-        editionInput.setText(listing.getEdition());
+        editionInput.setText(String.valueOf(listing.getEdition()));
         descriptionInput.setText(listing.getDescription());
         priceInput.setText("R " + listing.getPrice());
         isbnInput.setText("ISBN " + listing.getIsbn());
+        universityInput.setText(listing.getUniversityUid());
     }
 
     public HashMap<String, String> getFields() {

@@ -25,6 +25,7 @@ import butterknife.OnClick;
 import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
+import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -41,16 +42,18 @@ public class ListingDetailFragment extends Fragment {
     private Listing listing;
 
 
-    private boolean isViewingOwnListing;
+    private boolean isViewingOwnListing = false;
 
     //TODO: Add edition field
 
     @BindView(R.id.tlb_listing_detail)
     Toolbar toolbar;
-    @BindView(R.id.fab_bookmark)
-    FloatingActionButton bookmarkFAB;
-    @BindView(R.id.btn_seller_profile) View sellerContainerButton;
-    @BindView(R.id.div_seller) View sellerContainer;
+    @BindView(R.id.fab_listing_action)
+    FloatingActionButton listingActionFAB;
+    @BindView(R.id.btn_seller_profile)
+    View sellerContainerButton;
+    @BindView(R.id.div_seller)
+    View sellerContainer;
     @BindView(R.id.imv_seller_profile_pic)
     ImageView sellerProfilePic;
     @BindView(R.id.lbl_seller_name)
@@ -58,16 +61,25 @@ public class ListingDetailFragment extends Fragment {
     @BindView(R.id.lbl_seller_university)
     TextView sellerUniversityTV;
 
-    @BindView(R.id.btn_call) View call;
-    @BindView(R.id.btn_email) View email;
-    @BindView(R.id.btn_text) View text;
-    @BindView(R.id.btn_share) View share;
+    @BindView(R.id.btn_call)
+    View call;
+    @BindView(R.id.btn_email)
+    View email;
+    @BindView(R.id.btn_text)
+    View text;
+    @BindView(R.id.btn_share)
+    View share;
 
-    @BindView(R.id.lbl_title) TextView title;
-    @BindView(R.id.lbl_author) TextView author;
-    @BindView(R.id.lbl_description) TextView description;
-    @BindView(R.id.lbl_price) TextView price;
-    @BindView(R.id.imv_listing_image) ImageView listingImage;
+    @BindView(R.id.lbl_title)
+    TextView title;
+    @BindView(R.id.lbl_author)
+    TextView author;
+    @BindView(R.id.lbl_description)
+    TextView description;
+    @BindView(R.id.lbl_price)
+    TextView price;
+    @BindView(R.id.imv_listing_image)
+    ImageView listingImage;
 
 
     @Override
@@ -84,7 +96,7 @@ public class ListingDetailFragment extends Fragment {
         Bundle bundle = this.getArguments();
         ButterKnife.bind(this, view);
 
-        listing = (Listing)bundle.getSerializable(IntentExtras.EXTRA_LISTING);
+        listing = (Listing) bundle.getSerializable(IntentExtras.EXTRA_LISTING);
         bindListingToViews();
         loadSeller();
 
@@ -92,16 +104,17 @@ public class ListingDetailFragment extends Fragment {
     }
 
 
-    public void loadSeller(){
+    public void loadSeller() {
         if (listing != null) {
-            ((MainActivity)getActivity()).quilloDatabase.loadPerson(listing.getSellerUid(), new PersonListener() {
+            ((MainActivity) getActivity()).quilloDatabase.loadPerson(listing.getSellerUid(), new PersonListener() {
                 @Override
                 public void onPersonLoaded(Person person) {
                     seller = person;
 
-                    isViewingOwnListing = seller.getUid().equals(listing.getUid());
+                    isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
                     if (isViewingOwnListing) {
                         sellerContainer.setVisibility(View.GONE);
+                        listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit_black_24dp));
                     } else {
                         sellerContainer.setVisibility(View.VISIBLE);
                         bindSellerToViews();
@@ -111,34 +124,51 @@ public class ListingDetailFragment extends Fragment {
         }
     }
 
-    private void bindSellerToViews(){
+    private void bindSellerToViews() {
 
         sellerNameTV.setText(seller.getName());
         sellerUniversityTV.setText(seller.getUniversityUid());
 
-        if(seller.getPhotoUrl()!= null){
+        if (seller.getPhotoUrl() != null) {
             Glide.with(getContext()).load(seller.getPhotoUrl()).into(sellerProfilePic);
         }
 
         setupSellerContainerButtons();
     }
 
-    @OnClick(R.id.fab_bookmark)
-    public void handleBookmarkClick(){
-        if(listing.isBookmarked()){
-            bookmarkFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_border_black_24dp));
-            listing.setBookmarked(false);
-            ((MainActivity)getActivity()).quilloDatabase.removeBookmark(listing);
-        }else{
-            bookmarkFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
-            listing.setBookmarked(true);
-            ((MainActivity)getActivity()).quilloDatabase.addBookmark(listing);
+    @OnClick(R.id.fab_listing_action)
+    public void handleListingActionClick() {
+        if (isViewingOwnListing) {
+            //Edit listing action
+            AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
+            addEditListingFragment.setArguments(bundle);
 
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_holder, addEditListingFragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .addToBackStack(null)
+                    .commit();
+
+
+        } else {
+            //Bookmark action
+            if (listing.isBookmarked()) {
+                listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_border_black_24dp));
+                listing.setBookmarked(false);
+                ((MainActivity) getActivity()).quilloDatabase.removeBookmark(listing);
+            } else {
+                listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
+                listing.setBookmarked(true);
+                ((MainActivity) getActivity()).quilloDatabase.addBookmark(listing);
+
+            }
         }
     }
 
     @OnClick(R.id.seller_view_container)
-    public void handleSellerProfileClick(){
+    public void handleSellerProfileClick() {
         Log.d(ListingDetailFragment.class.getName(), "Seller profile click");
 
         ProfileFragment profileFragment = new ProfileFragment();
@@ -154,7 +184,7 @@ public class ListingDetailFragment extends Fragment {
     }
 
 
-    private void setupSellerContainerButtons(){
+    private void setupSellerContainerButtons() {
         sellerContainerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,14 +245,14 @@ public class ListingDetailFragment extends Fragment {
         });
     }
 
-    private void  bindListingToViews(){
+    private void bindListingToViews() {
         title.setText(listing.getName());
         author.setText("James");
         description.setText(listing.getDescription());
         price.setText("R" + listing.getPrice());
 
-        if(listing.isBookmarked()){
-            bookmarkFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
+        if (listing.isBookmarked()) {
+            listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
         }
 
         Glide.with(getContext()).load(listing.getImageUrl()).into(listingImage);
