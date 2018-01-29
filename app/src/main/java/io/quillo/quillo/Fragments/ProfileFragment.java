@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -186,12 +187,14 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
     @Override
     public void onBookmarkClick(Listing listing) {
-
+        ((MainActivity)getActivity()).quilloDatabase.addBookmark(listing);
+        Toast.makeText(getContext(), "Added to bookmarks", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onUnBookmarkClick(Listing listing) {
-
+        ((MainActivity)getActivity()).quilloDatabase.removeBookmark(listing);
+        Toast.makeText(getContext(), "Removed from bookmarks", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -204,8 +207,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         nameLabel.setText(seller.getName());
         universityLabel.setText(seller.getUniversityUid());
 
-        if (seller.getPhotoUrl() != null) {
-            Glide.with(getContext()).load(seller.getPhotoUrl()).into(profilePicture);
+        if (seller.getImageUrl() != null) {
+            Glide.with(getContext()).load(seller.getImageUrl()).into(profilePicture);
         }
     }
 
