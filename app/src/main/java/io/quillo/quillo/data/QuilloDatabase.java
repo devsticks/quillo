@@ -439,7 +439,7 @@ public class QuilloDatabase {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                person.setPhotoUrl(downloadUrl.toString());
+                person.setImageUrl(downloadUrl.toString());
                 databasePersonRef.child(person.getUid()).setValue(person);
                 onSuccessListener.onSuccess(true);
             }

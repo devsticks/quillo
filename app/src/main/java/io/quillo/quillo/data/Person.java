@@ -13,7 +13,7 @@ public class Person implements Serializable {
     private String email;
     private String phoneNumber;
     private String universityUid;
-    private String photoUrl;
+    private String imageUrl;
 
 
 
@@ -69,11 +69,11 @@ public class Person implements Serializable {
         this.universityUid = universityUid;
     }
 
-    public void setPhotoUrl(String photoUrl){
-        this.photoUrl = photoUrl;
+    public void setImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

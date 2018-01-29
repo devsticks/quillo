@@ -207,8 +207,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         nameLabel.setText(seller.getName());
         universityLabel.setText(seller.getUniversityUid());
 
-        if (seller.getPhotoUrl() != null) {
-            Glide.with(getContext()).load(seller.getPhotoUrl()).into(profilePicture);
+        if (seller.getImageUrl() != null) {
+            Glide.with(getContext()).load(seller.getImageUrl()).into(profilePicture);
         }
     }
 
