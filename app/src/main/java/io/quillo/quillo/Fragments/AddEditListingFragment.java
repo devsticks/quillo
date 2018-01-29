@@ -170,7 +170,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             listing.setIsbn(fields.get(DatabaseContract.FIREBASE_LISTING_ISBN));
             listing.setUniversityUid(fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
 
-            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 50), new OnSuccessListener() {
+            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 80), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     Toast.makeText(getContext(), "Listing updated", Toast.LENGTH_SHORT);
@@ -195,7 +195,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     secondsSince1970,
                     fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
             listing = newListing;
-            ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 50));
+            ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
         }
 
 

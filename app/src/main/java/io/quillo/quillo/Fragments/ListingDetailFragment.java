@@ -99,7 +99,7 @@ public class ListingDetailFragment extends Fragment  {
         ButterKnife.bind(this, view);
         listingUid = bundle.getString(IntentExtras.EXTRA_LISTING_UID);
         loadListing();
-        
+
         return view;
     }
 
@@ -111,8 +111,8 @@ public class ListingDetailFragment extends Fragment  {
         sellerNameTV.setText(seller.getName());
         sellerUniversityTV.setText(seller.getUniversityUid());
 
-        if (seller.getPhotoUrl() != null) {
-            Glide.with(getContext()).load(seller.getPhotoUrl()).into(sellerProfilePic);
+        if (seller.getImageUrl() != null) {
+            Glide.with(getContext()).load(seller.getImageUrl()).into(sellerProfilePic);
         }
 
         setupSellerContainerButtons();

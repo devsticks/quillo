@@ -79,8 +79,8 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         }
         universityInput.setText(person.getUniversityUid());
 
-        if(person.getPhotoUrl() != null){
-            Glide.with(getContext()).load(person.getPhotoUrl()).into(profileImage);
+        if(person.getImageUrl() != null){
+            Glide.with(getContext()).load(person.getImageUrl()).into(profileImage);
         }
     }
 
@@ -110,7 +110,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             person.setPhoneNumber(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
-            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 50), new OnSuccessListener() {
+            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 80), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
