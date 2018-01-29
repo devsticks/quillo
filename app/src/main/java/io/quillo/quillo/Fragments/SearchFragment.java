@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -31,7 +32,7 @@ import io.quillo.quillo.interfaces.ListingsListener;
  *
  */
 
-public class SearchFragment extends Fragment implements ListingCellListener {
+public class SearchFragment extends Fragment implements ListingCellListener, SearchView.OnQueryTextListener{
 
 
     @BindView(R.id.recycler_view)
@@ -140,4 +141,13 @@ public class SearchFragment extends Fragment implements ListingCellListener {
         ((MainActivity)getActivity()).showListingDetailFragment(listing);
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        return false;
+    }
 }
