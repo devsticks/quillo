@@ -86,9 +86,6 @@ public class MainActivity extends AppCompatActivity {
         changeFragment();
     }
 
-
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -127,13 +124,20 @@ public class MainActivity extends AppCompatActivity {
             //Uni is not saved in shared pref
             if(currentUser == null){
                 //User is not logged in
+
                 LandingFragment landingFragment = new LandingFragment();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_holder, landingFragment)
-                        .addToBackStack(null)
+                        //.addToBackStack(null) we don't want to be able to go back to this...
                         .commit();
 
                 hideBottomNavBar();
+
+                //hide notification bar and toolbar
+                toolbar.setVisibility(View.GONE);
+                View decorView = this.getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                decorView.setSystemUiVisibility(uiOptions);
 
             }else{
                 //User is logged in get uni from firebase
@@ -212,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: Made a nice looking dialog
+    //TODO: Make a nice looking dialog
     private void showLoginAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 
@@ -280,8 +284,25 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
-
     }
 
+    public void showSearchFragment() {
+        SearchFragment searchFragment = new SearchFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, searchFragment)
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+    }
+
+    public void showSearchFragmentAfterLanding() {
+        toolbar.setVisibility(View.VISIBLE);
+
+        SearchFragment searchFragment = new SearchFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, searchFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit();
+    }
 
 }

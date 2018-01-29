@@ -51,8 +51,7 @@ public class LoginSignupFragment extends Fragment {
     @BindView(R.id.input_email) EditText inputEmail;
     @BindView(R.id.input_email_holder) View inputEmailHolder;
     @BindView(R.id.input_password) EditText inputPassword;
-    @BindView(R.id.btn_signup_login)
-    Button signupLoginButton;
+    @BindView(R.id.btn_signup_login) Button signupLoginButton;
     @BindView(R.id.btn_register_toggle) Button signupToggle;
     @BindView(R.id.btn_login_toggle) Button loginToggle;
 
