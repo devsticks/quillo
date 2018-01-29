@@ -435,7 +435,7 @@ public class QuilloDatabase {
             currentUser.updateEmail(person.getEmail());
         }
 
-        storagePeopleRef.putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        storagePeopleRef.child(person.getUid()).putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
