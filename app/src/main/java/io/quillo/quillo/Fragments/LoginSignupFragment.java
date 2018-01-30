@@ -40,8 +40,9 @@ import io.quillo.quillo.interfaces.PersonListener;
 
 public class LoginSignupFragment extends Fragment {
     private static final String TAG = "SignUpLoginActivity";
-    private boolean isLoggingIn = true;
     private FirebaseAuth auth;
+    private Fragment goingTo;
+    private boolean isLoggingIn = true;
 
     @BindView(R.id.input_name)
     EditText inputName;
@@ -59,7 +60,6 @@ public class LoginSignupFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
-
     }
 
     @Nullable
@@ -72,6 +72,12 @@ public class LoginSignupFragment extends Fragment {
     }
 
     public void setUpView(View view){
+        if (isLoggingIn) {
+            handleLoginToggleClick(view);
+        } else {
+            handleRegisterToggleClick(view);
+        }
+
         signupLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +94,11 @@ public class LoginSignupFragment extends Fragment {
         if(universityUid != null){
             inputUniversity.setText(universityUid);
         }
+    }
+
+    public void setIntentions(Fragment goingTo, boolean isLoggingIn) {
+        this.goingTo = goingTo;
+        this.isLoggingIn = isLoggingIn;
     }
 
     @OnClick(R.id.btn_register_toggle)
@@ -142,8 +153,6 @@ public class LoginSignupFragment extends Fragment {
         final String name = inputName.getText().toString();
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
-
-        // TODO: Implement your own signup logic here.
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
@@ -213,8 +222,6 @@ public class LoginSignupFragment extends Fragment {
     public void onSignupSuccess() {
         signupLoginButton.setEnabled(true);
 
-
-
         String university = inputUniversity.getText().toString();
 
         FirebaseUser user = auth.getCurrentUser();
@@ -225,7 +232,9 @@ public class LoginSignupFragment extends Fragment {
         Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
         ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(university);
 
-        getActivity().getSupportFragmentManager().popBackStack();
+        ((MainActivity) getActivity()).setSelectedFragment(goingTo);
+        ((MainActivity) getActivity()).changeFragment(false);
+//        getActivity().getSupportFragmentManager().popBackStack();
     }
 
     public void onSignupFailed() {
@@ -243,7 +252,9 @@ public class LoginSignupFragment extends Fragment {
             public void onPersonLoaded(Person person) {
                 String universityUid = person.getUniversityUid();
                 ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(universityUid);
-                getActivity().getSupportFragmentManager().popBackStack();
+
+                ((MainActivity) getActivity()).setSelectedFragment(goingTo);
+                ((MainActivity) getActivity()).changeFragment(false);
             }
         });
     }

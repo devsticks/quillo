@@ -92,20 +92,21 @@ public class SelectPhotoDialog extends DialogFragment{
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_PICKFILE && resultCode == Activity.RESULT_OK) {
+
             Uri selectedImageUri = data.getData();
             onPhotoSelectedListener.getImagePath(selectedImageUri);
             getDialog().dismiss();
 
-
         } else if (requestCode == RC_CAMERA && resultCode == Activity.RESULT_OK) {
+
             Bitmap bitmap;
             bitmap = (Bitmap) data.getExtras().get("data");
             onPhotoSelectedListener.getImageBitmap(bitmap);
             getDialog().dismiss();
 
         }
-
     }
+
     public boolean hasPermissionInManifest(Context context, String permissionName) {
         final String packageName = context.getPackageName();
         try {

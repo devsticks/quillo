@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import io.quillo.quillo.R;
+import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.interfaces.ListingCellListener;
 
@@ -46,15 +47,16 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         bookmarkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bookmarkButton.isChecked())
-                {
-                    listingCellListener.onBookmarkClick(listing);
-                    listing.setBookmarked(true);
-                }
-                else {
-                    listingCellListener.onUnBookmarkClick(listing);
-                    listing.setBookmarked(false);
-                }
+            if (bookmarkButton.isChecked())
+            {
+                // TODO Check if user is logged in. If not, start login thread and pass this listing through to be bookmarked if successful
+                listingCellListener.onBookmarkClick(listing);
+                listing.setBookmarked(true);
+            }
+            else {
+                listingCellListener.onUnBookmarkClick(listing);
+                listing.setBookmarked(false);
+            }
             }
         });
     }

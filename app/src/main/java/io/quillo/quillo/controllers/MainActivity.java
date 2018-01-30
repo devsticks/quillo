@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -46,9 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
 
-
     public QuilloDatabase quilloDatabase;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         checkIfUniversityIsKnown();
     }
-
 
     public void hideBottomNavBar(){
         bottomNavigation.setVisibility(View.GONE);
@@ -83,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         profileFragment = ProfileFragment.newInstance();
 
         selectedFragment = searchFragment;
-        changeFragment();
+        changeFragment(false);
     }
 
     @Override
@@ -103,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.logout){
             FirebaseAuth.getInstance().signOut();
-            showLoginScreen();
+            showLoginRegisterScreen(searchFragment, true);
         }
 
         //noinspection SimplifiableIfStatement
@@ -170,15 +166,20 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_search:
                     selectedFragment =  searchFragment;
                     break;
+
                 case R.id.btn_bookmarks:
-                    if(userIsLoggedIn()) {
+                    if (userIsLoggedIn()) {
                         selectedFragment = bookmarksFragment;
+                    } else {
+                        showLoginAlert(selectedFragment, (Fragment)bookmarksFragment);
                     }
                     break;
 
                 case R.id.btn_add_listing:
                     if (userIsLoggedIn()) {
                         selectedFragment = AddEditListingFragment.newInstance();
+                    } else {
+                        showLoginAlert(selectedFragment, (Fragment)AddEditListingFragment.newInstance());
                     }
                     break;
 
@@ -186,62 +187,68 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_profile:
                     if (userIsLoggedIn()) {
                         selectedFragment = profileFragment;
+                    } else {
+                        showLoginAlert(selectedFragment, (Fragment)profileFragment);
                     }
                     break;
 
             }
-            changeFragment();
+            changeFragment(true);
             return true;
         }
     };
 
-    private void changeFragment(){
+    public void setSelectedFragment(Fragment selectedFragment) {
+        this.selectedFragment = selectedFragment;
+    }
+
+    public void changeFragment(boolean addToBackStack){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_holder, selectedFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
         transaction.commit();
     }
 
-    private boolean userIsLoggedIn(){
+    public boolean userIsLoggedIn(){
         if (FirebaseHelper.getCurrentFirebaseUser()!= null){
             return true;
-        }else{
-
-            showLoginAlert();
-            //TODO: Find out how to manualy reset the selected tab button to search
-            View view = bottomNavigation.findViewById(R.id.btn_search);
-            view.performClick();
-            showLoginAlert();
+        } else {
+//            showLoginAlert();
+//            View view = bottomNavigation.findViewById(R.id.btn_search);
+//            view.callOnClick();
             return  false;
         }
     }
 
-    //TODO: Make a nice looking dialog
-    private void showLoginAlert(){
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+    private void showLoginAlert(final Fragment comingFrom, final Fragment goingTo){
+        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(this, android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
 
         alertDialog.setTitle("Whoops you are not logged in");
 
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                selectedFragment = comingFrom;
+                changeFragment(false);
+            }
+        });
+
+        alertDialog.setNegativeButton("Login", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                showLoginRegisterScreen(goingTo, true);
                 dialogInterface.cancel();
             }
         });
 
-        alertDialog.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("Register", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                showLoginScreen();
-                dialogInterface.cancel();
-
-            }
-        });
-
-        alertDialog.setNeutralButton("Register", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                showRegisterScreen();
+                showLoginRegisterScreen(goingTo, false);
                 dialogInterface.cancel();
             }
         });
@@ -266,19 +273,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //TODO: Make one method for this stuff with a fragment as the argument
-    private void showLoginScreen(){
+    private void showLoginRegisterScreen(Fragment goingTo, boolean isLoggingIn){
         hideBottomNavBar();
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_holder, loginSignupFragment)
-                .addToBackStack(null)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
-    }
-
-    private void showRegisterScreen(){
-        hideBottomNavBar();
-        LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
+        loginSignupFragment.setIntentions(goingTo, isLoggingIn);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, loginSignupFragment)
                 .addToBackStack(null)
