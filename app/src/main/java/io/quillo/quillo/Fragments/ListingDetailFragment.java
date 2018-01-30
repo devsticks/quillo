@@ -131,7 +131,7 @@ public class ListingDetailFragment extends Fragment  {
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_holder, addEditListingFragment)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .addToBackStack(null)
+                    .addToBackStack(getActivity().getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                     .commit();
 
 
@@ -164,7 +164,7 @@ public class ListingDetailFragment extends Fragment  {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, profileFragment)
                 .setTransition(FragmentTransaction.TRANSIT_ENTER_MASK)
-                .addToBackStack(null)
+                .addToBackStack(getActivity().getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private AddEditListingFragment addEditListingFragment;
     private ProfileFragment profileFragment;
     private Fragment selectedFragment = null;
+    private Fragment lastFragment = null;
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
 
@@ -135,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
                 decorView.setSystemUiVisibility(uiOptions);
 
-            }else{
+            } else {
                 //User is logged in get uni from firebase
                 quilloDatabase.loadPerson(currentUser.getUid(), new PersonListener() {
                     @Override
@@ -198,7 +200,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    //Always call before changeFragment
     public void setSelectedFragment(Fragment selectedFragment) {
+        lastFragment = this.selectedFragment;
         this.selectedFragment = selectedFragment;
     }
 
@@ -207,9 +211,30 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.content_holder, selectedFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         if (addToBackStack) {
-            transaction.addToBackStack(null);
+            transaction.addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName());
         }
         transaction.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
+        String backFragmentName = backStackEntry.getName();
+        String searchFragmentClassName = searchFragment.getClass().getName();
+        String bookmarksFragmentClassName = bookmarksFragment.getClass().getName();
+        String profileFragmentClassName = profileFragment.getClass().getName();
+
+        if (backFragmentName.equals(searchFragmentClassName)) {
+            bottomNavigation.getMenu().getItem(0).setChecked(true);
+        } else if (backFragmentName.equals(bookmarksFragmentClassName)) {
+            bottomNavigation.getMenu().getItem(1).setChecked(true);
+        } else if (backFragmentName.equals(profileFragmentClassName)) {
+            bottomNavigation.getMenu().getItem(3).setChecked(true);
+        }
+
+        super.onBackPressed();
     }
 
     public boolean userIsLoggedIn(){
@@ -266,20 +291,19 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_holder, listingDetailFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack("Search Fragment")
+                .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
 
         hideBottomNavBar();
     }
 
-    //TODO: Make one method for this stuff with a fragment as the argument
     private void showLoginRegisterScreen(Fragment goingTo, boolean isLoggingIn){
         hideBottomNavBar();
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         loginSignupFragment.setIntentions(goingTo, isLoggingIn);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, loginSignupFragment)
-                .addToBackStack(null)
+                .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
     }
@@ -288,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         SearchFragment searchFragment = new SearchFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, searchFragment)
-                .addToBackStack(null)
+                .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();
     }

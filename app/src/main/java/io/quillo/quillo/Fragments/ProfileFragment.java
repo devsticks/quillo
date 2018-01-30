@@ -150,7 +150,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, editProfileFragment)
-                .addToBackStack(null)
+                .addToBackStack(getActivity().getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
 
         ((MainActivity) getActivity()).hideBottomNavBar();

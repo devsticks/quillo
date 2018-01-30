@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_profile_activity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".views.ProfileActivity">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tlb_profile_activity"
@@ -42,7 +41,8 @@
                     android:id="@+id/imv_profile_picture"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:background="@color/DarkText" />
+                    android:background="@color/DarkText"
+                    android:scaleType="centerCrop"/>
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
