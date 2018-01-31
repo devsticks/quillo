@@ -30,4 +30,6 @@ public class DatabaseContract {
 
     public static final String FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME = "listings";
     public static final String FIREBASE_STORAGE_PEOPLE_PHOTOS_CHILD_NAME = "people";
+
+    public static final String FIREBASE_ELASTIC_SEARCH_CHILD_NAME = "elasticsearch";
 }
