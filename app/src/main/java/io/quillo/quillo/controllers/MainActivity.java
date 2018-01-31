@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private AddEditListingFragment addEditListingFragment;
     private ProfileFragment profileFragment;
     private Fragment selectedFragment = null;
-    private Fragment lastFragment = null;
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
 
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     public void checkIfUniversityIsKnown(){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
@@ -185,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_bookmarks:
                     if (userIsLoggedIn()) {
                         selectedFragment = bookmarksFragment;
+                        changeFragment(true);
                     } else {
                         showLoginAlert(selectedFragment, (Fragment)bookmarksFragment);
                     }
@@ -193,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_add_listing:
                     if (userIsLoggedIn()) {
                         selectedFragment = AddEditListingFragment.newInstance();
+                        changeFragment(true);
                     } else {
                         showLoginAlert(selectedFragment, (Fragment)AddEditListingFragment.newInstance());
                     }
@@ -202,20 +202,20 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_profile:
                     if (userIsLoggedIn()) {
                         selectedFragment = profileFragment;
+                        changeFragment(true);
                     } else {
                         showLoginAlert(selectedFragment, (Fragment)profileFragment);
                     }
                     break;
 
             }
-            changeFragment(true);
+
             return true;
         }
     };
 
     //Always call before changeFragment
     public void setSelectedFragment(Fragment selectedFragment) {
-        lastFragment = this.selectedFragment;
         this.selectedFragment = selectedFragment;
     }
 
@@ -231,23 +231,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
         FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
         String backFragmentName = backStackEntry.getName();
+
+        updateTabBar(backFragmentName);
+
+        super.onBackPressed();
+    }
+
+    public void updateTabBar(String fragmentName) {
         String searchFragmentClassName = searchFragment.getClass().getName();
         String bookmarksFragmentClassName = bookmarksFragment.getClass().getName();
         String profileFragmentClassName = profileFragment.getClass().getName();
 
-        if (backFragmentName.equals(searchFragmentClassName)) {
+        if (fragmentName.equals(searchFragmentClassName)) {
             bottomNavigation.getMenu().getItem(0).setChecked(true);
-        } else if (backFragmentName.equals(bookmarksFragmentClassName)) {
+        } else if (fragmentName.equals(bookmarksFragmentClassName)) {
             bottomNavigation.getMenu().getItem(1).setChecked(true);
-        } else if (backFragmentName.equals(profileFragmentClassName)) {
+        } else if (fragmentName.equals(profileFragmentClassName)) {
             bottomNavigation.getMenu().getItem(3).setChecked(true);
         }
-
-        super.onBackPressed();
     }
 
     public boolean userIsLoggedIn(){
@@ -269,9 +273,11 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
                 selectedFragment = comingFrom;
                 changeFragment(false);
+                updateTabBar(comingFrom.getClass().getName());
+
+                dialogInterface.cancel();
             }
         });
 
@@ -290,6 +296,20 @@ public class MainActivity extends AppCompatActivity {
                 dialogInterface.cancel();
             }
         });
+
+        alertDialog.setOnCancelListener(
+            new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    selectedFragment = comingFrom;
+                    changeFragment(false);
+                    updateTabBar(comingFrom.getClass().getName());
+
+                    dialogInterface.cancel();
+                }
+            }
+        );
+
         alertDialog.show();
     }
 

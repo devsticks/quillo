@@ -80,7 +80,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         price.setText("R " + String.valueOf(listing.getPrice()));
 
         if (listing.isBookmarked()){
-            bookmarkButton.toggle();
+            bookmarkButton.setChecked(true);
         }
     }
 
