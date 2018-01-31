@@ -113,6 +113,11 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         return listings;
     }
 
+    public void setListings(ArrayList<Listing> listings){
+        this.listings = listings;
+        notifyDataSetChanged();
+    }
+
     // LISTINGCELL STUFF MOVED FROM HERE TO OWN CLASS, LISTING CELL
 
 }

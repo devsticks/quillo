@@ -136,6 +136,10 @@
     <!--Dialog Headers -->
     <string name="dialog_select_photo">Select Photo</string>
 
+    <!--Elastic Search Vars-->
+    <string name="base_url">http://35.205.236.168//elasticsearch/listings/listing/</string>
+    <string name="elastic_search_username">user</string>
+
     <!--Supported Universities-->
     <string-array name="universities">
         <item>University of Cape Town</item>

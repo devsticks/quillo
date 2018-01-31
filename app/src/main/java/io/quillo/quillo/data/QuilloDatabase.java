@@ -21,7 +21,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.List;
 
+import io.quillo.quillo.R;
 import io.quillo.quillo.interfaces.BookmarkListener;
+import io.quillo.quillo.interfaces.DataListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.PersonListingsListener;
@@ -45,10 +47,13 @@ public class QuilloDatabase {
     private DatabaseReference databasePersonListingsRef;
     private DatabaseReference databasePersonRef;
     private DatabaseReference databaseBookmarksRef;
+    private DatabaseReference databaseElasticSearchRef;
 
     private StorageReference storageReference;
     private StorageReference storageListingRef;
     private StorageReference storagePeopleRef;
+
+    private String mElasticSearchPassword;
 
     public QuilloDatabase() {
         database = FirebaseDatabase.getInstance().getReference();
@@ -56,6 +61,7 @@ public class QuilloDatabase {
         databasePersonRef = database.child(DatabaseContract.FIREBASE_PERSON_CHILD_NAME);
         databasePersonListingsRef = database.child(DatabaseContract.FIREBASE_PERSON_LISTINGS_CHILD_NAME);
         databaseBookmarksRef = database.child(DatabaseContract.FIREBASE_USER_BOOKMARKS_CHILD_NAME);
+        databaseElasticSearchRef = database.child(DatabaseContract.FIREBASE_ELASTIC_SEARCH_CHILD_NAME);
 
         storageReference = FirebaseStorage.getInstance().getReference();
         storageListingRef = storageReference.child(DatabaseContract.FIREBASE_STORAGE_LISTING_PHOTOS_CHILD_NAME);
@@ -430,7 +436,6 @@ public class QuilloDatabase {
     public void addPerson(final Person person){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
 
-
         if (currentUser != null){
             databasePersonRef.child(person.getUid()).setValue(person);
         }
@@ -458,7 +463,7 @@ public class QuilloDatabase {
             currentUser.updateEmail(person.getEmail());
         }
 
-        storagePeopleRef.putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        storagePeopleRef.child(person.getUid()).putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
@@ -468,5 +473,24 @@ public class QuilloDatabase {
             }
         });
 
+    }
+
+    //TODO: check for better cloud auth methods && consider safety of this method
+    public String getElasticSearchPassword(final DataListener dataListener){
+        Query query = databaseElasticSearchRef.orderByValue();
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dataListener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                dataListener.onFailed(databaseError);
+            }
+        });
+
+        return mElasticSearchPassword;
     }
 }
