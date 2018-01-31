@@ -330,7 +330,11 @@ public class QuilloDatabase {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Listing listing = dataSnapshot.getValue(Listing.class);
-                            bookmarkListener.onBookmarkAdded(listing);
+                            if (listing != null) {
+                                bookmarkListener.onBookmarkAdded(listing);
+                            } else { //listing likely deleted, but still held in bookmarks
+                                //TODO clean up user bookmarks and delete listings that no longer exist
+                            }
                         }
 
                         @Override
@@ -403,17 +407,17 @@ public class QuilloDatabase {
         databasePersonRef.child(personUid).addValueEventListener(personValueEventListener);
     }
 
-
-
-
-
     public void loadPerson(String personUid, final PersonListener oneTimePersonListener){
 
         ValueEventListener personValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Person person = dataSnapshot.getValue(Person.class);
-                oneTimePersonListener.onPersonLoaded(person);
+                if (person != null) {
+                    oneTimePersonListener.onPersonLoaded(person);
+                } else {
+                    //TODO catch this as far as UI goes...
+                }
             }
 
             @Override
@@ -429,7 +433,6 @@ public class QuilloDatabase {
 
     public void addPerson(final Person person){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
-
 
         if (currentUser != null){
             databasePersonRef.child(person.getUid()).setValue(person);
