@@ -4,12 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/root_home_search_activity"
-    tools:context=".views.HomeSearchActivity"
     android:theme="@style/AppTheme">
-
-    <!--7. If you wish, you can specify a LayoutManager in XML instead of Java. Mostly a matter
-    of preference, but since the LayoutManager isn't a View/Layout, I prefer to do that in Java.
-    -->
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tlb_home_search"

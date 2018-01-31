@@ -234,7 +234,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                 if (!s.toString().startsWith("R ")) {
                     priceInput.setText("R ");
                     Selection.setSelection(priceInput.getText(), priceInput.getText().length());
-
                 }
 
             }
@@ -249,8 +248,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         }
 
     }
-
-
 
     private void setupISBNInput(){
         isbnInput.setText("ISBN ");

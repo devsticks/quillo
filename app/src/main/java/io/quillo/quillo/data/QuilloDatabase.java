@@ -193,7 +193,30 @@ public class QuilloDatabase {
     }
 
     public void deleteListing(Listing listing) {
+        String currentUserUid = FirebaseHelper.getCurrentUserUid();
 
+        if(currentUserUid != null){
+            databaseListingsRef.child(listing.getUid()).removeValue();
+            databasePersonListingsRef.child(currentUserUid).child(listing.getUid()).removeValue();
+            deleteListingFromBookmarks(listing);
+        }
+
+    }
+
+    private void deleteListingFromBookmarks(final Listing listing){
+        databaseBookmarksRef.orderByChild(listing.getUid()).equalTo(listing.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child: dataSnapshot.getChildren()){
+                    databaseBookmarksRef.child(child.getKey()).child(listing.getUid()).removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void updateListing(final Listing listing, byte[] uploadBytes, final OnSuccessListener successListener){
