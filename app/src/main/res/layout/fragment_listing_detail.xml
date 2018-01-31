@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_listing_detail"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".views.ListingDetailActivity">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tlb_listing_detail"
@@ -31,11 +30,15 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/lbl_description"
         android:background="@color/transparentBackgroundWhite"
-        android:padding="16dp"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imv_listing_image"
-        tools:text="Stewart Calculus" />
+        tools:text="Stewart Calculus, 5th Edition"
+        android:maxLines="3"/>
 
     <View
         android:id="@+id/div_center"
@@ -49,22 +52,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/div_center"
-        android:padding="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lbl_title"
         tools:text="James Stewart" />
-
-    <TextView
-        android:id="@+id/lbl_edition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/div_center"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_author"
-        tools:text="Edition 5" />
 
     <TextView
         android:id="@+id/lbl_description"
@@ -74,8 +68,19 @@
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_edition"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_author"
         tools:text="Textbook about all things maths" />
+
+    <TextView
+        android:id="@+id/lbl_edition"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_description"
+        tools:text="Edition 5"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/lbl_price"

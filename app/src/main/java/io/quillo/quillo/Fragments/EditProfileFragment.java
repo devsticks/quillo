@@ -26,6 +26,7 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
@@ -40,7 +41,7 @@ import io.quillo.quillo.data.Person;
 public class EditProfileFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener {
 
     @BindView(R.id.profile_image)
-    ImageView profileImage;
+    CircleImageView profileImage;
     @BindView(R.id.input_name)
     EditText nameInput;
     @BindView(R.id.input_email)
@@ -62,7 +63,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_edit_profile, container, false);
         ButterKnife.bind(this, view);
-
 
         person = (Person)this.getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
         bindPersonToViews();
@@ -100,7 +100,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         dialog.show(getActivity().getSupportFragmentManager(), "Select Photo");
     }
 
-
     @OnClick(R.id.save_btn)
     public void handleSaveButtonClick(){
         //TODO: Put a progress bar
@@ -121,7 +120,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         }
 
     }
-
 
     private boolean fieldsAreValid(){
         String name = nameInput.getText().toString();
@@ -149,7 +147,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         }
 
         return  true;
-
 
     }
 

@@ -43,7 +43,6 @@ public class ListingDetailFragment extends Fragment  {
     private Listing listing;
     private String listingUid;
 
-
     private boolean isViewingOwnListing = false;
 
     //TODO: Add edition field
@@ -103,9 +102,6 @@ public class ListingDetailFragment extends Fragment  {
         return view;
     }
 
-
-
-
     private void bindSellerToViews() {
 
         sellerNameTV.setText(seller.getName());
@@ -116,6 +112,7 @@ public class ListingDetailFragment extends Fragment  {
         }
 
         setupSellerContainerButtons();
+
     }
 
     @OnClick(R.id.fab_listing_action)
@@ -134,15 +131,17 @@ public class ListingDetailFragment extends Fragment  {
                     .addToBackStack(getActivity().getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                     .commit();
 
-
         } else {
             //Bookmark action
             if (listing.isBookmarked()) {
+
                 listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_border_black_24dp));
                 listing.setBookmarked(false);
                 ((MainActivity) getActivity()).quilloDatabase.removeBookmark(listing);
                 Toast.makeText(getContext(), "Removed from bookmarks", Toast.LENGTH_SHORT).show();
+
             } else {
+
                 listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
                 listing.setBookmarked(true);
                 ((MainActivity) getActivity()).quilloDatabase.addBookmark(listing);
@@ -231,7 +230,7 @@ public class ListingDetailFragment extends Fragment  {
     }
 
     private void bindListingToViews() {
-        title.setText(listing.getName());
+        title.setText(listing.getName() + ", " + listing.getEditionOrdinal() + " Edition");
         author.setText("James");
         description.setText(listing.getDescription());
         price.setText("R" + listing.getPrice());
