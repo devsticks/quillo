@@ -174,16 +174,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            boolean addToBackStack = false;
 
             switch (item.getItemId()) {
                 case R.id.btn_search:
+                    if (selectedFragment.getClass().getName().equals(searchFragment.getClass().getName())) {
+                        addToBackStack = false;
+                    } else {
+                        addToBackStack = true;
+                    }
                     selectedFragment =  searchFragment;
+                    changeFragment(addToBackStack);
                     break;
 
                 case R.id.btn_bookmarks:
                     if (userIsLoggedIn()) {
+                        if (selectedFragment.getClass().getName().equals(bookmarksFragment.getClass().getName())) {
+                            addToBackStack = false;
+                        } else {
+                            addToBackStack = true;
+                        }
                         selectedFragment = bookmarksFragment;
-                        changeFragment(true);
+                        changeFragment(addToBackStack);
                     } else {
                         showLoginAlert(selectedFragment, (Fragment)bookmarksFragment);
                     }
@@ -191,8 +203,13 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.btn_add_listing:
                     if (userIsLoggedIn()) {
+                        if (selectedFragment.getClass().getName().equals(AddEditListingFragment.class.getName())) {
+                            addToBackStack = false;
+                        } else {
+                            addToBackStack = true;
+                        }
                         selectedFragment = AddEditListingFragment.newInstance();
-                        changeFragment(true);
+                        changeFragment(addToBackStack);
                     } else {
                         showLoginAlert(selectedFragment, (Fragment)AddEditListingFragment.newInstance());
                     }
@@ -201,8 +218,13 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.btn_profile:
                     if (userIsLoggedIn()) {
+                        if (selectedFragment.getClass().getName().equals(profileFragment.getClass().getName())) {
+                            addToBackStack = false;
+                        } else {
+                            addToBackStack = true;
+                        }
                         selectedFragment = profileFragment;
-                        changeFragment(true);
+                        changeFragment(addToBackStack);
                     } else {
                         showLoginAlert(selectedFragment, (Fragment)profileFragment);
                     }
@@ -277,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 changeFragment(false);
                 updateTabBar(comingFrom.getClass().getName());
 
-                dialogInterface.cancel();
+                dialogInterface.dismiss();
             }
         });
 
@@ -285,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 showLoginRegisterScreen(goingTo, true);
-                dialogInterface.cancel();
+                dialogInterface.dismiss();
             }
         });
 
@@ -293,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 showLoginRegisterScreen(goingTo, false);
-                dialogInterface.cancel();
+                dialogInterface.dismiss();
             }
         });
 
@@ -305,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(false);
                     updateTabBar(comingFrom.getClass().getName());
 
-                    dialogInterface.cancel();
+                    dialogInterface.dismiss();
                 }
             }
         );
