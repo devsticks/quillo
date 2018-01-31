@@ -20,6 +20,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -68,6 +69,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     TextInputEditText universityInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
+    @BindView(R.id.btn_publish)
+    Button publishButton;
 
     public static AddEditListingFragment newInstance(){
         AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
@@ -77,7 +80,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -179,9 +181,11 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             });
 
         } else { // Adding Listing
+
             if (fields == null) {
                 return;
             }
+
             Calendar calendar = Calendar.getInstance();
             long secondsSince1970 = calendar.getTimeInMillis();
 
@@ -195,6 +199,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     secondsSince1970,
                     fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
             listing = newListing;
+
             ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
         }
 
@@ -297,7 +302,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     public HashMap<String, String> getFields() {
 
         //TODO: Verify that a photo was selected
-
 
         String title = titleInput.getText().toString();
         String author = authorInput.getText().toString();

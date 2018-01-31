@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -17,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,8 +37,6 @@ public class SelectPhotoDialog extends DialogFragment{
     private static final int RC_PICKFILE = 1;
     private static final int RC_CAMERA = 2;
 
-
-
     public interface OnPhotoSelectedListener{
         void getImagePath(Uri imagePath);
         void getImageBitmap(Bitmap bitmap);
@@ -44,9 +45,9 @@ public class SelectPhotoDialog extends DialogFragment{
     OnPhotoSelectedListener onPhotoSelectedListener;
 
     @BindView(R.id.gallery_tv)
-    TextView galleryTextView;
+    View galleryButton;
     @BindView(R.id.camera_tv)
-    TextView cameraTextView;
+    View cameraButton;
 
     @NonNull
     @Override
@@ -57,6 +58,14 @@ public class SelectPhotoDialog extends DialogFragment{
         View view = inflater.inflate(R.layout.dialog_select_photo, null);
         ButterKnife.bind(this, view);
         builder.setView(view);
+        builder.setTitle("Select Image");
+
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
 
         return builder.create();
     }

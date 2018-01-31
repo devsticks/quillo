@@ -62,28 +62,33 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     ImageView profilePicture;
 
     public static ProfileFragment newInstance() {
+
         ProfileFragment profileFragment = new ProfileFragment();
         return profileFragment;
+
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
 
         Bundle bundle = getArguments();
 
-        if(bundle != null && bundle.containsKey(IntentExtras.EXTRA_SELLER)){
+        if ( bundle != null && bundle.containsKey(IntentExtras.EXTRA_SELLER) ) {
             seller = (Person) getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
             isViewingOwnProfile = false;
             editProfileBtn.setVisibility(View.GONE);
         }
+
         adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
 
         setupDatabase();
         setUpView(view);
+
         return view;
     }
 
@@ -159,16 +164,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     //TODO Update with fragments
 
     public void setUpView(View view) {
-        FloatingActionButton mAddListingButton = (FloatingActionButton) view.findViewById(R.id.fab_add_listing);
-
-
-        mAddListingButton.setOnClickListener(this);
-        if (isViewingOwnProfile) {
-            mAddListingButton.setVisibility(View.VISIBLE);
-        } else {
-            mAddListingButton.setVisibility(View.INVISIBLE);
-        }
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);

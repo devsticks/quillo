@@ -41,7 +41,7 @@ import io.quillo.quillo.data.Person;
 public class EditProfileFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener {
 
     @BindView(R.id.profile_image)
-    CircleImageView profileImage;
+    ImageView profileImage;
     @BindView(R.id.input_name)
     EditText nameInput;
     @BindView(R.id.input_email)
