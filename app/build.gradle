@@ -50,6 +50,10 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     compile 'de.cketti.mailto:email-intent-builder:1.0.0'
     implementation 'com.android.support:cardview-v7:27.0.2'
+
+    //retrofit for elasticsearch
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
 }
 
 

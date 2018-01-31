@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/root_home_search_activity"
-    tools:context=".views.HomeSearchActivity"
     android:theme="@style/AppTheme">
 
     <!--7. If you wish, you can specify a LayoutManager in XML instead of Java. Mostly a matter
@@ -32,5 +31,4 @@
         app:layout_constraintTop_toBottomOf="@+id/tlb_home_search" />
 
 </android.support.constraint.ConstraintLayout>
-
 
