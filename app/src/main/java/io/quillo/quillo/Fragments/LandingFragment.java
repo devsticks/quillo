@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,26 +30,22 @@ public class LandingFragment extends Fragment{
 
     @BindView(R.id.input_university)
     EditText universityInput;
+    @BindView(R.id.btn_skip)
+    TextView btnSkip;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
+        getActivity().setTheme(R.style.AppTheme_Dark);
+        super.onCreate(savedInstanceState);
+
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_landing, container, false);
-        //TODO: Fix the theme of this view
         ButterKnife.bind(this, view);
-
-        getContext().getTheme().applyStyle(R.style.AppTheme_Dark, true);
-
-        View decorView = getActivity().getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
 
         return view;
     }
@@ -59,16 +56,22 @@ public class LandingFragment extends Fragment{
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.fragment_landing, universities);
 
-      //  universityInput.setAdapter(adapter);
+        //universityInput.setAdapter(adapter);
     }
 
     @OnClick(R.id.btn_start)
     public void handleStartClick (View v) {
-        if(universityIsValid()){
+        if (universityIsValid()){
             String universityUid = universityInput.getText().toString();
             ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(universityUid);
-            getActivity().getSupportFragmentManager().popBackStack();
+            ((MainActivity)getActivity()).showSearchFragmentAfterLanding();
         }
+    }
+
+    @OnClick(R.id.btn_skip)
+    public void handleSkipClick (View v) {
+        //TODO What if they aren't in university?
+        ((MainActivity)getActivity()).showSearchFragmentAfterLanding();
     }
 
     private boolean universityIsValid(){
@@ -86,10 +89,6 @@ public class LandingFragment extends Fragment{
         }
 
         return true;
-
-
-
     }
-
 
 }

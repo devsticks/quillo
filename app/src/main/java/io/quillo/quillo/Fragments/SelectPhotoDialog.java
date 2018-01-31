@@ -51,7 +51,7 @@ public class SelectPhotoDialog extends DialogFragment{
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_select_photo, null);
@@ -92,20 +92,21 @@ public class SelectPhotoDialog extends DialogFragment{
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_PICKFILE && resultCode == Activity.RESULT_OK) {
+
             Uri selectedImageUri = data.getData();
             onPhotoSelectedListener.getImagePath(selectedImageUri);
             getDialog().dismiss();
 
-
         } else if (requestCode == RC_CAMERA && resultCode == Activity.RESULT_OK) {
+
             Bitmap bitmap;
             bitmap = (Bitmap) data.getExtras().get("data");
             onPhotoSelectedListener.getImageBitmap(bitmap);
             getDialog().dismiss();
 
         }
-
     }
+
     public boolean hasPermissionInManifest(Context context, String permissionName) {
         final String packageName = context.getPackageName();
         try {
