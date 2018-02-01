@@ -79,9 +79,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         author.setText(listing.getAuthor());
         price.setText("R " + String.valueOf(listing.getPrice()));
 
-        if (listing.isBookmarked()){
-            bookmarkButton.setChecked(true);
-        }
+        bookmarkButton.setChecked(listing.isBookmarked());
     }
 
     public ImageView getIcon(){

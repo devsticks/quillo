@@ -22,6 +22,9 @@ import android.widget.SearchView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
 import io.quillo.quillo.Fragments.AddEditListingFragment;
 import io.quillo.quillo.Fragments.BookmarksFragment;
 import io.quillo.quillo.Fragments.LandingFragment;
@@ -75,6 +78,14 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation = (BottomNavigationView) findViewById(R.id.navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigation);
+
+        KeyboardVisibilityEvent.setEventListener(this,
+            new KeyboardVisibilityEventListener() {
+                @Override
+                public void onVisibilityChanged(boolean isOpen) {
+                    bottomNavigation.setVisibility(isOpen ? View.GONE : View.VISIBLE);
+                }
+            });
     }
 
     private void initFragments(){
@@ -88,9 +99,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-       MenuInflater menuInflater = getMenuInflater();
-       menuInflater.inflate(R.menu.search, menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.search, menu);
+        menuInflater.inflate(R.menu.app_bar_overflow_menu, menu);
 
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
 
@@ -100,26 +111,24 @@ public class MainActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(searchFragment);
+        searchView.onActionViewExpanded();
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.logout){
+        //TODO Get rid of this for launch (along with menu item...
+        if (id == R.id.landing){
+            showLandingFragment();
+        } else if (id == R.id.legal) {
+            //TODO make legal page and call it here
+        } else if (id == R.id.logout){
             FirebaseAuth.getInstance().signOut();
             showLoginRegisterScreen(searchFragment, true);
         }
-
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -134,19 +143,7 @@ public class MainActivity extends AppCompatActivity {
             if(currentUser == null){
                 //User is not logged in
 
-                LandingFragment landingFragment = new LandingFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.content_holder, landingFragment)
-                        //.addToBackStack(null) we don't want to be able to go back to this...
-                        .commit();
-
-                hideBottomNavBar();
-
-                //hide notification bar and toolbar
-                toolbar.setVisibility(View.GONE);
-                View decorView = this.getWindow().getDecorView();
-                int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-                decorView.setSystemUiVisibility(uiOptions);
+                showLandingFragment();
 
             } else {
                 //User is logged in get uni from firebase
@@ -183,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         addToBackStack = true;
                     }
+                    toolbar.getBackground().setAlpha(255);
                     selectedFragment =  searchFragment;
                     changeFragment(addToBackStack);
                     break;
@@ -223,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             addToBackStack = true;
                         }
+                        toolbar.getBackground().setAlpha(0);
                         selectedFragment = profileFragment;
                         changeFragment(addToBackStack);
                     } else {
@@ -333,6 +332,21 @@ public class MainActivity extends AppCompatActivity {
         );
 
         alertDialog.show();
+    }
+
+    public void showLandingFragment() {
+        LandingFragment landingFragment = new LandingFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, landingFragment)
+                .commit();
+
+        hideBottomNavBar();
+
+        //hide notification bar and toolbar
+        toolbar.setVisibility(View.GONE);
+        View decorView = this.getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     public void showListingDetailFragment(Listing listing){

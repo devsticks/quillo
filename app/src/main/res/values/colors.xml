@@ -12,9 +12,9 @@
     <color name="LightText">#757575</color>
     <color name="ButtonText">@color/Primary</color>
 
-    <color name="RED">#FF0000</color>
+    <color name="RED">#FF2211</color>
     <color name="BLUE">#0000FF</color>
-    <color name="GREEN">#00FF00</color>
+    <color name="GREEN">#55FF22</color>
     <color name="YELLOW">#FFEB3B</color>
     <color name="WHITE">#FFFFFF</color>
 </resources>
