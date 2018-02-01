@@ -45,10 +45,6 @@ public class ListingDetailFragment extends Fragment  {
 
     private boolean isViewingOwnListing = false;
 
-    //TODO: Add edition field
-
-    @BindView(R.id.tlb_listing_detail)
-    Toolbar toolbar;
     @BindView(R.id.fab_listing_action)
     FloatingActionButton listingActionFAB;
     @BindView(R.id.btn_seller_profile)
@@ -61,6 +57,8 @@ public class ListingDetailFragment extends Fragment  {
     TextView sellerNameTV;
     @BindView(R.id.lbl_seller_university)
     TextView sellerUniversityTV;
+    @BindView(R.id.div_delete_options)
+    View deleteOptionsContainer;
 
     @BindView(R.id.btn_call)
     View call;
@@ -70,6 +68,10 @@ public class ListingDetailFragment extends Fragment  {
     View text;
     @BindView(R.id.btn_share)
     View share;
+    @BindView(R.id.btn_delete)
+    View delete;
+    @BindView(R.id.btn_sold)
+    View sold;
 
     @BindView(R.id.lbl_title)
     TextView title;
@@ -81,7 +83,6 @@ public class ListingDetailFragment extends Fragment  {
     TextView price;
     @BindView(R.id.imv_listing_image)
     ImageView listingImage;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,6 +97,11 @@ public class ListingDetailFragment extends Fragment  {
 
         Bundle bundle = this.getArguments();
         ButterKnife.bind(this, view);
+
+        listingActionFAB.setVisibility(View.INVISIBLE);
+        sellerContainer.setVisibility(View.GONE);
+        deleteOptionsContainer.setVisibility(View.GONE);
+
         listingUid = bundle.getString(IntentExtras.EXTRA_LISTING_UID);
         loadListing();
 
@@ -167,6 +173,21 @@ public class ListingDetailFragment extends Fragment  {
                 .commit();
     }
 
+    @OnClick(R.id.btn_delete)
+    public void handleDeleteListingClick() {
+        //TODO Delete Listing Code here...
+
+        Toast.makeText(getContext(), "Listing deleted", Toast.LENGTH_SHORT).show();
+        getFragmentManager().popBackStack();
+    }
+
+    @OnClick(R.id.btn_sold)
+    public void handleSoldListingClick() {
+        //TODO Sold Listing Code here...
+
+        Toast.makeText(getContext(), "Listing marked sold", Toast.LENGTH_SHORT).show();
+        getFragmentManager().popBackStack();
+    }
 
     private void setupSellerContainerButtons() {
         sellerContainerButton.setOnClickListener(new View.OnClickListener() {
@@ -231,9 +252,9 @@ public class ListingDetailFragment extends Fragment  {
 
     private void bindListingToViews() {
         title.setText(listing.getName() + ", " + listing.getEditionOrdinal() + " Edition");
-        author.setText("James");
+        author.setText(listing.getAuthor());
         description.setText(listing.getDescription());
-        price.setText("R" + listing.getPrice());
+        price.setText("R " + listing.getPrice());
 
         if (listing.isBookmarked()) {
             listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_black_24dp));
@@ -277,14 +298,17 @@ public class ListingDetailFragment extends Fragment  {
                     isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
                     if (isViewingOwnListing) {
                         sellerContainer.setVisibility(View.GONE);
+                        deleteOptionsContainer.setVisibility(View.VISIBLE);
                         listingActionFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit_black_24dp));
                     } else {
                         sellerContainer.setVisibility(View.VISIBLE);
+                        deleteOptionsContainer.setVisibility(View.GONE);
                         bindSellerToViews();
                     }
                 }
             });
         }
+        listingActionFAB.setVisibility(View.VISIBLE);
     }
 }
 

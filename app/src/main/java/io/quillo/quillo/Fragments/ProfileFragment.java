@@ -50,8 +50,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     private ListingAdapter adapter;
     @BindView(R.id.rec_profile_listing_holder)
     RecyclerView recyclerView;
-    @BindView(R.id.tlb_profile_activity)
-    Toolbar toolbar;
     @BindView(R.id.lbl_seller_name)
     TextView nameLabel;
     @BindView(R.id.lbl_seller_university)

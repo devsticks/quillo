@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -72,6 +76,11 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @BindView(R.id.btn_publish)
     Button publishButton;
 
+    private Drawable addPictureIcon;
+    private Drawable defaultBookIcon;
+    private final String defaultTag = "default";
+    private final String notDefaultTag = "notDefault";
+
     public static AddEditListingFragment newInstance(){
         AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
         return  addEditListingFragment;
@@ -85,6 +94,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        addPictureIcon = getResources().getDrawable(R.drawable.ic_add_photo_primary_24dp);
 
         View view = inflater.inflate(R.layout.fragment_add_edit_listing, container, false);
         ButterKnife.bind(this, view);
@@ -97,7 +107,13 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             isInEditMode = true;
             bindListingToViews();
 
+            if (!isInEditMode) {
+                photo1.setTag(defaultTag);
+            } else {
+                photo1.setTag(notDefaultTag);
+            }
         }
+
         return view;
     }
 
@@ -133,7 +149,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         SelectPhotoDialog dialog = new SelectPhotoDialog();
         dialog.setTargetFragment(AddEditListingFragment.this, 1);
         dialog.show(getActivity().getSupportFragmentManager(), "Select Photo");
-
 
     }
 
@@ -200,10 +215,21 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
             listing = newListing;
 
+//            if (photo1.getTag().equals(defaultTag)) {
+//                photo1.setImageResource(R.drawable.ic_open_book);
+//            }
+
+            final Drawable.ConstantState currentImage = photo1.getDrawable().getConstantState();
+            Drawable defaultPicture = getResources().getDrawable(R.drawable.ic_add_photo_primary_24dp);
+            final Drawable.ConstantState defaultImage = defaultPicture.getConstantState();
+
+            if (currentImage == defaultImage) {
+                photo1.setImageResource(R.drawable.ic_open_book);
+            }
+
             ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
+            photo1.setTag(notDefaultTag);
         }
-
-
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){
@@ -376,8 +402,5 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
     //Image handling
-
-
-
 
 }

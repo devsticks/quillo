@@ -7,22 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/tlb_profile_activity"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tlb_profile_activity">
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.design.widget.AppBarLayout
 
@@ -42,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:background="@color/DarkText"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="center"/>
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
