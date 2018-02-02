@@ -1,13 +1,18 @@
 package io.quillo.quillo.Fragments;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -20,6 +25,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -68,6 +74,13 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     TextInputEditText universityInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
+    @BindView(R.id.btn_publish)
+    Button publishButton;
+
+    private Drawable addPictureIcon;
+    private Drawable defaultBookIcon;
+    private final String defaultTag = "default";
+    private final String notDefaultTag = "notDefault";
 
     public static AddEditListingFragment newInstance(){
         AddEditListingFragment addEditListingFragment = new AddEditListingFragment();
@@ -77,12 +90,12 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        addPictureIcon = getResources().getDrawable(R.drawable.ic_add_photo_primary_24dp);
 
         View view = inflater.inflate(R.layout.fragment_add_edit_listing, container, false);
         ButterKnife.bind(this, view);
@@ -95,7 +108,13 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             isInEditMode = true;
             bindListingToViews();
 
+            if (!isInEditMode) {
+                photo1.setTag(defaultTag);
+            } else {
+                photo1.setTag(notDefaultTag);
+            }
         }
+
         return view;
     }
 
@@ -132,7 +151,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         dialog.setTargetFragment(AddEditListingFragment.this, 1);
         dialog.show(getActivity().getSupportFragmentManager(), "Select Photo");
 
-
     }
 
     private void verifyPermissions() {
@@ -156,6 +174,12 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
     @OnClick(R.id.btn_publish)
     public void handlePublishClick(View v) {
+//        ProgressDialog progressDialog = new ProgressDialog(getActivity(),
+//                R.style.AppTheme_Dark_Dialog);
+//        progressDialog.setIndeterminate(true);
+//        progressDialog.setMessage("Publishing...");
+//        progressDialog.show();
+
         HashMap<String, String> fields = getFields();
         if (isInEditMode) { // Editing Listing
             if(fields == null){
@@ -179,9 +203,11 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             });
 
         } else { // Adding Listing
+
             if (fields == null) {
                 return;
             }
+
             Calendar calendar = Calendar.getInstance();
             long secondsSince1970 = calendar.getTimeInMillis();
 
@@ -195,10 +221,27 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     secondsSince1970,
                     fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
             listing = newListing;
+
+//            if (photo1.getTag().equals(defaultTag)) {
+//                photo1.setImageResource(R.drawable.ic_open_book);
+//            }
+
+            final Drawable.ConstantState currentImage = photo1.getDrawable().getConstantState();
+            Drawable defaultPicture = getResources().getDrawable(R.drawable.ic_add_photo_primary_24dp);
+            final Drawable.ConstantState defaultImage = defaultPicture.getConstantState();
+
+            if (currentImage == defaultImage) {
+                photo1.setImageResource(R.drawable.ic_open_book);
+            }
+
             ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
+            photo1.setTag(notDefaultTag);
         }
+//        progressDialog.cancel();
+//        ((MainActivity)getActivity()).pop();
 
-
+        Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
+        ((MainActivity) getActivity()).showProfileFragment(false);
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){
@@ -298,7 +341,6 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
         //TODO: Verify that a photo was selected
 
-
         String title = titleInput.getText().toString();
         String author = authorInput.getText().toString();
         String edition = editionInput.getText().toString();
@@ -372,8 +414,5 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
     //Image handling
-
-
-
 
 }

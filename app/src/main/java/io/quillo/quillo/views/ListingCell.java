@@ -10,6 +10,7 @@ import android.widget.ToggleButton;
 
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
+import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.interfaces.ListingCellListener;
 
@@ -32,6 +33,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
 
     public ListingCell(View itemView) {
         super(itemView);
+        boolean loggedIn = FirebaseHelper.getCurrentFirebaseUser()!= null;
 
         this.icon = (ImageView) itemView.findViewById(R.id.imv_cell_listing_icon);
         this.name = (TextView) itemView.findViewById(R.id.lbl_cell_name);
@@ -41,6 +43,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         this.loading = (ProgressBar) itemView.findViewById(R.id.pro_item_data);
         loading.setVisibility(View.INVISIBLE);
         this.bookmarkButton = (ToggleButton) itemView.findViewById(R.id.btn_bookmark);
+        bookmarkButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
 
         this.container.setOnClickListener(this);
 
@@ -49,7 +52,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
             public void onClick(View v) {
             if (bookmarkButton.isChecked())
             {
-                // TODO Check if user is logged in. If not, start login thread and pass this listing through to be bookmarked if successful
+                // TODO (enhancement) Check if user is logged in. If not, start login thread and pass this listing through to be bookmarked if successful
                 listingCellListener.onBookmarkClick(listing);
                 listing.setBookmarked(true);
             }
@@ -79,9 +82,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         author.setText(listing.getAuthor());
         price.setText("R " + String.valueOf(listing.getPrice()));
 
-        if (listing.isBookmarked()){
-            bookmarkButton.setChecked(true);
-        }
+        bookmarkButton.setChecked(listing.isBookmarked());
     }
 
     public ImageView getIcon(){

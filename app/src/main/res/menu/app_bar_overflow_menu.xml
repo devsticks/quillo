@@ -2,33 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-    <item
-        android:id="@+id/search"
-        android:orderInCategory="1"
-        android:title="Search"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/my_listings"
-        android:orderInCategory="2"
-        android:title="My Listings"
-        app:showAsAction="never" />
     <item
         android:id="@+id/landing"
-        android:orderInCategory="3"
+        android:orderInCategory="1"
         android:title="Landing Screen"
         app:showAsAction="never" />
+
     <item
-        android:id="@+id/signup_login"
-        android:orderInCategory="4"
-        android:title="Signup / Login"
+        android:id="@+id/legal"
+        android:orderInCategory="2"
+        android:title="Legal"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/logout"
-        android:orderInCategory="5"
+        android:orderInCategory="3"
         android:title="Logout"
         app:showAsAction="never" />
-
 
 </menu>

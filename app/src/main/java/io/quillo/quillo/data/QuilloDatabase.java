@@ -207,6 +207,9 @@ public class QuilloDatabase {
             deleteListingFromBookmarks(listing);
         }
 
+        //TODO do we need to tell the recyclerView adapters that the listing was removed?
+        //adapter.notifyItemRemoved vibe
+
     }
 
     private void deleteListingFromBookmarks(final Listing listing){
@@ -496,5 +499,22 @@ public class QuilloDatabase {
         });
 
         return mElasticSearchPassword;
+    }
+
+
+    public void loadListingImageData(final Listing listing){
+        DatabaseReference imageref = databaseListingsRef.child(listing.getUid()).child("imageUrl");
+
+        imageref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listing.setImageUrl(dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

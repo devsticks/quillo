@@ -234,7 +234,8 @@ public class LoginSignupFragment extends Fragment {
 
         ((MainActivity) getActivity()).setSelectedFragment(goingTo);
         ((MainActivity) getActivity()).changeFragment(false);
-//        getActivity().getSupportFragmentManager().popBackStack();
+
+        ((MainActivity) getActivity()).showToolbar();
     }
 
     public void onSignupFailed() {
@@ -257,6 +258,8 @@ public class LoginSignupFragment extends Fragment {
                 ((MainActivity) getActivity()).changeFragment(false);
             }
         });
+
+        ((MainActivity) getActivity()).showToolbar();
     }
 
     public void onLoginFailed() {

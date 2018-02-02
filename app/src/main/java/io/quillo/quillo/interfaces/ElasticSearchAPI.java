@@ -17,9 +17,10 @@ public interface ElasticSearchAPI {
     Call<HitsObject> search(
             @HeaderMap Map<String, String> headers,
             @Query("default_operator") String operator,
-            @Query("q") String query,
+            @Query("from") int from,
             @Query("size") int size,
-            @Query("from") int from
+            @Query("q") String query
+
 
     );
 }

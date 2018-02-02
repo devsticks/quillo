@@ -3,6 +3,7 @@ package io.quillo.quillo.Fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,8 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import com.ethanhua.skeleton.Skeleton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
@@ -33,6 +37,7 @@ import io.quillo.quillo.interfaces.DataListener;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.ListingsListener;
+import io.quillo.quillo.interfaces.OnLoadMoreListener;
 import io.quillo.quillo.utils.HitsList;
 import io.quillo.quillo.utils.HitsObject;
 import okhttp3.Credentials;
@@ -60,14 +65,16 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     }
 
     private ListingAdapter adapter;
+//    private ProgressBar spinner;
 
     // Search vars
     private String mElasticSearchPassword;
     private ArrayList<Listing> searchListings;
     private String universityUid;
     private int searchPage = 0;
-    private int searchListingsPerPage = 2;
+    private int searchListingsPerPage = 12;
     private boolean mIsLoading;
+    private String savedSearchText;
 
 
 
@@ -90,6 +97,39 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         ButterKnife.bind(this, view);
         setUpView(view);
         universityUid = getString(R.string.shared_pref_university_key);
+        savedSearchText = "";
+
+        adapter.addOnScroll(recyclerView);
+
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override public void onLoadMore() {
+                Log.e("haint", "Load More");
+
+                //Add the loading spinner
+                searchListings.add(null);
+                adapter.notifyItemInserted(searchListings.size() - 1);
+
+                //Load more data for reyclerview
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        Log.e("haint", "Load More 2");
+
+                        //Remove loading spinner
+                        searchListings.remove(searchListings.size() - 1);
+                        adapter.notifyItemRemoved(searchListings.size());
+
+                        if (adapter.getListings().size() == 0){
+                            searchPage = 0;
+                        }
+                        elasticSearchQuery(savedSearchText);
+
+                        adapter.notifyDataSetChanged();
+                        adapter.setLoaded(); /////wahhhaayayyaay
+                    }
+                }, 5000);
+            }
+        });
+
         return view;
     }
 
@@ -121,6 +161,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
             }
         });
 
+//        elasticSearchQuery("");
+
         ((MainActivity)getActivity()).quilloDatabase.observeListings(universityUid, new ListingsListener() {
             @Override
             public void onListingLoaded(Listing listing) {
@@ -150,12 +192,17 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
+//        spinner = (ProgressBar)view.findViewById(R.id.indeterminateBar);
+//        spinner.setVisibility(View.VISIBLE);
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
+
+//        spinner.setVisibility(View.VISIBLE);
     }
 
 
@@ -176,6 +223,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity() ).showBottomNavbar();
+        savedSearchText = "";
     }
 
     @Override
@@ -192,15 +240,18 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     // This method implements the elastic search functionality on text change
     @Override
     public boolean onQueryTextChange(String searchText) {
+        this.savedSearchText = searchText;
         searchPage = 0;
-        searchListings = new ArrayList<Listing>();
-        if (!searchText.equals("")) {
-            elasticSearchQuery(searchText);
-        }
-        else{
-            setupDatabase();
-            return false;
-        }
+
+        elasticSearchQuery(searchText);
+
+//        if (!searchText.equals("")) {
+//            elasticSearchQuery(searchText);
+//        }
+//        else{
+//            setupDatabase();
+//            return false;
+//        }
 
         if (searchListings.size() != 0) {
             return true;
@@ -208,8 +259,15 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         return false;
     }
 
-    public void elasticSearchQuery(String searchText){
+    public void elasticSearchQuery(final String searchText){ //, final DataListener dataListener
         mIsLoading = true;
+
+        if (searchPage == 0) {
+            adapter.removeAllListings();
+        }
+        searchPage = 0;
+        
+        searchListings = new ArrayList<Listing>();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.base_url))
@@ -231,8 +289,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
             searchString = searchString + " universityUid:" + universityUid;
         }
 
-        Call<HitsObject> call = searchAPI.search(headerMap, "AND", searchString,
-                searchListingsPerPage,searchPage*searchListingsPerPage);
+        Call<HitsObject> call = searchAPI.search(headerMap, "AND",
+                0, searchListingsPerPage, searchString);
 
         call.enqueue(new Callback<HitsObject>() {
             @Override
@@ -249,11 +307,20 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
                     }
 
                     for (int i = 0; i < hitsList.getListingIndex().size(); i++) {
-                        searchListings.add(hitsList.getListingIndex().get(i).getListing());
+                        Log.d("a", hitsList.getListingIndex().get(i).getListing().getDescription());
+                        Listing l = hitsList.getListingIndex().get(i).getListing();
+                        searchListings.add(l);
+                        ((MainActivity)getActivity()).quilloDatabase.loadListingImageData(l);
                     }
 
                     //set the listings into the adapter
-                    adapter.setListings(searchListings);
+                    if (searchPage == 0) {
+                        Log.d("a", "setting listings" + searchListings.toString());
+                        adapter.setListings(searchListings);
+                    }
+                    else{
+                        adapter.addListings(searchListings);
+                    }
 
                 } catch (NullPointerException e) {
                     Log.e("Error", "onResponse: NullPointerException: " + e.getMessage());
@@ -270,7 +337,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
                 Toast.makeText(getActivity(), "search failed", Toast.LENGTH_SHORT).show();
             }
         });
-
+        searchPage++;
         mIsLoading = false;
     }
 
@@ -289,5 +356,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
 //            }
 //        }
 //    };
+
+
 
 }

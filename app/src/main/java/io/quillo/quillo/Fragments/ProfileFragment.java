@@ -4,14 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,8 +48,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     private ListingAdapter adapter;
     @BindView(R.id.rec_profile_listing_holder)
     RecyclerView recyclerView;
-    @BindView(R.id.tlb_profile_activity)
-    Toolbar toolbar;
     @BindView(R.id.lbl_seller_name)
     TextView nameLabel;
     @BindView(R.id.lbl_seller_university)
@@ -62,28 +58,33 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     ImageView profilePicture;
 
     public static ProfileFragment newInstance() {
+
         ProfileFragment profileFragment = new ProfileFragment();
         return profileFragment;
+
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
 
         Bundle bundle = getArguments();
 
-        if(bundle != null && bundle.containsKey(IntentExtras.EXTRA_SELLER)){
+        if ( bundle != null && bundle.containsKey(IntentExtras.EXTRA_SELLER) ) {
             seller = (Person) getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
             isViewingOwnProfile = false;
             editProfileBtn.setVisibility(View.GONE);
         }
+
         adapter = new ListingAdapter(this, getContext(), isViewingOwnProfile);
 
         setupDatabase();
         setUpView(view);
+
         return view;
     }
 
@@ -91,7 +92,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     public void onResume() {
         super.onResume();
         if (isViewingOwnProfile) {
-            ((MainActivity) getActivity()).showBottomNavbar();
+            ((MainActivity) getActivity()).showBottomNavBar();
         }
     }
 
@@ -159,16 +160,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     //TODO Update with fragments
 
     public void setUpView(View view) {
-        FloatingActionButton mAddListingButton = (FloatingActionButton) view.findViewById(R.id.fab_add_listing);
-
-
-        mAddListingButton.setOnClickListener(this);
-        if (isViewingOwnProfile) {
-            mAddListingButton.setVisibility(View.VISIBLE);
-        } else {
-            mAddListingButton.setVisibility(View.INVISIBLE);
-        }
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -220,7 +211,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         adapter.insertListing(position, newListing);
     }
 
-    public void showUndoSnackBar() {
+    public void showUndoSnackBar(final Listing listing) {
         Snackbar.make(
                 getActivity().findViewById(R.id.root_profile_activity),
                 getString(R.string.action_delete_item),
@@ -236,7 +227,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
 
-                        handleSnackbarTimeout();
+                        handleSnackbarTimeout(listing);
                     }
                 })
                 .show();
@@ -288,7 +279,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         temporaryListing = listing;
         temporaryListingPosition = position;
 
-        showUndoSnackBar();
+        showUndoSnackBar(listing);
     }
 
     private void handleUndoDeleteConfirmed() {
@@ -302,8 +293,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     }
 
 
-    private void handleSnackbarTimeout() {
-
+    private void handleSnackbarTimeout(Listing listing) {
+        ((MainActivity)getActivity()).quilloDatabase.deleteListing(listing);
     }
 
 
