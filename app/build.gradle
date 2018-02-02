@@ -60,8 +60,10 @@ dependencies {
 
     // Handle empty recycler view
 //    compile 'com.github.tylersuehr7:empty-state-recyclerview:1.0.4'
-    implementation 'com.ethanhua:skeleton:1.0.1'
-    implementation 'io.supercharge:shimmerlayout:1.0.2'
+//    implementation 'com.ethanhua:skeleton:1.0.1'
+//    implementation 'io.supercharge:shimmerlayout:1.0.2'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'com.github.tylersuehr7:empty-state-recyclerview:1.0.4'
 }
 
 
