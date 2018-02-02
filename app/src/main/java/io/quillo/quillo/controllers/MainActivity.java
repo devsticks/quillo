@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment selectedFragment = null;
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
+    private boolean mustShowBottomNavBar = true;
 
     public QuilloDatabase quilloDatabase;
 
@@ -66,11 +67,13 @@ public class MainActivity extends AppCompatActivity {
         checkIfUniversityIsKnown();
     }
 
-    public void hideBottomNavBar(){
+    public void hideBottomNavBar() {
+        mustShowBottomNavBar = false;
         bottomNavigation.setVisibility(View.GONE);
     }
 
-    public void showBottomNavbar(){
+    public void showBottomNavBar() {
+        mustShowBottomNavBar = true;
         bottomNavigation.setVisibility(View.VISIBLE);
     }
 
@@ -83,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
             new KeyboardVisibilityEventListener() {
                 @Override
                 public void onVisibilityChanged(boolean isOpen) {
-                    bottomNavigation.setVisibility(isOpen ? View.GONE : View.VISIBLE);
+                    if (mustShowBottomNavBar) {
+                        bottomNavigation.setVisibility(isOpen ? View.GONE : View.VISIBLE);
+                    }
                 }
             });
     }
@@ -111,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(searchFragment);
-        searchView.onActionViewExpanded();
 
         return true;
     }
@@ -172,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             boolean addToBackStack = false;
+            showToolbar();
 
             switch (item.getItemId()) {
                 case R.id.btn_search:
@@ -192,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             addToBackStack = true;
                         }
+                        toolbar.getBackground().setAlpha(255);
                         selectedFragment = bookmarksFragment;
                         changeFragment(addToBackStack);
                     } else {
@@ -206,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             addToBackStack = true;
                         }
+                        hideToolbar();
                         selectedFragment = AddEditListingFragment.newInstance();
                         changeFragment(addToBackStack);
                     } else {
@@ -363,11 +370,15 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
 
-        hideBottomNavBar();
+        toolbar.setVisibility(View.VISIBLE);
+        toolbar.getBackground().setAlpha(0);
+        //hideBottomNavBar();
     }
 
     private void showLoginRegisterScreen(Fragment goingTo, boolean isLoggingIn){
         hideBottomNavBar();
+        hideToolbar();
+
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         loginSignupFragment.setIntentions(goingTo, isLoggingIn);
         getSupportFragmentManager().beginTransaction()
@@ -387,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showSearchFragmentAfterLanding() {
-        toolbar.setVisibility(View.VISIBLE);
+        showToolbar();
 
         SearchFragment searchFragment = new SearchFragment();
         getSupportFragmentManager().beginTransaction()
@@ -396,5 +407,18 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    public void hideToolbar () {
+        toolbar.setVisibility(View.GONE);
+    }
 
+    public void showToolbar () {
+        toolbar.setVisibility(View.VISIBLE);
+    }
+
+    public void showProfileFragment(boolean addToBackStack) {
+        showToolbar();
+        selectedFragment = profileFragment;
+        changeFragment(addToBackStack);
+        toolbar.getBackground().setAlpha(0);
+    }
 }

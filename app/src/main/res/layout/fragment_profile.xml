@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:background="@color/DarkText"
-                    android:scaleType="center"/>
+                    android:scaleType="centerCrop"/>
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"

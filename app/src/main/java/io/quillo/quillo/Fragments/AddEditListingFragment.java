@@ -230,6 +230,9 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
             photo1.setTag(notDefaultTag);
         }
+
+        Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
+        ((MainActivity) getActivity()).showProfileFragment(false);
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){

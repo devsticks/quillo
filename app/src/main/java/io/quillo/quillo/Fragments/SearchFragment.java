@@ -175,7 +175,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity() ).showBottomNavbar();
+        ((MainActivity) getActivity() ).showBottomNavBar();
     }
 
     @Override

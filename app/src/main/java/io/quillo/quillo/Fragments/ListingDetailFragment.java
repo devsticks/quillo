@@ -175,7 +175,7 @@ public class ListingDetailFragment extends Fragment  {
 
     @OnClick(R.id.btn_delete)
     public void handleDeleteListingClick() {
-        //TODO Delete Listing Code here...
+        ((MainActivity)getActivity()).quilloDatabase.deleteListing(listing);
 
         Toast.makeText(getContext(), "Listing deleted", Toast.LENGTH_SHORT).show();
         getFragmentManager().popBackStack();
@@ -183,7 +183,7 @@ public class ListingDetailFragment extends Fragment  {
 
     @OnClick(R.id.btn_sold)
     public void handleSoldListingClick() {
-        //TODO Sold Listing Code here...
+        ((MainActivity)getActivity()).quilloDatabase.deleteListing(listing);
 
         Toast.makeText(getContext(), "Listing marked sold", Toast.LENGTH_SHORT).show();
         getFragmentManager().popBackStack();
