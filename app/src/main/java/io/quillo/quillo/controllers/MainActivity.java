@@ -21,6 +21,7 @@ import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
     private boolean mustShowBottomNavBar = true;
+    MaterialSearchView searchView;
 
     public QuilloDatabase quilloDatabase;
 
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initBottomNavBar();
         initFragments();
+        initSearchBar();
         quilloDatabase = new QuilloDatabase();
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -102,19 +105,36 @@ public class MainActivity extends AppCompatActivity {
         changeFragment(false);
     }
 
+    private void initSearchBar(){
+        searchView = (MaterialSearchView)findViewById(R.id.search_view);
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                if (selectedFragment != searchFragment){
+                    setSelectedFragment(searchFragment);
+                    changeFragment(true);
+                }
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.search, menu);
         menuInflater.inflate(R.menu.app_bar_overflow_menu, menu);
 
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
 
-        MenuItem searchMenuItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+//        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
 
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(searchFragment);
 
         return true;
