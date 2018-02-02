@@ -72,7 +72,8 @@
                 android:id="@+id/input_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
+                android:singleLine="false"
+                android:inputType="textCapSentences"
                 android:maxLength="200"
                 android:hint="Description"/>
         </android.support.design.widget.TextInputLayout>

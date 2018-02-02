@@ -207,6 +207,9 @@ public class QuilloDatabase {
             deleteListingFromBookmarks(listing);
         }
 
+        //TODO do we need to tell the recyclerView adapters that the listing was removed?
+        //adapter.notifyItemRemoved vibe
+
     }
 
     private void deleteListingFromBookmarks(final Listing listing){

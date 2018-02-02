@@ -4,14 +4,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,7 +92,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     public void onResume() {
         super.onResume();
         if (isViewingOwnProfile) {
-            ((MainActivity) getActivity()).showBottomNavbar();
+            ((MainActivity) getActivity()).showBottomNavBar();
         }
     }
 
@@ -213,7 +211,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         adapter.insertListing(position, newListing);
     }
 
-    public void showUndoSnackBar() {
+    public void showUndoSnackBar(final Listing listing) {
         Snackbar.make(
                 getActivity().findViewById(R.id.root_profile_activity),
                 getString(R.string.action_delete_item),
@@ -229,7 +227,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
                     public void onDismissed(Snackbar transientBottomBar, int event) {
                         super.onDismissed(transientBottomBar, event);
 
-                        handleSnackbarTimeout();
+                        handleSnackbarTimeout(listing);
                     }
                 })
                 .show();
@@ -281,7 +279,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         temporaryListing = listing;
         temporaryListingPosition = position;
 
-        showUndoSnackBar();
+        showUndoSnackBar(listing);
     }
 
     private void handleUndoDeleteConfirmed() {
@@ -295,8 +293,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     }
 
 
-    private void handleSnackbarTimeout() {
-
+    private void handleSnackbarTimeout(Listing listing) {
+        ((MainActivity)getActivity()).quilloDatabase.deleteListing(listing);
     }
 
 
