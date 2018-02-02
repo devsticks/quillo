@@ -19,9 +19,9 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.ethanhua.skeleton.Skeleton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  *
  */
 
-public class SearchFragment extends Fragment implements ListingCellListener, SearchView.OnQueryTextListener{
+public class SearchFragment extends Fragment implements ListingCellListener, MaterialSearchView.OnQueryTextListener{
 
 
     @BindView(R.id.recycler_view)
@@ -68,6 +68,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
 //    private ProgressBar spinner;
 
     // Search vars
+    MaterialSearchView searchView;
     private String mElasticSearchPassword;
     private ArrayList<Listing> searchListings;
     private String universityUid;
@@ -75,6 +76,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     private int searchListingsPerPage = 12;
     private boolean mIsLoading;
     private String savedSearchText;
+    private ListingAdapter searchAdapter;
 
 
 
@@ -85,7 +87,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
 
-       setupDatabase();
+        setupDatabase();
     }
 
 
@@ -99,36 +101,36 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         universityUid = getString(R.string.shared_pref_university_key);
         savedSearchText = "";
 
-        adapter.addOnScroll(recyclerView);
+//        adapter.addOnScroll(recyclerView);
 
-        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override public void onLoadMore() {
-                Log.e("haint", "Load More");
-
-                //Add the loading spinner
-                searchListings.add(null);
-                adapter.notifyItemInserted(searchListings.size() - 1);
-
-                //Load more data for reyclerview
-                new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
-                        Log.e("haint", "Load More 2");
-
-                        //Remove loading spinner
-                        searchListings.remove(searchListings.size() - 1);
-                        adapter.notifyItemRemoved(searchListings.size());
-
-                        if (adapter.getListings().size() == 0){
-                            searchPage = 0;
-                        }
-                        elasticSearchQuery(savedSearchText);
-
-                        adapter.notifyDataSetChanged();
-                        adapter.setLoaded(); /////wahhhaayayyaay
-                    }
-                }, 5000);
-            }
-        });
+//        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+//            @Override public void onLoadMore() {
+//                Log.e("haint", "Load More");
+//
+//                //Add the loading spinner
+//                searchListings.add(null);
+//                adapter.notifyItemInserted(searchListings.size() - 1);
+//
+//                //Load more data for reyclerview
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override public void run() {
+//                        Log.e("haint", "Load More 2");
+//
+//                        //Remove loading spinner
+//                        searchListings.remove(searchListings.size() - 1);
+//                        adapter.notifyItemRemoved(searchListings.size());
+//
+//                        if (adapter.getListings().size() == 0){
+//                            searchPage = 0;
+//                        }
+//                        elasticSearchQuery(savedSearchText);
+//
+//                        adapter.notifyDataSetChanged();
+//                        adapter.setLoaded(); /////wahhhaayayyaay
+//                    }
+//                }, 5000);
+//            }
+//        });
 
         return view;
     }
@@ -222,7 +224,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity() ).showBottomNavbar();
+        ((MainActivity) getActivity() ).showBottomNavBar();
         savedSearchText = "";
     }
 
@@ -237,21 +239,18 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         return onQueryTextChange(searchText);
     }
 
-    // This method implements the elastic search functionality on text change
     @Override
     public boolean onQueryTextChange(String searchText) {
-        this.savedSearchText = searchText;
+        savedSearchText = searchText;
         searchPage = 0;
 
-        elasticSearchQuery(searchText);
-
-//        if (!searchText.equals("")) {
-//            elasticSearchQuery(searchText);
-//        }
-//        else{
-//            setupDatabase();
-//            return false;
-//        }
+        if (searchText != null && !searchText.isEmpty()) {
+            elasticSearchQuery(searchText);
+        }
+        else{
+            recyclerView.setAdapter(adapter);
+            return false;
+        }
 
         if (searchListings.size() != 0) {
             return true;
@@ -264,8 +263,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
 
         if (searchPage == 0) {
             adapter.removeAllListings();
+            searchAdapter = new ListingAdapter(this, getContext(), false);
         }
-        searchPage = 0;
         
         searchListings = new ArrayList<Listing>();
 
@@ -285,9 +284,9 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         // Add other parameters here in future
         searchString = searchString + searchText + "*";
 
-        if (universityUid != null) {
-            searchString = searchString + " universityUid:" + universityUid;
-        }
+//        if (universityUid != null) {
+//            searchString = searchString + " universityUid:" + universityUid;
+//        }
 
         Call<HitsObject> call = searchAPI.search(headerMap, "AND",
                 0, searchListingsPerPage, searchString);
@@ -309,18 +308,25 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
                     for (int i = 0; i < hitsList.getListingIndex().size(); i++) {
                         Log.d("a", hitsList.getListingIndex().get(i).getListing().getDescription());
                         Listing l = hitsList.getListingIndex().get(i).getListing();
+                        l.setImageUrl(null);
                         searchListings.add(l);
                         ((MainActivity)getActivity()).quilloDatabase.loadListingImageData(l);
                     }
 
+                    Log.d("Listings", searchListings.toString());
+
                     //set the listings into the adapter
+                    Log.d("pageNum", String.valueOf(searchPage));
                     if (searchPage == 0) {
-                        Log.d("a", "setting listings" + searchListings.toString());
+                        Log.d("setting listings", searchListings.toString());
                         adapter.setListings(searchListings);
                     }
                     else{
+                        Log.d("adding listings", searchListings.toString());
                         adapter.addListings(searchListings);
                     }
+
+                    searchPage++;
 
                 } catch (NullPointerException e) {
                     Log.e("Error", "onResponse: NullPointerException: " + e.getMessage());
@@ -337,8 +343,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
                 Toast.makeText(getActivity(), "search failed", Toast.LENGTH_SHORT).show();
             }
         });
-        searchPage++;
-        mIsLoading = false;
     }
 
     //TODO: pagination onScroll
