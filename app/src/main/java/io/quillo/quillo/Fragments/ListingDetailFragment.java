@@ -307,6 +307,7 @@ public class ListingDetailFragment extends Fragment  {
                         isViewingOwnListing = false;
                         listingActionFAB.setVisibility(View.GONE);
                     }
+
                     if (isViewingOwnListing) {
                         sellerContainer.setVisibility(View.GONE);
                         deleteOptionsContainer.setVisibility(View.VISIBLE);

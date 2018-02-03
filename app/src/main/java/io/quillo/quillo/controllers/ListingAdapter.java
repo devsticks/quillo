@@ -99,6 +99,11 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         this.notifyItemInserted(position);
     }
 
+    public void setListings(List<Listing> listings){
+        this.listings = listings;
+        notifyDataSetChanged();
+    }
+
     public void updateListing(Listing listing) {
         for (int i = 0; i < listings.size(); i++) {
             if (listings.get(i).getUid().equals(listing.getUid())) {
