@@ -1,4 +1,4 @@
-package io.quillo.quillo.interfaces;
+package io.quillo.quillo.utils;
 
 /**
  * Created by Tom on 2018/01/31.

@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -40,7 +36,7 @@ import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
-import io.quillo.quillo.interfaces.OnLoadMoreListener;
+import io.quillo.quillo.utils.OnLoadMoreListener;
 import io.quillo.quillo.interfaces.PasswordListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.FirebaseHelper;

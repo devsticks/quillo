@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 
@@ -16,7 +15,7 @@ import java.util.List;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.interfaces.ListingCellListener;
-import io.quillo.quillo.interfaces.OnLoadMoreListener;
+import io.quillo.quillo.utils.OnLoadMoreListener;
 import io.quillo.quillo.views.ListingCell;
 import io.quillo.quillo.views.LoadingViewHolder;
 
@@ -149,47 +148,6 @@ public class ListingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public List<Listing> getListings() {
         return listings;
     }
-
-    public void setListings(ArrayList<Listing> listings){
-        this.listings = listings;
-        notifyDataSetChanged();
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-        this.mOnLoadMoreListener = mOnLoadMoreListener;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return listings.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
-    }
-
-    public void setLoaded() {
-        isLoading = false;
-    }
-
-    public void addOnScroll(RecyclerView rcv){
-        recyclerView = rcv;
-
-//        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                totalItemCount = linearLayoutManager.getItemCount();
-                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                    if (mOnLoadMoreListener != null) {
-                        mOnLoadMoreListener.onLoadMore();
-                    }
-                    isLoading = true;
-                }
-            }
-        });
-    }
-
 
     // LISTINGCELL STUFF MOVED FROM HERE TO OWN CLASS, LISTING CELL
 
