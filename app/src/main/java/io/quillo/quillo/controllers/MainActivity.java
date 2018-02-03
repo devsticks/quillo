@@ -388,6 +388,7 @@ public class MainActivity extends AppCompatActivity {
 
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         loginSignupFragment.setIntentions(goingTo, isLoggingIn);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, loginSignupFragment)
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
