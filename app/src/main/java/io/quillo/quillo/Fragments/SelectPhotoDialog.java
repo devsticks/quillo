@@ -17,14 +17,15 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
+import io.quillo.quillo.utils.RotateBitmap;
 
 /**
  * Created by shkla on 2018/01/21.
@@ -94,6 +95,19 @@ public class SelectPhotoDialog extends DialogFragment{
     public void handleCameraClick() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, RC_CAMERA);
+
+        /*FotoAppartCamera fotoAppartCamera = new FotoAppartCamera();
+        fotoAppartCamera.setCameraListner(new FotoAppartCamera.CameraListner() {
+            @Override
+            public void onPhotoTaken(BitmapPhoto bitmap) {
+                onPhotoSelectedListener.getImageBitmap (bitmap.bitmap);
+            }
+        });
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_holder, fotoAppartCamera)
+                .addToBackStack(AddEditListingFragment.FRAGMENT_NAME)
+                .commit();*/
+
     }
 
     @Override
@@ -108,9 +122,17 @@ public class SelectPhotoDialog extends DialogFragment{
 
         } else if (requestCode == RC_CAMERA && resultCode == Activity.RESULT_OK) {
 
-            Bitmap bitmap;
-            bitmap = (Bitmap) data.getExtras().get("data");
+
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             onPhotoSelectedListener.getImageBitmap(bitmap);
+            RotateBitmap rotateBitmap = new RotateBitmap();
+            try {
+                Bitmap rotatedBitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), getImageUri(bitmap));
+                onPhotoSelectedListener.getImageBitmap(rotatedBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             getDialog().dismiss();
 
         }
@@ -133,5 +155,12 @@ public class SelectPhotoDialog extends DialogFragment{
 
         }
         return false;
+    }
+
+    public Uri getImageUri(Bitmap bitmap){
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, "Listing", null);
+        return Uri.parse(path);
+
     }
 }

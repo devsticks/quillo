@@ -22,9 +22,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,12 +35,16 @@ import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.interfaces.DataListener;
+import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
-import io.quillo.quillo.interfaces.ListingsListener;
+import io.quillo.quillo.interfaces.PasswordListener;
+import io.quillo.quillo.interfaces.PersonListener;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.utils.HitsList;
 import io.quillo.quillo.utils.HitsObject;
+import io.quillo.quillo.utils.ListingLoader;
+import io.quillo.quillo.utils.ListingSource;
 import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,6 +60,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchFragment extends Fragment implements ListingCellListener, MaterialSearchView.OnQueryTextListener{
 
+    private static final String BASE_URL = "http://35.205.236.168//elasticsearch/listings/listing/";
+
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -63,7 +72,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     }
 
     private ListingAdapter adapter;
-//    private ProgressBar spinner;
 
     // Search vars
     MaterialSearchView searchView;
@@ -72,20 +80,42 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     private String universityUid;
     private int searchPage = 0;
     private int searchListingsPerPage = 12;
-    private boolean mIsLoading;
-    private String savedSearchText;
-    private ListingAdapter searchAdapter;
 
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
+        checkIfUniversityIsKnown();
 
         setupDatabase();
+    }
+    public void checkIfUniversityIsKnown(){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+
+        if (universityUid == null){
+            //Uni is not saved in shared pref
+            if(currentUser == null){
+                //User is not logged in
+
+                ((MainActivity)getActivity()).showLandingFragment();
+
+            } else {
+                //User is logged in get uni from firebase
+                ((MainActivity)getActivity()).quilloDatabase.loadPerson(currentUser.getUid(), new PersonListener() {
+                    @Override
+                    public void onPersonLoaded(Person person) {
+                        String personUniversityUid = person.getUniversityUid();
+                        ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(personUniversityUid);
+                    }
+                });
+
+            }
+        }
     }
 
 
@@ -93,10 +123,9 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_search, container, false);
-
         ButterKnife.bind(this, view);
         setUpView(view);
-        savedSearchText = "";
+        onQueryTextChange("");
 
         adapter.addOnScroll(recyclerView);
 
@@ -130,6 +159,12 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         });
 
         return view;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
     @Override
@@ -183,7 +218,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     private void clearDatabase(){
         Log.d(SearchFragment.class.getName(), "Detaching listing event listener");
-        ((MainActivity)getActivity()).quilloDatabase.stopObservingListings();
+        adapter.removeAllListings();
     }
 
 
@@ -217,7 +252,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity() ).showBottomNavBar();
-        savedSearchText = "";
     }
 
     @Override
@@ -233,106 +267,116 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     @Override
     public boolean onQueryTextChange(String searchText) {
-        savedSearchText = searchText;
         searchPage = 0;
-        if (searchText != null && !searchText.isEmpty()) {
-            elasticSearchQuery(searchText);
+        if (searchText == null){
+            searchText = "";
         }
-        else{
-            recyclerView.setAdapter(adapter);
-            return false;
-        }
-
-        if (searchListings.size() != 0) {
-            return true;
-        }
-        return false;
-    }
-
-    public void elasticSearchQuery(final String searchText){ //, final DataListener dataListener
-//        if (searchPage == 0) {
-////            adapter.removeAllListings();
-//            searchAdapter = new ListingAdapter(this, getContext(), false);
-//        }
-        
-        searchListings = new ArrayList<Listing>();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.base_url))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ElasticSearchAPI searchAPI = retrofit.create(ElasticSearchAPI.class);
-
-        HashMap<String, String> headerMap = new HashMap<String, String>();
-        headerMap.put("Authorization", Credentials
-                .basic(getString(R.string.elastic_search_username), mElasticSearchPassword));
-
-        String searchString = "";
-
-        // Add other parameters here in future
-        searchString = searchString + searchText + "*";
-
-        if (universityUid != null) {
-            searchString = searchString + " universityUid:" + universityUid;
-        }
-
-        Call<HitsObject> call = searchAPI.search(headerMap, "AND",
-                searchPage, searchListingsPerPage, searchString);
-
-        call.enqueue(new Callback<HitsObject>() {
+        getHitsFromElasticSearchQuery(searchText, new HitsLoadedListener() {
             @Override
-            public void onResponse(Call<HitsObject> call, Response<HitsObject> response) {
-                Log.d("response", "onResponse: server response: " + response.toString());
+            public void ListingUidsLoaded(ArrayList<String> listingUids) {
+                if (listingUids.isEmpty()){
+                    //No listings match search
+                    adapter.removeAllListings();
+                }else {
 
-                HitsList hitsList = new HitsList();
-                String jsonResponse = "";
-                try {
-                    if (response.isSuccessful()) {
-                        hitsList = response.body().getHits();
-                    } else {
-                        jsonResponse = response.errorBody().string();
-                    }
-
-                    for (int i = 0; i < hitsList.getListingIndex().size(); i++) {
-                        Log.d("a", hitsList.getListingIndex().get(i).getListing().getDescription());
-                        Listing l = hitsList.getListingIndex().get(i).getListing();
-                        l.setImageUrl(null);
-                        searchListings.add(l);
-                        ((MainActivity)getActivity()).quilloDatabase.loadListingImageData(l);
-                    }
-
-                    Log.d("Listings", searchListings.toString());
-
-                    //set the listings into the adapter
-                    Log.d("pageNum", String.valueOf(searchPage));
-                    if (searchPage == 0) {
-                        Log.d("setting listings", searchListings.toString());
-                        adapter.setListings(searchListings);
-                        recyclerView.setAdapter(adapter);
-                    }
-                    else{
-                        Log.d("adding listings", searchListings.toString());
-                        adapter.addListings(searchListings);
-                    }
-
-                    searchPage++;
-
-                } catch (NullPointerException e) {
-                    Log.e("Error", "onResponse: NullPointerException: " + e.getMessage());
-                } catch (IndexOutOfBoundsException e) {
-                    Log.e("Error", "onResponse: IndexOutOfBoundsException: " + e.getMessage());
-                } catch (IOException e) {
-                    Log.e("Error", "onResponse: IOException: " + e.getMessage());
+                    ListingLoader listingLoader = new ListingLoader(((MainActivity) getActivity()).quilloDatabase, new ListingLoader.ListingLoaderListener() {
+                        @Override
+                        public void onListingsLoaded(List<Listing> listings) {
+                            adapter.setListings(listings);
+                        }
+                    });
+                    listingLoader.loadListings(listingUids);
                 }
             }
+        });
+        return true;
+    }
+
+    interface HitsLoadedListener{
+        public void ListingUidsLoaded(ArrayList<String> listingUids);
+    }
+
+    public void getHitsFromElasticSearchQuery(final String searchText, final HitsLoadedListener hitsLoadedListener){
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+
+        if (universityUid == null){
+            return;
+        }
+
+        ((MainActivity)getActivity()).quilloDatabase.getElasticSearchPassword(new PasswordListener() {
+            @Override
+            public void onPasswordLoaded(String password) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                ElasticSearchAPI searchAPI = retrofit.create(ElasticSearchAPI.class);
+
+                HashMap<String, String> headerMap = new HashMap<String, String>();
+                headerMap.put("Authorization", Credentials
+                        .basic(getString(R.string.elastic_search_username), password));
+
+                String searchString = "";
+
+                // Add other parameters here in future
+                searchString = searchString + searchText + "*";
+
+                if (universityUid != null) {
+                    searchString = searchString + " universityUid:" + universityUid;
+                }else{
+                    return;
+                }
+
+                Call<HitsObject> call = searchAPI.search(headerMap, "AND", searchString,
+                        searchListingsPerPage,searchPage*searchListingsPerPage);
+
+                call.enqueue(new Callback<HitsObject>() {
+                    @Override
+                    public void onResponse(Call<HitsObject> call, Response<HitsObject> response) {
+                        ArrayList<String> listingUids = new ArrayList<>();
+                        Log.d("response", "onResponse: server response: " + response.toString());
+
+                        HitsList hitsList = new HitsList();
+                        String jsonResponse = "";
+                        try {
+                            if (response.isSuccessful()) {
+                                hitsList = response.body().getHits();
+                            } else {
+                                jsonResponse = response.errorBody().string();
+                            }
+
+                            for(ListingSource listingSouce: hitsList.getListingIndex()){
+                                listingUids.add(listingSouce.getListing().getUid());
+                            }
+
+
+                            hitsLoadedListener.ListingUidsLoaded(listingUids);
+
+                        } catch (NullPointerException e) {
+                            Log.e("Error", "onResponse: NullPointerException: " + e.getMessage());
+                        } catch (IndexOutOfBoundsException e) {
+                            Log.e("Error", "onResponse: IndexOutOfBoundsException: " + e.getMessage());
+                        } catch (IOException e) {
+                            Log.e("Error", "onResponse: IOException: " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<HitsObject> call, Throwable t) {
+                        Log.e("Error", "onFailure: " + t.getMessage());
+                        Toast.makeText(getActivity(), "search failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
             @Override
-            public void onFailure(Call<HitsObject> call, Throwable t) {
-                Log.e("Error", "onFailure: " + t.getMessage());
-                Toast.makeText(getActivity(), "search failed", Toast.LENGTH_SHORT).show();
+            public void onPasswordLoadFailed() {
+
             }
         });
+
     }
 
     //TODO: pagination onScroll

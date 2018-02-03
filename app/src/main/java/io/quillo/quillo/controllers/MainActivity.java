@@ -32,7 +32,7 @@ import io.quillo.quillo.Fragments.LoginSignupFragment;
 import io.quillo.quillo.Fragments.ProfileFragment;
 import io.quillo.quillo.Fragments.SearchFragment;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -58,14 +58,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        quilloDatabase = new QuilloDatabase();
         setContentView(R.layout.activity_main);
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
         initBottomNavBar();
         initFragments();
         initSearchBar();
-        quilloDatabase = new QuilloDatabase();
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        checkIfUniversityIsKnown();
+
     }
 
     public void hideBottomNavBar() {
@@ -76,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
     public void showBottomNavBar() {
         mustShowBottomNavBar = true;
         bottomNavigation.setVisibility(View.VISIBLE);
+    }
+
+    public void setupToolbar(){
+        toolbar.getBackground().setAlpha(0);
     }
 
     private void initBottomNavBar(){
@@ -278,11 +282,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-        FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
-        String backFragmentName = backStackEntry.getName();
-
-        updateTabBar(backFragmentName);
-
+        if (backStackCount > 0) {
+            FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
+            String backFragmentName = backStackEntry.getName();
+            updateTabBar(backFragmentName);
+        }
         super.onBackPressed();
     }
 
@@ -388,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
 
-        toolbar.setVisibility(View.VISIBLE);
+        hideBottomNavBar();
         toolbar.getBackground().setAlpha(0);
         //hideBottomNavBar();
     }
@@ -399,6 +403,7 @@ public class MainActivity extends AppCompatActivity {
 
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         loginSignupFragment.setIntentions(goingTo, isLoggingIn);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, loginSignupFragment)
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())

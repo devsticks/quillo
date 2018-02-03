@@ -8,9 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -30,7 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.PersonListener;
 
@@ -48,7 +50,8 @@ public class LoginSignupFragment extends Fragment {
     EditText inputName;
     @BindView(R.id.input_name_holder) View inputNameHolder;
     @BindView(R.id.input_university_holder) View inputUniversityHolder;
-    @BindView(R.id.input_university) EditText inputUniversity;
+    @BindView(R.id.input_university)
+    AutoCompleteTextView inputUniversity;
     @BindView(R.id.input_email) EditText inputEmail;
     @BindView(R.id.input_email_holder) View inputEmailHolder;
     @BindView(R.id.input_password) EditText inputPassword;
@@ -65,7 +68,10 @@ public class LoginSignupFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_signup_login, container, false);
+        final Context context = new ContextThemeWrapper(getActivity(), R.style.AppTheme_Dark);
+        LayoutInflater layoutInflater = inflater.cloneInContext(context);
+        View view = layoutInflater.inflate(R.layout.fragment_signup_login, container, false);
+
         ButterKnife.bind(this, view);
         setUpView(view);
         return view;
@@ -91,6 +97,7 @@ public class LoginSignupFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+        inputUniversity.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
         if(universityUid != null){
             inputUniversity.setText(universityUid);
         }
@@ -176,6 +183,7 @@ public class LoginSignupFragment extends Fragment {
         auth.getCurrentUser().updateProfile(profileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                auth.getCurrentUser().sendEmailVerification();
                 if(task.isSuccessful()) {
                     onSignupSuccess();
                 }
@@ -228,6 +236,7 @@ public class LoginSignupFragment extends Fragment {
         //TODO Link with an actual uni UID
         Person person = new Person(user.getUid(), user.getDisplayName(), user.getEmail(), university);
         ((MainActivity)getActivity()).quilloDatabase.addPerson(person);
+
 
         Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
         ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(university);

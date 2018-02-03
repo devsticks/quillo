@@ -21,12 +21,12 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.List;
 
-import io.quillo.quillo.R;
 import io.quillo.quillo.interfaces.BookmarkListener;
-import io.quillo.quillo.interfaces.DataListener;
 import io.quillo.quillo.interfaces.ListingsListener;
+import io.quillo.quillo.interfaces.PasswordListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.PersonListingsListener;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by Stickells on 13/01/2018.
@@ -137,9 +137,7 @@ public class QuilloDatabase {
 
     }
 
-    public void stopObservingListings(){
-        listingQuery.removeEventListener(listingChildEventListener);
-    }
+
 
     public void loadListing(String listingUid, final ListingsListener listingsListener){
         databaseListingsRef.child(listingUid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -204,6 +202,7 @@ public class QuilloDatabase {
         if(currentUserUid != null){
             databaseListingsRef.child(listing.getUid()).removeValue();
             databasePersonListingsRef.child(currentUserUid).child(listing.getUid()).removeValue();
+            storageListingRef.child(listing.getUid()).delete();
             deleteListingFromBookmarks(listing);
         }
 
@@ -483,22 +482,27 @@ public class QuilloDatabase {
     }
 
     //TODO: check for better cloud auth methods && consider safety of this method
-    public String getElasticSearchPassword(final DataListener dataListener){
-        Query query = databaseElasticSearchRef.orderByValue();
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getElasticSearchPassword(final PasswordListener passwordListener){
+        databaseElasticSearchRef.child("password").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                dataListener.onSuccess(dataSnapshot);
+                if (dataSnapshot.getValue() != null){
+                    passwordListener.onPasswordLoaded((String) dataSnapshot.getValue());
+                }else{
+                    passwordListener.onPasswordLoadFailed();
+                }
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                dataListener.onFailed(databaseError);
+                passwordListener.onPasswordLoadFailed();
             }
         });
 
-        return mElasticSearchPassword;
+
+
+
     }
 
 

@@ -3,16 +3,14 @@ package io.quillo.quillo.Fragments;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -25,6 +23,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -44,9 +43,9 @@ import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.DatabaseContract;
-import io.quillo.quillo.data.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/22.
@@ -54,6 +53,7 @@ import io.quillo.quillo.data.Listing;
 //TODO: Make this class look nice
 public class AddEditListingFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener{
     private static final int RC_PERMISSIONS = 1;
+    public static final String FRAGMENT_NAME = AddEditListingFragment.class.getName();
 
     private Listing listing;
     private boolean isInEditMode = false;
@@ -71,7 +71,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @BindView(R.id.input_price)
     TextInputEditText priceInput;
     @BindView(R.id.input_university)
-    TextInputEditText universityInput;
+    AutoCompleteTextView universityInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
     @BindView(R.id.btn_publish)
@@ -128,6 +128,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void getImageBitmap(Bitmap bitmap) {
         photo1.setImageBitmap(bitmap);
+
     }
 
 
@@ -194,7 +195,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             listing.setIsbn(fields.get(DatabaseContract.FIREBASE_LISTING_ISBN));
             listing.setUniversityUid(fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
 
-            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 80), new OnSuccessListener() {
+            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 90), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     Toast.makeText(getContext(), "Listing updated", Toast.LENGTH_SHORT);
@@ -234,14 +235,42 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                 photo1.setImageResource(R.drawable.ic_open_book);
             }
 
-            ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
-            photo1.setTag(notDefaultTag);
+
+
+            if (FirebaseHelper.getCurrentFirebaseUser().isEmailVerified()){
+                ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
+                Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
+                ((MainActivity) getActivity()).showProfileFragment(false);
+                photo1.setTag(notDefaultTag);
+            }else{
+                showEmailNotVerifiedAlert();
+            }
+
+
         }
 //        progressDialog.cancel();
 //        ((MainActivity)getActivity()).pop();
 
-        Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
-        ((MainActivity) getActivity()).showProfileFragment(false);
+
+    }
+
+    private void showEmailNotVerifiedAlert(){
+        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(getActivity(), android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+        alertDialog.setTitle("Email not verified");
+        alertDialog.setMessage("We have sent an email to: " + FirebaseHelper.getCurrentFirebaseUser().getEmail() + "\nPlease verify your email before adding a listing");
+        alertDialog.setPositiveButton("Send Verification again", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                FirebaseHelper.getCurrentFirebaseUser().sendEmailVerification();
+            }
+        });
+        alertDialog.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        alertDialog.show();
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){
@@ -289,6 +318,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         if(universityUid != null){
             universityInput.setText(universityUid);
         }
+        universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
 
     }
 
@@ -321,6 +351,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         setupUniversityInput();
         setupPriceInput();
         setupISBNInput();
+
     }
 
     private void bindListingToViews() {

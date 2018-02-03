@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +24,7 @@ import butterknife.OnClick;
 import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -38,6 +37,8 @@ import io.quillo.quillo.interfaces.PersonListener;
 
 public class ListingDetailFragment extends Fragment  {
     //TODO: Fix image scaling
+
+    public static String FRAGMENT_NAME = ListingDetailFragment.class.getName();
 
     private Person seller;
     private Listing listing;
@@ -161,16 +162,21 @@ public class ListingDetailFragment extends Fragment  {
     public void handleSellerProfileClick() {
         Log.d(ListingDetailFragment.class.getName(), "Seller profile click");
 
-        ProfileFragment profileFragment = new ProfileFragment();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(IntentExtras.EXTRA_SELLER, seller);
-        profileFragment.setArguments(bundle);
+        int index = getActivity().getSupportFragmentManager().getBackStackEntryCount() - 1;
+        if (getActivity().getSupportFragmentManager().getBackStackEntryAt(index).getName().equals(ProfileFragment.FRAGMENT_NAME)){
+            getActivity().getSupportFragmentManager().popBackStack();
+        }else {
+            ProfileFragment profileFragment = new ProfileFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(IntentExtras.EXTRA_SELLER, seller);
+            profileFragment.setArguments(bundle);
 
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_holder, profileFragment)
-                .setTransition(FragmentTransaction.TRANSIT_ENTER_MASK)
-                .addToBackStack(getActivity().getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
-                .commit();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_holder, profileFragment)
+                    .setTransition(FragmentTransaction.TRANSIT_ENTER_MASK)
+                    .addToBackStack(FRAGMENT_NAME)
+                    .commit();
+        }
     }
 
     @OnClick(R.id.btn_delete)
@@ -297,8 +303,14 @@ public class ListingDetailFragment extends Fragment  {
                 @Override
                 public void onPersonLoaded(Person person) {
                     seller = person;
+                    String currentUserUid = FirebaseHelper.getCurrentUserUid();
+                    if (currentUserUid != null ){
+                        isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
+                    }else{
+                        isViewingOwnListing = false;
+                        listingActionFAB.setVisibility(View.GONE);
+                    }
 
-                    isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
                     if (isViewingOwnListing) {
                         sellerContainer.setVisibility(View.GONE);
                         deleteOptionsContainer.setVisibility(View.VISIBLE);
