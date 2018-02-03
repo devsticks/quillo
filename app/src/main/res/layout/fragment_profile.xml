@@ -31,9 +31,9 @@
                 <ImageView
                     android:id="@+id/imv_profile_picture"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
+                    android:layout_height="200dp"
                     android:background="@color/DarkText"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop" />
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -94,7 +94,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_profile_listing_holder"
             android:layout_width="match_parent"
-            android:layout_height="451dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_marginTop="0dp"
 
