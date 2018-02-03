@@ -71,6 +71,7 @@ public class LoginSignupFragment extends Fragment {
         final Context context = new ContextThemeWrapper(getActivity(), R.style.AppTheme_Dark);
         LayoutInflater layoutInflater = inflater.cloneInContext(context);
         View view = layoutInflater.inflate(R.layout.fragment_signup_login, container, false);
+        view.setBackgroundColor(getResources().getColor(R.color.Primary));
 
         ButterKnife.bind(this, view);
         setUpView(view);
