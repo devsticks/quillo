@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +30,12 @@ import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.PasswordListener;
+import io.quillo.quillo.interfaces.PersonListener;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.utils.HitsList;
 import io.quillo.quillo.utils.HitsObject;
 import io.quillo.quillo.utils.ListingLoader;
@@ -49,6 +54,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class SearchFragment extends Fragment implements ListingCellListener, SearchView.OnQueryTextListener{
+
+    private static final String BASE_URL = "http://35.205.236.168//elasticsearch/listings/listing/";
 
 
     @BindView(R.id.recycler_view)
@@ -77,8 +84,34 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         super.onCreate(savedInstanceState);
         adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
-    }
+        checkIfUniversityIsKnown();
 
+    }
+    public void checkIfUniversityIsKnown(){
+        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+
+        if (universityUid == null){
+            //Uni is not saved in shared pref
+            if(currentUser == null){
+                //User is not logged in
+
+                ((MainActivity)getActivity()).showLandingFragment();
+
+            } else {
+                //User is logged in get uni from firebase
+                ((MainActivity)getActivity()).quilloDatabase.loadPerson(currentUser.getUid(), new PersonListener() {
+                    @Override
+                    public void onPersonLoaded(Person person) {
+                        String personUniversityUid = person.getUniversityUid();
+                        ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(personUniversityUid);
+                    }
+                });
+
+            }
+        }
+    }
 
 
     @Nullable
@@ -89,12 +122,19 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         setUpView(view);
         onQueryTextChange("");
 
+
         return view;
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         clearDatabase();
     }
 
@@ -183,11 +223,15 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
 
+        if (universityUid == null){
+            return;
+        }
+
         ((MainActivity)getActivity()).quilloDatabase.getElasticSearchPassword(new PasswordListener() {
             @Override
             public void onPasswordLoaded(String password) {
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(getString(R.string.base_url))
+                        .baseUrl(BASE_URL)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
 

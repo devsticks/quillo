@@ -44,6 +44,7 @@ import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.utils.RotateBitmap;
 
 /**
  * Created by shkla on 2018/01/22.
@@ -51,6 +52,7 @@ import io.quillo.quillo.data.Listing;
 //TODO: Make this class look nice
 public class AddEditListingFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener{
     private static final int RC_PERMISSIONS = 1;
+    public static final String FRAGMENT_NAME = AddEditListingFragment.class.getName();
 
     private Listing listing;
     private boolean isInEditMode = false;
@@ -125,6 +127,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @Override
     public void getImageBitmap(Bitmap bitmap) {
         photo1.setImageBitmap(bitmap);
+
     }
 
 
@@ -185,7 +188,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             listing.setIsbn(fields.get(DatabaseContract.FIREBASE_LISTING_ISBN));
             listing.setUniversityUid(fields.get(DatabaseContract.FIREBASE_LISTING_UNIVERSITY_UID));
 
-            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 80), new OnSuccessListener() {
+            ((MainActivity)getActivity()).quilloDatabase.updateListing(listing, getBytesFromBitmap(getBitmapFromPhoto(), 90), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     Toast.makeText(getContext(), "Listing updated", Toast.LENGTH_SHORT);
@@ -224,6 +227,10 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             if (currentImage == defaultImage) {
                 photo1.setImageResource(R.drawable.ic_open_book);
             }
+
+            Bitmap bitmap = getBitmapFromPhoto();
+            RotateBitmap rotateBitmap = new RotateBitmap();
+
 
             ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
             photo1.setTag(notDefaultTag);

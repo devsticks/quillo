@@ -58,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        quilloDatabase = new QuilloDatabase();
         setContentView(R.layout.activity_main);
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
         initBottomNavBar();
         initFragments();
-        quilloDatabase = new QuilloDatabase();
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        checkIfUniversityIsKnown();
+
     }
 
     public void hideBottomNavBar() {

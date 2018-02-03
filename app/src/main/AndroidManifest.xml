@@ -34,6 +34,7 @@
         <activity
             android:name=".views.SignUpLoginActivity"
             android:theme="@style/AppTheme.Dark" />
+        <activity android:name=".utils.FotoAppartCamera" />
     </application>
 
 </manifest>
