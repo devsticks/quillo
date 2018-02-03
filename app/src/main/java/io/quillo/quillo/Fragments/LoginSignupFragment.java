@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.PersonListener;
 
@@ -47,8 +48,8 @@ public class LoginSignupFragment extends Fragment {
     @BindView(R.id.input_name)
     EditText inputName;
     @BindView(R.id.input_name_holder) View inputNameHolder;
-    @BindView(R.id.input_university_holder) View inputUniversityHolder;
-    @BindView(R.id.input_university) EditText inputUniversity;
+    @BindView(R.id.input_university)
+    AutoCompleteTextView inputUniversity;
     @BindView(R.id.input_email) EditText inputEmail;
     @BindView(R.id.input_email_holder) View inputEmailHolder;
     @BindView(R.id.input_password) EditText inputPassword;
@@ -91,6 +92,7 @@ public class LoginSignupFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+        inputUniversity.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
         if(universityUid != null){
             inputUniversity.setText(universityUid);
         }
@@ -111,7 +113,7 @@ public class LoginSignupFragment extends Fragment {
         signupToggle.setTextColor(v.getContext().getResources().getColor(R.color.Primary));
 
         inputNameHolder.setVisibility(View.VISIBLE);
-        inputUniversityHolder.setVisibility(View.VISIBLE);
+        inputUniversity.setVisibility(View.VISIBLE);
 //        TODO GET FOCUS SWAPPING TO WORK
 //        inputNameHolder.requestFocus();
 //        inputName.requestFocus();
@@ -130,7 +132,7 @@ public class LoginSignupFragment extends Fragment {
 //        TODO GET FOCUS SWAPPING TO WORK
 //        inputEmail.requestFocus();
         inputNameHolder.setVisibility(View.GONE);
-        inputUniversityHolder.setVisibility(View.GONE);
+        inputUniversity.setVisibility(View.GONE);
         signupLoginButton.setText("LOGIN");
     }
 

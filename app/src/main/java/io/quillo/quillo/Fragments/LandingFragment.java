@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,6 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/27.
@@ -48,12 +48,13 @@ public class LandingFragment extends Fragment{
         View view  = inflater.inflate(R.layout.fragment_landing, container, false);
         ButterKnife.bind(this, view);
 
-        String[] universities = getResources().getStringArray(R.array.universities);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,universities);
-        universityInput.setAdapter(adapter);
+
+        universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
 
         return view;
     }
+
+
 
     //TODO: Find a way to do auto complete
     private void setupUniversityTextField(){

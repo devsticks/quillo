@@ -26,6 +26,7 @@ import io.quillo.quillo.interfaces.DataListener;
 import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.PersonListingsListener;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by Stickells on 13/01/2018.
