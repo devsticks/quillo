@@ -140,7 +140,9 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     public void onStop() {
         super.onStop();
         adapter.removeAllListings();
-        ((MainActivity)getActivity()).quilloDatabase.stopObservingPersonListings(seller.getUid());
+        if (seller.getUid() != null) {
+            ((MainActivity) getActivity()).quilloDatabase.stopObservingPersonListings(seller.getUid());
+        }
     }
 
     @OnClick(R.id.btn_edit_profile)

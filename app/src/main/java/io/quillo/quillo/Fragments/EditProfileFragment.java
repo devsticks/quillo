@@ -87,7 +87,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         }
     }
 
-    @OnClick(R.id.profile_image)
+    @OnClick({R.id.profile_image, R.id.fab_add_photo})
     public void handleProfileImageClick(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
