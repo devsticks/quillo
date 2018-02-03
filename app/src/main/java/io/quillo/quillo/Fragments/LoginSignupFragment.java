@@ -183,6 +183,7 @@ public class LoginSignupFragment extends Fragment {
         auth.getCurrentUser().updateProfile(profileChangeRequest).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                auth.getCurrentUser().sendEmailVerification();
                 if(task.isSuccessful()) {
                     onSignupSuccess();
                 }
@@ -235,6 +236,7 @@ public class LoginSignupFragment extends Fragment {
         //TODO Link with an actual uni UID
         Person person = new Person(user.getUid(), user.getDisplayName(), user.getEmail(), university);
         ((MainActivity)getActivity()).quilloDatabase.addPerson(person);
+
 
         Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
         ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(university);

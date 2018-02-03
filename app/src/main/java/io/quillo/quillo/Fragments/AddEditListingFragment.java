@@ -2,6 +2,7 @@ package io.quillo.quillo.Fragments;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -41,10 +42,9 @@ import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.DatabaseContract;
-import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.utils.RotateBitmap;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/22.
@@ -228,16 +228,40 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                 photo1.setImageResource(R.drawable.ic_open_book);
             }
 
-            Bitmap bitmap = getBitmapFromPhoto();
-            RotateBitmap rotateBitmap = new RotateBitmap();
 
 
-            ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
-            photo1.setTag(notDefaultTag);
+            if (FirebaseHelper.getCurrentFirebaseUser().isEmailVerified()){
+                ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
+                Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
+                ((MainActivity) getActivity()).showProfileFragment(false);
+                photo1.setTag(notDefaultTag);
+            }else{
+                showEmailNotVerifiedAlert();
+            }
+
+
         }
 
-        Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
-        ((MainActivity) getActivity()).showProfileFragment(false);
+
+    }
+
+    private void showEmailNotVerifiedAlert(){
+        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(getActivity(), android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+        alertDialog.setTitle("Email not verified");
+        alertDialog.setMessage("We have sent an email to: " + FirebaseHelper.getCurrentFirebaseUser().getEmail() + "\nPlease verify your email before adding a listing");
+        alertDialog.setPositiveButton("Send Verification again", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                FirebaseHelper.getCurrentFirebaseUser().sendEmailVerification();
+            }
+        });
+        alertDialog.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        alertDialog.show();
     }
 
     private byte[] getBytesFromBitmap(Bitmap bitmap, int quality){

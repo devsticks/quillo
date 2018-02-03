@@ -269,9 +269,6 @@ public class MainActivity extends AppCompatActivity {
             String backFragmentName = backStackEntry.getName();
             updateTabBar(backFragmentName);
         }
-
-
-
         super.onBackPressed();
     }
 
