@@ -142,9 +142,18 @@
 
     <!--Supported Universities-->
     <string-array name="universities">
-        <item>University of Cape Town</item>
+        <item>UCT</item>
         <item>WITS</item>
         <item>CPUT</item>
+        <item>UJ</item>
+        <item>University of Witwatersrand</item>
+        <item>Monash South Africa</item>
+        <item>Rhodes University</item>
+        <item>North West University</item>
+        <item>University of Pretoria</item>
+        <item>University of Cape Town</item>
+        <item>Cape Peninsula University of Technology</item>
+        <item>Nelson Mandela University</item>
 
     </string-array>
 
