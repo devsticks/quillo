@@ -51,18 +51,18 @@ public class ListingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        if (viewType == VIEW_TYPE_LOADING){
-//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_loading_data, parent, false);
-//            return new LoadingViewHolder(v);
-//        }else{
+        if (viewType == VIEW_TYPE_LOADING){
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_loading_data, parent, false);
+            return new LoadingViewHolder(v);
+        }else{
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.listing_cell, parent, false);
             return new ListingCell(v);
-//        }
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-//        if (holder instanceof ListingCell) {
+        if (holder instanceof ListingCell) {
             ListingCell mHolder = (ListingCell)holder;
 
             Listing listing = listings.get(position);
@@ -76,11 +76,11 @@ public class ListingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (listing.getImageUrl() != null) {
                 Glide.with(context).load(listing.getImageUrl()).into(mHolder.getIcon());
             }
-//        }
-//        else if (holder instanceof LoadingViewHolder) {
-//            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-//            loadingViewHolder.progressBar.setIndeterminate(true);
-//        }
+        }
+        else if (holder instanceof LoadingViewHolder) {
+            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+            loadingViewHolder.progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
@@ -163,27 +163,27 @@ public class ListingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         isLoading = false;
     }
 
-//    public void addOnScroll(RecyclerView rcv){
-//        recyclerView = rcv;
-//
-////        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
-//        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-//
-//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                totalItemCount = linearLayoutManager.getItemCount();
-//                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-//                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-//                    if (mOnLoadMoreListener != null) {
-//                        mOnLoadMoreListener.onLoadMore();
-//                    }
-//                    isLoading = true;
-//                }
-//            }
-//        });
-//    }
+    public void addOnScroll(RecyclerView rcv){
+        recyclerView = rcv;
+
+//        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItemCount = linearLayoutManager.getItemCount();
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    if (mOnLoadMoreListener != null) {
+                        mOnLoadMoreListener.onLoadMore();
+                    }
+                    isLoading = true;
+                }
+            }
+        });
+    }
 
 
     // LISTINGCELL STUFF MOVED FROM HERE TO OWN CLASS, LISTING CELL

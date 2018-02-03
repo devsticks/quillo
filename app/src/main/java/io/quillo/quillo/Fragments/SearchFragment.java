@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
@@ -98,39 +100,38 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
         ButterKnife.bind(this, view);
         setUpView(view);
-        universityUid = getString(R.string.shared_pref_university_key);
         savedSearchText = "";
 
-//        adapter.addOnScroll(recyclerView);
+        adapter.addOnScroll(recyclerView);
 
-//        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-//            @Override public void onLoadMore() {
-//                Log.e("haint", "Load More");
-//
-//                //Add the loading spinner
-//                searchListings.add(null);
-//                adapter.notifyItemInserted(searchListings.size() - 1);
-//
-//                //Load more data for reyclerview
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override public void run() {
-//                        Log.e("haint", "Load More 2");
-//
-//                        //Remove loading spinner
-//                        searchListings.remove(searchListings.size() - 1);
-//                        adapter.notifyItemRemoved(searchListings.size());
-//
-//                        if (adapter.getListings().size() == 0){
-//                            searchPage = 0;
-//                        }
-//                        elasticSearchQuery(savedSearchText);
-//
-//                        adapter.notifyDataSetChanged();
-//                        adapter.setLoaded(); /////wahhhaayayyaay
-//                    }
-//                }, 5000);
-//            }
-//        });
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override public void onLoadMore() {
+                Log.e("haint", "Load More");
+
+                //Add the loading spinner
+                searchListings.add(null);
+                adapter.notifyItemInserted(searchListings.size() - 1);
+
+                //Load more data for reyclerview
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        Log.e("haint", "Load More 2");
+
+                        //Remove loading spinner
+                        adapter.removeListing(searchListings.size() - 1);
+                        adapter.notifyItemRemoved(searchListings.size());
+
+                        if (adapter.getListings().size() == 0){
+                            searchPage = 0;
+                        }
+                        elasticSearchQuery(savedSearchText);
+
+                        adapter.notifyDataSetChanged();
+                        adapter.setLoaded(); /////wahhhaayayyaay
+                    }
+                }, 5000);
+            }
+        });
 
         return view;
     }
@@ -143,7 +144,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     private void setupDatabase(){
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+        universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
 
         mElasticSearchPassword = ((MainActivity)getActivity()).quilloDatabase.getElasticSearchPassword(new DataListener() {
             @Override
@@ -163,25 +164,25 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
             }
         });
 
-//        elasticSearchQuery("");
+        elasticSearchQuery("");
 
-        ((MainActivity)getActivity()).quilloDatabase.observeListings(universityUid, new ListingsListener() {
-            @Override
-            public void onListingLoaded(Listing listing) {
-                adapter.addListing(listing);
-                Log.i(SearchFragment.class.getName(), "Listing added: " + listing.getUid());
-            }
-
-            @Override
-            public void onListingUpdated(Listing listing) {
-
-            }
-
-            @Override
-            public void onListingRemoved(Listing listing) {
-
-            }
-        });
+//        ((MainActivity)getActivity()).quilloDatabase.observeListings(universityUid, new ListingsListener() {
+//            @Override
+//            public void onListingLoaded(Listing listing) {
+//                adapter.addListing(listing);
+//                Log.i(SearchFragment.class.getName(), "Listing added: " + listing.getUid());
+//            }
+//
+//            @Override
+//            public void onListingUpdated(Listing listing) {
+//
+//            }
+//
+//            @Override
+//            public void onListingRemoved(Listing listing) {
+//
+//            }
+//        });
     }
 
     private void clearDatabase(){
@@ -194,17 +195,12 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
-//        spinner = (ProgressBar)view.findViewById(R.id.indeterminateBar);
-//        spinner.setVisibility(View.VISIBLE);
-
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
-
-//        spinner.setVisibility(View.VISIBLE);
     }
 
 
@@ -259,12 +255,10 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     }
 
     public void elasticSearchQuery(final String searchText){ //, final DataListener dataListener
-        mIsLoading = true;
-
-        if (searchPage == 0) {
-            adapter.removeAllListings();
-            searchAdapter = new ListingAdapter(this, getContext(), false);
-        }
+//        if (searchPage == 0) {
+////            adapter.removeAllListings();
+//            searchAdapter = new ListingAdapter(this, getContext(), false);
+//        }
         
         searchListings = new ArrayList<Listing>();
 
@@ -284,12 +278,12 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         // Add other parameters here in future
         searchString = searchString + searchText + "*";
 
-//        if (universityUid != null) {
-//            searchString = searchString + " universityUid:" + universityUid;
-//        }
+        if (universityUid != null) {
+            searchString = searchString + " universityUid:" + universityUid;
+        }
 
         Call<HitsObject> call = searchAPI.search(headerMap, "AND",
-                0, searchListingsPerPage, searchString);
+                searchPage, searchListingsPerPage, searchString);
 
         call.enqueue(new Callback<HitsObject>() {
             @Override
@@ -320,6 +314,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                     if (searchPage == 0) {
                         Log.d("setting listings", searchListings.toString());
                         adapter.setListings(searchListings);
+                        recyclerView.setAdapter(adapter);
                     }
                     else{
                         Log.d("adding listings", searchListings.toString());
