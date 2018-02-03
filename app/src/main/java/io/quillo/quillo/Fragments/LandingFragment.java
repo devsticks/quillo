@@ -8,8 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +29,8 @@ import io.quillo.quillo.controllers.MainActivity;
 
 public class LandingFragment extends Fragment{
 
-    @BindView(R.id.input_university)
-    EditText universityInput;
+    @BindView(R.id.universityInput)
+    AutoCompleteTextView universityInput;
     @BindView(R.id.btn_skip)
     TextView btnSkip;
 
@@ -46,6 +47,10 @@ public class LandingFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view  = inflater.inflate(R.layout.fragment_landing, container, false);
         ButterKnife.bind(this, view);
+
+        String[] universities = getResources().getStringArray(R.array.universities);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,universities);
+        universityInput.setAdapter(adapter);
 
         return view;
     }

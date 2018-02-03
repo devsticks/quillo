@@ -21,7 +21,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.List;
 
-import io.quillo.quillo.R;
 import io.quillo.quillo.interfaces.BookmarkListener;
 import io.quillo.quillo.interfaces.DataListener;
 import io.quillo.quillo.interfaces.ListingsListener;
@@ -204,6 +203,7 @@ public class QuilloDatabase {
         if(currentUserUid != null){
             databaseListingsRef.child(listing.getUid()).removeValue();
             databasePersonListingsRef.child(currentUserUid).child(listing.getUid()).removeValue();
+            storageListingRef.child(listing.getUid()).delete();
             deleteListingFromBookmarks(listing);
         }
 

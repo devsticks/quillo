@@ -264,10 +264,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-        FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
-        String backFragmentName = backStackEntry.getName();
+        if (backStackCount > 0) {
+            FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
+            String backFragmentName = backStackEntry.getName();
+            updateTabBar(backFragmentName);
+        }
 
-        updateTabBar(backFragmentName);
+
 
         super.onBackPressed();
     }
