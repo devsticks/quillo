@@ -6,10 +6,12 @@ package io.quillo.quillo.utils;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ProgressBar;
 
 public abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
     private int mPreviousTotal = 0;
     private boolean mLoading = true;
+    private ProgressBar itemProgressBar;
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -27,7 +29,7 @@ public abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
         }
         int visibleThreshold = 5;
         if (!mLoading && (totalItemCount - visibleItemCount)
-                <= (firstVisibleItem + visibleThreshold)) {
+                <= (firstVisibleItem + visibleThreshold) && !(totalItemCount < visibleThreshold)) {
             // End has been reached
 
             onLoadMore();
