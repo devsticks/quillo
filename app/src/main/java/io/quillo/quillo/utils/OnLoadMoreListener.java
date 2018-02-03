@@ -29,7 +29,7 @@ public abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
         }
         int visibleThreshold = 5;
         if (!mLoading && (totalItemCount - visibleItemCount)
-                <= (firstVisibleItem + visibleThreshold) && !(totalItemCount < visibleThreshold)) {
+                <= (firstVisibleItem + visibleThreshold) && totalItemCount > visibleThreshold) {
             // End has been reached
 
             onLoadMore();

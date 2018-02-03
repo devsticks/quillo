@@ -1,7 +1,6 @@
 package io.quillo.quillo.controllers;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,31 +14,18 @@ import java.util.List;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.interfaces.ListingCellListener;
-import io.quillo.quillo.utils.OnLoadMoreListener;
 import io.quillo.quillo.views.ListingCell;
-import io.quillo.quillo.views.LoadingViewHolder;
 
 /**
  * Created by Stickells on 18/01/2018.
  */
 
-public class ListingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private final int VIEW_TYPE_ITEM = 0;
-    private final int VIEW_TYPE_LOADING = 1;
+public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
 
     private List<Listing> listings;
     private Context context;
     private boolean isViewingOwnListings;
     private ListingCellListener listingCellListener;
-    //dis 4 srch #its way too late
-    private OnLoadMoreListener mOnLoadMoreListener;
-    private RecyclerView recyclerView;
-
-    // page-my-nate
-    private boolean isLoading;
-    private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
 
     public ListingAdapter(ListingCellListener listingCellListener, Context context, boolean isViewingOwnListings) {
         this.listingCellListener = listingCellListener;
@@ -49,36 +35,24 @@ public class ListingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_LOADING){
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_loading_data, parent, false);
-            return new LoadingViewHolder(v);
-        }else{
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.listing_cell, parent, false);
-            return new ListingCell(v);
-        }
+    public ListingCell onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.listing_cell, parent, false);
+        return new ListingCell(v);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ListingCell) {
-            ListingCell mHolder = (ListingCell)holder;
+    public void onBindViewHolder(ListingCell holder, int position) {
 
-            Listing listing = listings.get(position);
-            mHolder.setListing(listing);
+        Listing listing = listings.get(position);
+        holder.setListing(listing);
 
-            if(isViewingOwnListings){
-                mHolder.hideBookmark();
-            }
-
-            mHolder.setListingCellListener(listingCellListener);
-            if (listing.getImageUrl() != null) {
-                Glide.with(context).load(listing.getImageUrl()).into(mHolder.getIcon());
-            }
+        if (isViewingOwnListings) {
+            holder.hideBookmark();
         }
-        else if (holder instanceof LoadingViewHolder) {
-            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
-            loadingViewHolder.progressBar.setIndeterminate(true);
+
+        holder.setListingCellListener(listingCellListener);
+        if (listing.getImageUrl() != null) {
+            Glide.with(context).load(listing.getImageUrl()).into(holder.getIcon());
         }
     }
 

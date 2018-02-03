@@ -64,6 +64,12 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+    @BindView(R.id.loading_state)
+    View loadingState;
+    @BindView(R.id.empty_state)
+    View emptyState;
+    @BindView(R.id.error_state)
+    View errorState;
 
     public static SearchFragment newInstance(){
         SearchFragment searchFragment = new SearchFragment();
@@ -82,6 +88,11 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar itemProgressBar;
 
+    //state vars
+    public final int STATE_NORMAL = 0;
+    public final int STATE_LOADING = 1;
+    public final int STATE_EMPTY = 2;
+    public final int STATE_ERROR = 3;
 
 
     @Override
@@ -122,9 +133,11 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home_search, container, false);
+
         ButterKnife.bind(this, view);
         setUpView(view);
         onQueryTextChange("");
+
         return view;
     }
 
@@ -148,6 +161,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     public void setUpView(View view) {
 
+        showState(STATE_LOADING);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -164,6 +179,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                                                  itemProgressBar.setVisibility(View.VISIBLE);
 
                                                  if (lastSearchText == null){
+                                                     itemProgressBar.setVisibility(View.GONE);
                                                      return;
                                                  }
                                                  getHitsFromElasticSearchQuery(lastSearchText, new HitsLoadedListener() {
@@ -183,6 +199,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                                                              });
                                                              listingLoader.loadListings(listingUids);
                                                          }
+                                                         itemProgressBar.setVisibility(View.GONE);
                                                      }
                                                  });
                                              }
@@ -242,6 +259,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
             public void ListingUidsLoaded(ArrayList<String> listingUids) {
                 if (listingUids.isEmpty()){
                     //No listings match search
+                    showState(STATE_EMPTY);
                     adapter.removeAllListings();
                 }else {
 
@@ -328,6 +346,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                             Log.e("Error", "onResponse: IOException: " + e.getMessage());
                         } finally {
                             onRefreshComplete();
+                            showState(STATE_NORMAL);
                             searchPage++;
                         }
                     }
@@ -353,4 +372,37 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
             swipeRefreshLayout.setRefreshing(false);
         }
     }
+
+    private void showState(int stateNumber){
+        switch (stateNumber){
+            case STATE_NORMAL:
+                Log.e("State", "normal");
+                recyclerView.setVisibility(View.VISIBLE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.GONE);
+                errorState.setVisibility(View.GONE);
+                break;
+            case STATE_LOADING:
+                Log.e("State", "loading");
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.VISIBLE);
+                emptyState.setVisibility(View.GONE);
+                errorState.setVisibility(View.GONE);
+                break;
+            case STATE_EMPTY:
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.VISIBLE);
+                errorState.setVisibility(View.GONE);
+                break;
+            case STATE_ERROR:
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.GONE);
+                errorState.setVisibility(View.VISIBLE);
+                break;
+        }
+
+    }
+
 }
