@@ -20,10 +20,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
+import io.quillo.quillo.utils.RotateBitmap;
 
 /**
  * Created by shkla on 2018/01/21.
@@ -135,22 +138,19 @@ public class SelectPhotoDialog extends DialogFragment{
         } else if (requestCode == RC_CAMERA && resultCode == Activity.RESULT_OK) {
 
 
-            try{
+            /*try{
                 Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
                 onPhotoSelectedListener.getImageBitmap(thumbnail);
             }catch (Exception e){
                 e.printStackTrace();
-            }
-
-
-
-            /*RotateBitmap rotateBitmap = new RotateBitmap();
+            }*/
+            RotateBitmap rotateBitmap = new RotateBitmap();
             try {
-                Bitmap rotatedBitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), getImageUri(bitmap));
+                Bitmap rotatedBitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), imageUri);
                 onPhotoSelectedListener.getImageBitmap(rotatedBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
-            }*/
+            }
 
             getDialog().dismiss();
 
