@@ -145,6 +145,9 @@ public class QuilloDatabase {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String currentUserUid = FirebaseHelper.getCurrentUserUid();
                 final Listing listing = dataSnapshot.getValue(Listing.class);
+                if (listing == null){
+                    return;
+                }
                 if (currentUserUid != null){
                     databaseBookmarksRef.child(currentUserUid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override

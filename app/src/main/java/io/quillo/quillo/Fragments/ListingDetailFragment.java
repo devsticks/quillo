@@ -1,6 +1,7 @@
 package io.quillo.quillo.Fragments;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -85,6 +86,10 @@ public class ListingDetailFragment extends Fragment  {
     @BindView(R.id.imv_listing_image)
     ImageView listingImage;
 
+    @BindView(R.id.ic_text)
+    ImageView messageButton;
+    @BindView(R.id.lbl_text)
+    TextView messageText;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,15 +103,23 @@ public class ListingDetailFragment extends Fragment  {
 
         Bundle bundle = this.getArguments();
         ButterKnife.bind(this, view);
-
-        listingActionFAB.setVisibility(View.INVISIBLE);
-        sellerContainer.setVisibility(View.GONE);
-        deleteOptionsContainer.setVisibility(View.GONE);
-
+        setupViews();
         listingUid = bundle.getString(IntentExtras.EXTRA_LISTING_UID);
         loadListing();
 
         return view;
+    }
+
+    private void setupViews(){
+        listingActionFAB.setVisibility(View.INVISIBLE);
+        sellerContainer.setVisibility(View.GONE);
+        deleteOptionsContainer.setVisibility(View.GONE);
+
+        if (whatsAppIsInstalled()){
+            messageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_whatsapp));
+            messageText.setText("WhatsApp");
+        }
+
     }
 
     private void bindSellerToViews() {
@@ -195,6 +208,21 @@ public class ListingDetailFragment extends Fragment  {
         getFragmentManager().popBackStack();
     }
 
+    private boolean whatsAppIsInstalled(){
+        PackageManager pm = getActivity().getPackageManager();
+        boolean appInstalled;
+
+        try{
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+            appInstalled = true;
+        }catch (PackageManager.NameNotFoundException e){
+            appInstalled = false;
+        }
+
+        return appInstalled;
+
+    }
+
     private void setupSellerContainerButtons() {
         sellerContainerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,10 +253,15 @@ public class ListingDetailFragment extends Fragment  {
                 @Override
                 public void onClick(View view) {
                     try {
-                        Uri uri = Uri.parse("smsto:" + seller.getPhoneNumber());
+                        /*Uri uri = Uri.parse("smsto:" + seller.getPhoneNumber());
                         Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
                         smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
-                        view.getContext().startActivity(smsIntent);
+                        view.getContext().startActivity(smsIntent);*/
+                        String number = "+27" + seller.getPhoneNumber().substring(1);
+                        String queryText = "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo. For R" + listing.getPrice();
+                        Uri uri = Uri.parse("https://api.whatsapp.com/send?phone="+number+"&text="+queryText);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
                     } catch (Exception e) {
                         Toast.makeText(view.getContext(),
                                 "SMS failed, please try again later!",

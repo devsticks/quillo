@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -239,7 +240,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
 
 
-            if (FirebaseHelper.getCurrentFirebaseUser().isEmailVerified()){
+            if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
                 ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
                 Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
                 ((MainActivity) getActivity()).showProfileFragment(false);

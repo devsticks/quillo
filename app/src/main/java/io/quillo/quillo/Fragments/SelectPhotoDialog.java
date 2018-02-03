@@ -46,10 +46,7 @@ public class SelectPhotoDialog extends DialogFragment{
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        contentValues = new ContentValues();
-        contentValues.put(MediaStore.Images.Media.TITLE, "New Picture");
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "From your camera");
-        imageUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
         super.onCreate(savedInstanceState);
     }
 
@@ -104,8 +101,10 @@ public class SelectPhotoDialog extends DialogFragment{
     private  ContentValues contentValues;
     @OnClick(R.id.camera_tv)
     public void handleCameraClick() {
-
-
+        contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.TITLE, "New Picture");
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "From your camera");
+        imageUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 

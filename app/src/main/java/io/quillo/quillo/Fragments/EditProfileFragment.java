@@ -8,7 +8,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +42,7 @@ import io.quillo.quillo.utils.FirebaseHelper;
 //TODO: Clean up UI
 
 public class EditProfileFragment extends Fragment implements SelectPhotoDialog.OnPhotoSelectedListener {
-
+    private static final int RC_PERMISSIONS = 22;
     @BindView(R.id.profile_image)
     ImageView profileImage;
     @BindView(R.id.input_name)
@@ -96,11 +98,31 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
                 requestPermissions(new String[]{Manifest.permission.CAMERA},
                         1);
             }
+            if(getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            }
         }
 
         SelectPhotoDialog dialog = new SelectPhotoDialog();
         dialog.setTargetFragment(EditProfileFragment.this, 1);
         dialog.show(getActivity().getSupportFragmentManager(), "Select Photo");
+    }
+    private void verifyPermissions() {
+        String[] permissions = {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA};
+
+        if (ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext().getApplicationContext(), permissions[2]) == PackageManager.PERMISSION_GRANTED) {
+
+
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), permissions, RC_PERMISSIONS);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        verifyPermissions();
     }
 
     @OnClick(R.id.save_btn)
