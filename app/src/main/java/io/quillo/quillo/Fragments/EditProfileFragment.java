@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/27.
@@ -48,7 +50,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     @BindView(R.id.input_phone)
     EditText phoneInput;
     @BindView(R.id.input_university)
-    EditText universityInput;
+    AutoCompleteTextView universityInput;
 
     private Person person;
 
@@ -65,6 +67,8 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         person = (Person)this.getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
         bindPersonToViews();
+        universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
+
 
         return view;
     }

@@ -48,6 +48,7 @@ public class LoginSignupFragment extends Fragment {
     @BindView(R.id.input_name)
     EditText inputName;
     @BindView(R.id.input_name_holder) View inputNameHolder;
+    @BindView(R.id.input_university_holder) View inputUniversityHolder;
     @BindView(R.id.input_university)
     AutoCompleteTextView inputUniversity;
     @BindView(R.id.input_email) EditText inputEmail;
@@ -113,7 +114,7 @@ public class LoginSignupFragment extends Fragment {
         signupToggle.setTextColor(v.getContext().getResources().getColor(R.color.Primary));
 
         inputNameHolder.setVisibility(View.VISIBLE);
-        inputUniversity.setVisibility(View.VISIBLE);
+        inputUniversityHolder.setVisibility(View.VISIBLE);
 //        TODO GET FOCUS SWAPPING TO WORK
 //        inputNameHolder.requestFocus();
 //        inputName.requestFocus();
@@ -132,7 +133,7 @@ public class LoginSignupFragment extends Fragment {
 //        TODO GET FOCUS SWAPPING TO WORK
 //        inputEmail.requestFocus();
         inputNameHolder.setVisibility(View.GONE);
-        inputUniversity.setVisibility(View.GONE);
+        inputUniversityHolder.setVisibility(View.GONE);
         signupLoginButton.setText("LOGIN");
     }
 

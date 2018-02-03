@@ -21,6 +21,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -67,7 +68,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     @BindView(R.id.input_price)
     TextInputEditText priceInput;
     @BindView(R.id.input_university)
-    TextInputEditText universityInput;
+    AutoCompleteTextView universityInput;
     @BindView(R.id.imv_listing_photo_1)
     ImageView photo1;
     @BindView(R.id.btn_publish)
@@ -277,6 +278,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         if(universityUid != null){
             universityInput.setText(universityUid);
         }
+        universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
 
     }
 
@@ -309,6 +311,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         setupUniversityInput();
         setupPriceInput();
         setupISBNInput();
+
     }
 
     private void bindListingToViews() {

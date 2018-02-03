@@ -29,7 +29,7 @@ import io.quillo.quillo.utils.FirebaseHelper;
 
 public class LandingFragment extends Fragment{
 
-    @BindView(R.id.universityInput)
+    @BindView(R.id.input_university)
     AutoCompleteTextView universityInput;
     @BindView(R.id.btn_skip)
     TextView btnSkip;

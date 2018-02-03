@@ -74,21 +74,20 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_university_holder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
-
-            <android.support.design.widget.TextInputEditText
+            android:layout_height="wrap_content">
+            <AutoCompleteTextView
                 android:id="@+id/input_university"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="University"
-                android:inputType="textCapWords" />
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:hint="University" />
 
         </android.support.design.widget.TextInputLayout>
+
+
 
         <Button
             android:id="@+id/save_btn"
