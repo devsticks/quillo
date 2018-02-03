@@ -168,6 +168,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
+
     private Bitmap getBitmapFromPhoto(){
         profileImage.setDrawingCacheEnabled(true);
         profileImage.buildDrawingCache();

@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
 
-        toolbar.setVisibility(View.VISIBLE);
+        hideBottomNavBar();
         toolbar.getBackground().setAlpha(0);
         //hideBottomNavBar();
     }
