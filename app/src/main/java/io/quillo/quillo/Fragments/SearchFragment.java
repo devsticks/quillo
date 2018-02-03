@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +40,7 @@ import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
+import io.quillo.quillo.interfaces.OnLoadMoreListener;
 import io.quillo.quillo.interfaces.PasswordListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.FirebaseHelper;
@@ -76,13 +78,13 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     // Search vars
     MaterialSearchView searchView;
-    private String mElasticSearchPassword;
-    private ArrayList<Listing> searchListings;
     private String universityUid;
     private int searchPage = 0;
     private int searchListingsPerPage = 12;
+    private String lastSearchText;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar itemProgressBar;
 
 
 
@@ -127,38 +129,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         ButterKnife.bind(this, view);
         setUpView(view);
         onQueryTextChange("");
-
-//        adapter.addOnScroll(recyclerView);
-//
-//        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-//            @Override public void onLoadMore() {
-//                Log.e("haint", "Load More");
-//
-//                //Add the loading spinner
-//                searchListings.add(null);
-//                adapter.notifyItemInserted(searchListings.size() - 1);
-//
-//                //Load more data for reyclerview
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override public void run() {
-//                        Log.e("haint", "Load More 2");
-//
-//                        //Remove loading spinner
-//                        adapter.removeListing(searchListings.size() - 1);
-//                        adapter.notifyItemRemoved(searchListings.size());
-//
-//                        if (adapter.getListings().size() == 0){
-//                            searchPage = 0;
-//                        }
-//                        elasticSearchQuery(savedSearchText);
-//
-//                        adapter.notifyDataSetChanged();
-//                        adapter.setLoaded(); /////wahhhaayayyaay
-//                    }
-//                }, 5000);
-//            }
-//        });
-
         return view;
     }
 
@@ -190,6 +160,38 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
+
+        itemProgressBar = view.findViewById(R.id.item_progress_bar);
+        recyclerView.addOnScrollListener(new OnLoadMoreListener() {
+                                             @Override
+                                             public void onLoadMore() {
+                                                 itemProgressBar.setVisibility(View.VISIBLE);
+
+                                                 if (lastSearchText == null){
+                                                     return;
+                                                 }
+                                                 getHitsFromElasticSearchQuery(lastSearchText, new HitsLoadedListener() {
+                                                     @Override
+                                                     public void ListingUidsLoaded(ArrayList<String> listingUids) {
+                                                         if (listingUids.isEmpty()){
+                                                             //No listings match search
+                                                             adapter.removeAllListings();
+                                                         }else {
+
+                                                             ListingLoader listingLoader = new ListingLoader(((MainActivity) getActivity()).quilloDatabase, new ListingLoader.ListingLoaderListener() {
+                                                                 @Override
+                                                                 public void onListingsLoaded(List<Listing> listings) {
+                                                                     adapter.addListings(listings);
+                                                                     itemProgressBar.setVisibility(View.GONE);
+                                                                 }
+                                                             });
+                                                             listingLoader.loadListings(listingUids);
+                                                         }
+                                                     }
+                                                 });
+                                             }
+                                         });
+
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -235,6 +237,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     @Override
     public boolean onQueryTextChange(String searchText) {
         searchPage = 0;
+        lastSearchText = searchText;
         if (searchText == null){
             searchText = "";
         }
@@ -329,6 +332,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                             Log.e("Error", "onResponse: IOException: " + e.getMessage());
                         } finally {
                             onRefreshComplete();
+                            searchPage++;
                         }
                     }
 
@@ -353,23 +357,4 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
             swipeRefreshLayout.setRefreshing(false);
         }
     }
-
-    //TODO: pagination onScroll
-//    RecyclerView.OnScrollListener mScrollListener = new RecyclerView.OnScrollListener() {
-//        @Override
-//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//            if (mIsLoading) {
-//                return;
-//            }
-//            int visibleItemCount = layoutManager.getChildCount();
-//            int totalItemCount = mLayoutManager.getItemCount();
-//            int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
-//            if (pastVisibleItems + visibleItemCount >= totalItemCount) {
-//                //End of list
-//            }
-//        }
-//    };
-
-
-
 }
