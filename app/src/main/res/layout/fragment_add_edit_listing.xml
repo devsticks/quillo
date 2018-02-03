@@ -19,7 +19,7 @@
             <ImageView
                 android:id="@+id/imv_listing_photo_1"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="250dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@android:color/black"
                 android:scaleType="centerCrop"
@@ -29,10 +29,11 @@
                 app:srcCompat="@drawable/ic_open_book" />
 
             <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_add_photo"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="168dp"
+                android:layout_marginTop="218dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_photo_camera_black_48px" />

@@ -1,7 +1,6 @@
 package io.quillo.quillo.Fragments;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -13,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -76,6 +76,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     ImageView photo1;
     @BindView(R.id.btn_publish)
     Button publishButton;
+    @BindView(R.id.fab_add_photo)
+    FloatingActionButton addPhotoButton;
 
     private Drawable addPictureIcon;
     private Drawable defaultBookIcon;
@@ -132,7 +134,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
     }
 
 
-    @OnClick({R.id.imv_listing_photo_1})
+    @OnClick({R.id.imv_listing_photo_1, R.id.fab_add_photo})
     public void handleAddPhotoClick() {
         showPhotoDialog();
     }

@@ -3,6 +3,7 @@ package io.quillo.quillo.Fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,19 +14,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
-import io.quillo.quillo.utils.RotateBitmap;
 
 /**
  * Created by shkla on 2018/01/21.
@@ -41,6 +39,15 @@ public class SelectPhotoDialog extends DialogFragment{
     public interface OnPhotoSelectedListener{
         void getImagePath(Uri imagePath);
         void getImageBitmap(Bitmap bitmap);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        contentValues = new ContentValues();
+        contentValues.put(MediaStore.Images.Media.TITLE, "New Picture");
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "From your camera");
+        imageUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        super.onCreate(savedInstanceState);
     }
 
     OnPhotoSelectedListener onPhotoSelectedListener;
@@ -90,10 +97,15 @@ public class SelectPhotoDialog extends DialogFragment{
         intent.setType("image/*");
         startActivityForResult(intent, RC_PICKFILE);
     }
-
+    private Uri imageUri;
+    private  ContentValues contentValues;
     @OnClick(R.id.camera_tv)
     public void handleCameraClick() {
+
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
         startActivityForResult(intent, RC_CAMERA);
 
         /*FotoAppartCamera fotoAppartCamera = new FotoAppartCamera();
@@ -123,15 +135,22 @@ public class SelectPhotoDialog extends DialogFragment{
         } else if (requestCode == RC_CAMERA && resultCode == Activity.RESULT_OK) {
 
 
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            onPhotoSelectedListener.getImageBitmap(bitmap);
-            RotateBitmap rotateBitmap = new RotateBitmap();
+            try{
+                Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
+                onPhotoSelectedListener.getImageBitmap(thumbnail);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+
+            /*RotateBitmap rotateBitmap = new RotateBitmap();
             try {
                 Bitmap rotatedBitmap = rotateBitmap.HandleSamplingAndRotationBitmap(getActivity(), getImageUri(bitmap));
                 onPhotoSelectedListener.getImageBitmap(rotatedBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             getDialog().dismiss();
 
@@ -158,9 +177,7 @@ public class SelectPhotoDialog extends DialogFragment{
     }
 
     public Uri getImageUri(Bitmap bitmap){
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, "Listing", null);
         return Uri.parse(path);
-
     }
 }
