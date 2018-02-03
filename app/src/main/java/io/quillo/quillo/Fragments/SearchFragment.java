@@ -188,6 +188,16 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
+
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onQueryTextChange("");
+                return;
+            }
+        });
+
     }
 
 
