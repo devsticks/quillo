@@ -2,8 +2,10 @@ package io.quillo.quillo.Fragments;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,12 +27,12 @@ import butterknife.OnClick;
 import de.cketti.mailto.EmailIntentBuilder;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ListingsListener;
 import io.quillo.quillo.interfaces.PersonListener;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/25.
@@ -290,6 +292,31 @@ public class ListingDetailFragment extends Fragment  {
                 }
             }
         });
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = "Look at this listing I found on quillo";
+                Uri imageUri = getImageUri(getBitmapFromPhoto());
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                shareIntent.setType("image/*");
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(shareIntent, "Share listing"));
+
+            }
+        });
+    }
+    public Uri getImageUri(Bitmap bitmap){
+        String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), bitmap, "Listing", null);
+        return Uri.parse(path);
+    }
+    private Bitmap getBitmapFromPhoto(){
+        listingImage.setDrawingCacheEnabled(true);
+        listingImage.buildDrawingCache();
+        return listingImage.getDrawingCache();
     }
 
     private void bindListingToViews() {
