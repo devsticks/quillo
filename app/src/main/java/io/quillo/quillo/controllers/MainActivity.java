@@ -77,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setVisibility(View.VISIBLE);
     }
 
+    public void setupToolbar(){
+        toolbar.getBackground().setAlpha(0);
+    }
+
     private void initBottomNavBar(){
         bottomNavigation = (BottomNavigationView) findViewById(R.id.navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
