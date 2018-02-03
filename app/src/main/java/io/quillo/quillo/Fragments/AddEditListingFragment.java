@@ -237,14 +237,14 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
 
 
-//            if (FirebaseHelper.getCurrentFirebaseUser().isEmailVerified()){
+            if (FirebaseHelper.getCurrentFirebaseUser().isEmailVerified()){
                 ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
                 Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
                 ((MainActivity) getActivity()).showProfileFragment(false);
                 photo1.setTag(notDefaultTag);
-//            }else{
-//                showEmailNotVerifiedAlert();
-//            }
+            }else{
+                showEmailNotVerifiedAlert();
+            }
 
 
         }
