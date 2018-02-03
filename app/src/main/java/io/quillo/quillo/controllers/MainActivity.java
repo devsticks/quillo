@@ -1,6 +1,5 @@
 package io.quillo.quillo.controllers;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -17,10 +16,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
@@ -33,7 +32,7 @@ import io.quillo.quillo.Fragments.LoginSignupFragment;
 import io.quillo.quillo.Fragments.ProfileFragment;
 import io.quillo.quillo.Fragments.SearchFragment;
 import io.quillo.quillo.R;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -52,19 +51,21 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private Toolbar toolbar;
     private boolean mustShowBottomNavBar = true;
+    MaterialSearchView searchView;
 
     public QuilloDatabase quilloDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        quilloDatabase = new QuilloDatabase();
         setContentView(R.layout.activity_main);
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
         initBottomNavBar();
         initFragments();
-        quilloDatabase = new QuilloDatabase();
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        initSearchBar();
         setSupportActionBar(toolbar);
-        checkIfUniversityIsKnown();
+
     }
 
     public void hideBottomNavBar() {
@@ -75,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
     public void showBottomNavBar() {
         mustShowBottomNavBar = true;
         bottomNavigation.setVisibility(View.VISIBLE);
+    }
+
+    public void setupToolbar(){
+        toolbar.getBackground().setAlpha(0);
     }
 
     private void initBottomNavBar(){
@@ -102,19 +107,37 @@ public class MainActivity extends AppCompatActivity {
         changeFragment(false);
     }
 
+    private void initSearchBar(){
+        searchView = (MaterialSearchView)findViewById(R.id.search_view);
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                if (selectedFragment != searchFragment){
+                    setSelectedFragment(searchFragment);
+                    changeFragment(true);
+//                    updateTabBar(selectedFragment.getTag());
+                }
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                searchFragment.onQueryTextChange("");
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.search, menu);
         menuInflater.inflate(R.menu.app_bar_overflow_menu, menu);
 
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
 
-        MenuItem searchMenuItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+//        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
 
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(searchFragment);
 
         return true;
@@ -260,11 +283,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
-        FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
-        String backFragmentName = backStackEntry.getName();
-
-        updateTabBar(backFragmentName);
-
+        if (backStackCount > 0) {
+            FragmentManager.BackStackEntry backStackEntry = getSupportFragmentManager().getBackStackEntryAt(backStackCount - 1);
+            String backFragmentName = backStackEntry.getName();
+            updateTabBar(backFragmentName);
+        }
         super.onBackPressed();
     }
 
@@ -370,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
                 .commit();
 
-        toolbar.setVisibility(View.VISIBLE);
+        hideBottomNavBar();
         toolbar.getBackground().setAlpha(0);
         //hideBottomNavBar();
     }
@@ -381,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
 
         LoginSignupFragment loginSignupFragment = new LoginSignupFragment();
         loginSignupFragment.setIntentions(goingTo, isLoggingIn);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, loginSignupFragment)
                 .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())

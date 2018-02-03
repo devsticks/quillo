@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,7 +27,7 @@ import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
@@ -39,6 +40,8 @@ import io.quillo.quillo.interfaces.PersonListingsListener;
  */
 
 public class ProfileFragment extends Fragment implements ListingCellListener, View.OnClickListener {
+
+    public static final String FRAGMENT_NAME = ProfileFragment.class.getName();
 
     private boolean isViewingOwnProfile = true;
     private Person seller;
@@ -190,7 +193,23 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
     @Override
     public void onListingClick(Listing listing) {
-        ((MainActivity) getActivity()).showListingDetailFragment(listing);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable(IntentExtras.EXTRA_LISTING_UID, listing.getUid());
+
+        ListingDetailFragment listingDetailFragment = new ListingDetailFragment();
+        listingDetailFragment.setArguments(bundle);
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_holder, listingDetailFragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(FRAGMENT_NAME)
+                .commit();
+
+        ((MainActivity)getActivity()).hideBottomNavBar();
+        ((MainActivity)getActivity()).setupToolbar();
+
     }
 
 

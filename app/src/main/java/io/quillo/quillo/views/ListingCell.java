@@ -9,8 +9,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import io.quillo.quillo.R;
-import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.data.FirebaseHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.interfaces.ListingCellListener;
 

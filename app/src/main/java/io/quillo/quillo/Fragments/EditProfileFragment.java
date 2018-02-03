@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,11 +27,11 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Person;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/27.
@@ -49,7 +50,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     @BindView(R.id.input_phone)
     EditText phoneInput;
     @BindView(R.id.input_university)
-    EditText universityInput;
+    AutoCompleteTextView universityInput;
 
     private Person person;
 
@@ -66,6 +67,8 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         person = (Person)this.getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
         bindPersonToViews();
+        universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
+
 
         return view;
     }
@@ -109,7 +112,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             person.setPhoneNumber(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
-            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 80), new OnSuccessListener() {
+            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 100), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
@@ -131,12 +134,15 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         ArrayList<String> supportedUniversities = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.universities)));
 
-        if(name.isEmpty()){
+        if(name.isEmpty() || name.equals(" ")){
+            nameInput.setError("Enter a name");
             return false;
         }
 
         if(email.isEmpty()){
+            emailInput.setError("Enter a valid email");
             return  false;
+
         }
 
 
@@ -166,6 +172,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();
     }
+
     private Bitmap getBitmapFromPhoto(){
         profileImage.setDrawingCacheEnabled(true);
         profileImage.buildDrawingCache();
