@@ -77,14 +77,4 @@ dependencies {
     compile 'com.github.tylersuehr7:empty-state-recyclerview:1.0.4'
 }
 
-
-
-
-
-
-
-
-
-
-
 apply plugin: 'com.google.gms.google-services'

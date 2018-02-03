@@ -116,12 +116,13 @@ public class MainActivity extends AppCompatActivity {
                 if (selectedFragment != searchFragment){
                     setSelectedFragment(searchFragment);
                     changeFragment(true);
+//                    updateTabBar(selectedFragment.getTag());
                 }
             }
 
             @Override
             public void onSearchViewClosed() {
-
+                searchFragment.onQueryTextChange("");
             }
         });
     }
