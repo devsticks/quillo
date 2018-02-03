@@ -3,7 +3,6 @@ package io.quillo.quillo.Fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,8 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +34,6 @@ import io.quillo.quillo.interfaces.DataListener;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.ListingsListener;
-import io.quillo.quillo.interfaces.OnLoadMoreListener;
 import io.quillo.quillo.utils.HitsList;
 import io.quillo.quillo.utils.HitsObject;
 import okhttp3.Credentials;
@@ -243,7 +239,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     public boolean onQueryTextChange(String searchText) {
         savedSearchText = searchText;
         searchPage = 0;
-
         if (searchText != null && !searchText.isEmpty()) {
             elasticSearchQuery(searchText);
         }
