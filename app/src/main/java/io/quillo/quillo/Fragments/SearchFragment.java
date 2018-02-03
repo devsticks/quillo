@@ -89,8 +89,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
         checkIfUniversityIsKnown();
-
-        setupDatabase();
     }
     public void checkIfUniversityIsKnown(){
         FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
@@ -127,36 +125,36 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         setUpView(view);
         onQueryTextChange("");
 
-        adapter.addOnScroll(recyclerView);
-
-        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override public void onLoadMore() {
-                Log.e("haint", "Load More");
-
-                //Add the loading spinner
-                searchListings.add(null);
-                adapter.notifyItemInserted(searchListings.size() - 1);
-
-                //Load more data for reyclerview
-                new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
-                        Log.e("haint", "Load More 2");
-
-                        //Remove loading spinner
-                        adapter.removeListing(searchListings.size() - 1);
-                        adapter.notifyItemRemoved(searchListings.size());
-
-                        if (adapter.getListings().size() == 0){
-                            searchPage = 0;
-                        }
-                        elasticSearchQuery(savedSearchText);
-
-                        adapter.notifyDataSetChanged();
-                        adapter.setLoaded(); /////wahhhaayayyaay
-                    }
-                }, 5000);
-            }
-        });
+//        adapter.addOnScroll(recyclerView);
+//
+//        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+//            @Override public void onLoadMore() {
+//                Log.e("haint", "Load More");
+//
+//                //Add the loading spinner
+//                searchListings.add(null);
+//                adapter.notifyItemInserted(searchListings.size() - 1);
+//
+//                //Load more data for reyclerview
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override public void run() {
+//                        Log.e("haint", "Load More 2");
+//
+//                        //Remove loading spinner
+//                        adapter.removeListing(searchListings.size() - 1);
+//                        adapter.notifyItemRemoved(searchListings.size());
+//
+//                        if (adapter.getListings().size() == 0){
+//                            searchPage = 0;
+//                        }
+//                        elasticSearchQuery(savedSearchText);
+//
+//                        adapter.notifyDataSetChanged();
+//                        adapter.setLoaded(); /////wahhhaayayyaay
+//                    }
+//                }, 5000);
+//            }
+//        });
 
         return view;
     }
@@ -171,49 +169,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     public void onDestroy() {
         super.onDestroy();
         clearDatabase();
-    }
-
-    private void setupDatabase(){
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
-
-        mElasticSearchPassword = ((MainActivity)getActivity()).quilloDatabase.getElasticSearchPassword(new DataListener() {
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onSuccess(DataSnapshot data) {
-                DataSnapshot singleSnapshot = data.getChildren().iterator().next();
-                mElasticSearchPassword = singleSnapshot.getValue().toString();
-            }
-
-            @Override
-            public void onFailed(DatabaseError databaseError) {
-
-            }
-        });
-
-        elasticSearchQuery("");
-
-//        ((MainActivity)getActivity()).quilloDatabase.observeListings(universityUid, new ListingsListener() {
-//            @Override
-//            public void onListingLoaded(Listing listing) {
-//                adapter.addListing(listing);
-//                Log.i(SearchFragment.class.getName(), "Listing added: " + listing.getUid());
-//            }
-//
-//            @Override
-//            public void onListingUpdated(Listing listing) {
-//
-//            }
-//
-//            @Override
-//            public void onListingRemoved(Listing listing) {
-//
-//            }
-//        });
     }
 
     private void clearDatabase(){
@@ -329,8 +284,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                     return;
                 }
 
-                Call<HitsObject> call = searchAPI.search(headerMap, "AND", searchString,
-                        searchListingsPerPage,searchPage*searchListingsPerPage);
+                Call<HitsObject> call = searchAPI.search(headerMap, "AND",
+                        searchPage*searchListingsPerPage, searchListingsPerPage,searchString);
 
                 call.enqueue(new Callback<HitsObject>() {
                     @Override
