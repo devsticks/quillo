@@ -75,9 +75,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
         adapter = new ListingAdapter(this, getContext(), false);
         setHasOptionsMenu(true);
     }
@@ -183,6 +180,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Sea
     }
 
     public void getHitsFromElasticSearchQuery(final String searchText, final HitsLoadedListener hitsLoadedListener){
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
 
         ((MainActivity)getActivity()).quilloDatabase.getElasticSearchPassword(new PasswordListener() {
             @Override
