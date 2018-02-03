@@ -26,7 +26,6 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
@@ -109,7 +108,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             person.setPhoneNumber(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
-            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 80), new OnSuccessListener() {
+            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 100), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
                     Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
@@ -131,12 +130,15 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         ArrayList<String> supportedUniversities = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.universities)));
 
-        if(name.isEmpty()){
+        if(name.isEmpty() || name.equals(" ")){
+            nameInput.setError("Enter a name");
             return false;
         }
 
         if(email.isEmpty()){
+            emailInput.setError("Enter a valid email");
             return  false;
+
         }
 
 

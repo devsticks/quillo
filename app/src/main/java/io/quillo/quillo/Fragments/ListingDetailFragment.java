@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -294,8 +293,13 @@ public class ListingDetailFragment extends Fragment  {
                 @Override
                 public void onPersonLoaded(Person person) {
                     seller = person;
-
-                    isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
+                    String currentUserUid = FirebaseHelper.getCurrentUserUid();
+                    if (currentUserUid != null ){
+                        isViewingOwnListing = FirebaseHelper.getCurrentUserUid().equals(listing.getSellerUid());
+                    }else{
+                        isViewingOwnListing = false;
+                        listingActionFAB.setVisibility(View.GONE);
+                    }
                     if (isViewingOwnListing) {
                         sellerContainer.setVisibility(View.GONE);
                         deleteOptionsContainer.setVisibility(View.VISIBLE);
