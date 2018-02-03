@@ -82,6 +82,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     private int searchPage = 0;
     private int searchListingsPerPage = 12;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
 
     @Override
@@ -189,12 +191,11 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
 
-        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 onQueryTextChange("");
-                return;
             }
         });
 
@@ -326,6 +327,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                             Log.e("Error", "onResponse: IndexOutOfBoundsException: " + e.getMessage());
                         } catch (IOException e) {
                             Log.e("Error", "onResponse: IOException: " + e.getMessage());
+                        } finally {
+                            onRefreshComplete();
                         }
                     }
 
@@ -343,6 +346,12 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
             }
         });
 
+    }
+
+    private void onRefreshComplete() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     //TODO: pagination onScroll
