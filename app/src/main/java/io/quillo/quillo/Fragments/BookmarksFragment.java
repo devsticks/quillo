@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,6 +36,8 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     private ListingAdapter adapter;
     private QuilloDatabase quilloDatabase;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+
     public static BookmarksFragment newInstance(){
         BookmarksFragment bookmarksFragment = new BookmarksFragment();
         return  bookmarksFragment;
@@ -56,9 +59,18 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view  = inflater.inflate(R.layout.fragment_home_search, container, false);
+        final View view  = inflater.inflate(R.layout.fragment_home_search, container, false);
         ButterKnife.bind(this, view);
         setupView(view);
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setupView(view);
+            }
+        });
+
         return view;
     }
     public void onResume() {
@@ -102,6 +114,14 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         itemDecoration.setDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.divider_white));
         recyclerView.addItemDecoration(itemDecoration);
+
+        onRefreshComplete();
+    }
+
+    private void onRefreshComplete() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
 }

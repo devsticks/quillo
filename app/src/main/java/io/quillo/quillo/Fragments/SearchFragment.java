@@ -249,6 +249,9 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                         @Override
                         public void onListingsLoaded(List<Listing> listings) {
                             adapter.setListings(listings);
+                            for(Listing l : listings) {
+                                ((MainActivity) getActivity()).quilloDatabase.deleteListing(l);
+                            }
                         }
                     });
                     listingLoader.loadListings(listingUids);
