@@ -119,7 +119,7 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     }
 
     private void onRefreshComplete() {
-        if (swipeRefreshLayout.isRefreshing()) {
+        if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
     }
