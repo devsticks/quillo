@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private ProfileFragment profileFragment;
     private Fragment selectedFragment = null;
     private BottomNavigationView bottomNavigation;
-    private Toolbar toolbar;
+    public Toolbar toolbar;
     private boolean mustShowBottomNavBar = true;
     MaterialSearchView searchView;
 
@@ -143,6 +143,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    public void resetPersonFragment(){
+        profileFragment = new ProfileFragment();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -154,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
             //TODO make legal page and call it here
         } else if (id == R.id.logout){
             FirebaseAuth.getInstance().signOut();
+
             showLoginRegisterScreen(searchFragment, true);
         }
 

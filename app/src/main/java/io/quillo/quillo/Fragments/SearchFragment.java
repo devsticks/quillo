@@ -128,7 +128,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         }
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -142,9 +141,16 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onStart() {
+        ((MainActivity)getActivity()).toolbar.setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).toolbar.getBackground().setAlpha(255);
+        super.onStart();
+    }
 
+    @Override
+    public void onStop() {
+        ((MainActivity)getActivity()).toolbar.getMenu().findItem(R.id.action_search).setVisible(false);
+        super.onStop();
     }
 
     @Override
@@ -210,7 +216,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                onQueryTextChange("");
+                onQueryTextChange(lastSearchText);
             }
         });
 

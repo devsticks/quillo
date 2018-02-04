@@ -215,6 +215,7 @@ public class LoginSignupFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
+                    auth.getCurrentUser().reload();
                     onLoginSuccess();
                     progressDialog.cancel();
                 }else{
@@ -263,6 +264,7 @@ public class LoginSignupFragment extends Fragment {
             public void onPersonLoaded(Person person) {
                 String universityUid = person.getUniversityUid();
                 ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(universityUid);
+                ((MainActivity)getActivity()).resetPersonFragment();
 
                 ((MainActivity) getActivity()).setSelectedFragment(goingTo);
                 ((MainActivity) getActivity()).changeFragment(false);
