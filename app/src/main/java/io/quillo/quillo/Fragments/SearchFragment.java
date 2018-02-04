@@ -187,7 +187,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                                                      public void ListingUidsLoaded(ArrayList<String> listingUids) {
                                                          if (listingUids.isEmpty()){
                                                              //No listings match search
-                                                             adapter.removeAllListings();
+                                                             //adapter.removeAllListings();
                                                          }else {
 
                                                              ListingLoader listingLoader = new ListingLoader(((MainActivity) getActivity()).quilloDatabase, new ListingLoader.ListingLoaderListener() {

@@ -256,7 +256,9 @@ public class QuilloDatabase {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         final Listing listing = dataSnapshot.getValue(Listing.class);
-
+                        if (listing == null){
+                            return;
+                        }
                         String currentUserUid = FirebaseHelper.getCurrentUserUid();
 
                         if (currentUserUid != null){

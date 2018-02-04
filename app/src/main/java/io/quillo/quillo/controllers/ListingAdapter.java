@@ -71,6 +71,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
         for (int i = 0; i < listings.size(); i++){
             addListing(listings.get(i));
         }
+        notifyDataSetChanged();
     }
 
     public void removeListing(int position) {

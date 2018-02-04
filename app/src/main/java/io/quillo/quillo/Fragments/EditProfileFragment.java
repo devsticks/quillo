@@ -137,7 +137,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 100), new OnSuccessListener() {
                 @Override
                 public void onSuccess(Object o) {
-                    Toast.makeText(getContext(), "Profile Updated", Toast.LENGTH_SHORT);
+                    Toast.makeText(getActivity(), "Profile Updated", Toast.LENGTH_SHORT);
                     getActivity().getSupportFragmentManager().popBackStack();
                     //Hide progress bar
                 }
