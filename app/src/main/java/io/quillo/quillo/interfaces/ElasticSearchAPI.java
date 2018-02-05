@@ -19,6 +19,7 @@ public interface ElasticSearchAPI {
             @Query("default_operator") String operator,
             @Query("from") int from,
             @Query("size") int size,
+            @Query("sort") String sortBy,
             @Query("q") String query
 
 
