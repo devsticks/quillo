@@ -82,7 +82,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     MaterialSearchView searchView;
     private String universityUid;
     private int searchPage = 0;
-    private int searchListingsPerPage = 12;
+    private int searchListingsPerPage = 14;
     private String lastSearchText;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -179,37 +179,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         recyclerView.addItemDecoration(itemDecoration);
 
         itemProgressBar = view.findViewById(R.id.item_progress_bar);
-        recyclerView.addOnScrollListener(new OnLoadMoreListener() {
-                                             @Override
-                                             public void onLoadMore() {
-                                                 itemProgressBar.setVisibility(View.VISIBLE);
-
-                                                 if (lastSearchText == null){
-                                                     itemProgressBar.setVisibility(View.GONE);
-                                                     return;
-                                                 }
-                                                 getHitsFromElasticSearchQuery(lastSearchText, new HitsLoadedListener() {
-                                                     @Override
-                                                     public void ListingUidsLoaded(ArrayList<String> listingUids) {
-                                                         if (listingUids.isEmpty()){
-                                                             //No listings match search
-                                                             //adapter.removeAllListings();
-                                                         }else {
-
-                                                             ListingLoader listingLoader = new ListingLoader(((MainActivity) getActivity()).quilloDatabase, new ListingLoader.ListingLoaderListener() {
-                                                                 @Override
-                                                                 public void onListingsLoaded(List<Listing> listings) {
-                                                                     adapter.addListings(listings);
-                                                                     itemProgressBar.setVisibility(View.GONE);
-                                                                 }
-                                                             });
-                                                             listingLoader.loadListings(listingUids);
-                                                         }
-                                                         itemProgressBar.setVisibility(View.GONE);
-                                                     }
-                                                 });
-                                             }
-                                         });
+        recyclerView.addOnScrollListener(resetOnScroll());
 
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
@@ -256,10 +226,11 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     @Override
     public boolean onQueryTextChange(String searchText) {
         searchPage = 0;
-        lastSearchText = searchText;
+
         if (searchText == null){
             searchText = "";
         }
+        lastSearchText = searchText;
         getHitsFromElasticSearchQuery(searchText, new HitsLoadedListener() {
             @Override
             public void ListingUidsLoaded(ArrayList<String> listingUids) {
@@ -289,6 +260,8 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     public void getHitsFromElasticSearchQuery(final String searchText, final HitsLoadedListener hitsLoadedListener){
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
+
+        Log.e("Page", "" + searchPage);
 
         if (universityUid == null){
             return;
@@ -320,7 +293,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                 }
 
                 Call<HitsObject> call = searchAPI.search(headerMap, "AND",
-                        searchPage*searchListingsPerPage, searchListingsPerPage,searchString);
+                        searchPage*searchListingsPerPage, searchListingsPerPage, "price", searchString);
 
                 call.enqueue(new Callback<HitsObject>() {
                     @Override
@@ -353,7 +326,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                         } finally {
                             onRefreshComplete();
                             showState(STATE_NORMAL);
-                            searchPage++;
                         }
                     }
 
@@ -363,6 +335,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                         Toast.makeText(getActivity(), "search failed", Toast.LENGTH_SHORT).show();
                     }
                 });
+                searchPage++;
             }
 
             @Override
@@ -382,14 +355,12 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     private void showState(int stateNumber){
         switch (stateNumber){
             case STATE_NORMAL:
-                Log.e("State", "normal");
                 recyclerView.setVisibility(View.VISIBLE);
                 loadingState.setVisibility(View.GONE);
                 emptyState.setVisibility(View.GONE);
                 errorState.setVisibility(View.GONE);
                 break;
             case STATE_LOADING:
-                Log.e("State", "loading");
                 recyclerView.setVisibility(View.GONE);
                 loadingState.setVisibility(View.VISIBLE);
                 emptyState.setVisibility(View.GONE);
@@ -409,6 +380,39 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                 break;
         }
 
+    }
+
+    public OnLoadMoreListener resetOnScroll(){
+        return new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                itemProgressBar.setVisibility(View.VISIBLE);
+
+                if (lastSearchText == null){
+                    itemProgressBar.setVisibility(View.GONE);
+                    return;
+                }
+                getHitsFromElasticSearchQuery(lastSearchText, new HitsLoadedListener() {
+                    @Override
+                    public void ListingUidsLoaded(ArrayList<String> listingUids) {
+                        if (listingUids.isEmpty()){
+                            //No listings match search
+                            //adapter.removeAllListings();
+                        }else {
+                            ListingLoader listingLoader = new ListingLoader(((MainActivity) getActivity()).quilloDatabase, new ListingLoader.ListingLoaderListener() {
+                                @Override
+                                public void onListingsLoaded(List<Listing> listings) {
+                                    adapter.addListings(listings);
+                                    itemProgressBar.setVisibility(View.GONE);
+                                }
+                            });
+                            listingLoader.loadListings(listingUids);
+                        }
+                        itemProgressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        };
     }
 
 }
