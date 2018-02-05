@@ -2,6 +2,7 @@ package io.quillo.quillo.data;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -454,7 +455,7 @@ public class QuilloDatabase {
     }
 
     public void updatePerson(final Person person, byte[] uploadBytes, final OnSuccessListener onSuccessListener){
-        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
+        final FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
 
         if(!currentUser.getDisplayName().equals(person.getName())){
             UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
@@ -471,7 +472,25 @@ public class QuilloDatabase {
         }
 
         if(!currentUser.getEmail().equals(person.getEmail())){
-            currentUser.updateEmail(person.getEmail());
+            currentUser.updateEmail(person.getEmail()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        currentUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()) {
+                                    currentUser.sendEmailVerification();
+                                }
+                            }
+                        });
+                    }else{
+                        Log.e(QuilloDatabase.class.getName(), "Could not updaate email : ");
+
+                    }
+                }
+            });
+
         }
 
         storagePeopleRef.child(person.getUid()).putBytes(uploadBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

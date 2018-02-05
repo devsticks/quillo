@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -367,6 +368,9 @@ public class MainActivity extends AppCompatActivity {
         );
 
         alertDialog.show();
+    }
+    public void showProfileUpdateSuccess(){
+        Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show();
     }
 
     public void showLandingFragment() {

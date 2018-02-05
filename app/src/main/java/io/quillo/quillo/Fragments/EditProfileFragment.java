@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.io.ByteArrayOutputStream;
@@ -58,8 +61,11 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     EditText phoneInput;
     @BindView(R.id.input_university)
     AutoCompleteTextView universityInput;
-
+    @BindView(R.id.input_password)
+    EditText passwordInput;
     private Person person;
+    private boolean userDidReauthenticate = false;
+    private String oldPassword = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,23 +98,43 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         builder.setTitle("Verify your password");
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.password_dialog, (ViewGroup)getView(), false);
-        final EditText passwordInput = (EditText)view.findViewById(R.id.input_password);
-
-        passwordInput.setInputType(InputType.TYPE_CLASS_TEXT| InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        passwordInput.setHint("Password");
+        final EditText dialogPasswordInput = (EditText)view.findViewById(R.id.input_password);
+        dialogPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT| InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        dialogPasswordInput.setHint("Password");
 
         builder.setView(view);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String password = passwordInput.getText().toString();
+            public void onClick(final DialogInterface dialogInterface, int i) {
+                final String password = dialogPasswordInput.getText().toString();
                 FirebaseUser user = FirebaseHelper.getCurrentFirebaseUser();
                 if (user == null){
                     getActivity().getSupportFragmentManager().popBackStack();
                     return;
                 }
-                AuthCredential credential = EmailAuthCredential.getC
+                if(password == null || password.isEmpty()){
+                    Toast.makeText(getContext(), "Invalid password", Toast.LENGTH_SHORT).show();
+                    showPasswordInputDialog();
+                    return;
+                }
+                AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), password);
+                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            Log.d(EditProfileFragment.class.getName(), "User re authed");
+                            passwordInput.setText(password);
+                            passwordInput.setError("");
+                            userDidReauthenticate = true;
+                            oldPassword = password;
+                            dialogInterface.dismiss();
+                        }else{
+                            Toast.makeText(getContext(), "Invalid password", Toast.LENGTH_SHORT).show();
+                            showPasswordInputDialog();
+                        }
+                    }
+                });
 
 
             }
@@ -179,21 +205,39 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     @OnClick(R.id.save_btn)
     public void handleSaveButtonClick(){
         //TODO: Put a progress bar
+        if(!userDidReauthenticate){
+            showPasswordInputDialog();
+            return;
+        }
         if(fieldsAreValid()){
+
+            final FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
             person.setName(nameInput.getText().toString());
             person.setEmail(emailInput.getText().toString());
             person.setPhoneNumber(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
-            ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 100), new OnSuccessListener() {
+            AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
+            currentUser.reauthenticate(authCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
-                public void onSuccess(Object o) {
-                    Toast.makeText(getActivity(), "Profile Updated", Toast.LENGTH_SHORT);
-                    getActivity().getSupportFragmentManager().popBackStack();
-                    //Hide progress bar
-                }
-            });
-        }
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        currentUser.updatePassword(passwordInput.getText().toString());
+                        ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 90), new OnSuccessListener() {
+                            @Override
+                            public void onSuccess(Object o) {
+                                getActivity().getSupportFragmentManager().popBackStack();
+                                ((MainActivity) getActivity()).showProfileUpdateSuccess();
+                                ((MainActivity) getActivity()).saveUniversityUidToSharedPrefrences(universityInput.getText().toString());
+                                //Hide progress bar
+                            }
+                        });
+                    }
+                    }
+                });
+            }
+
+
 
     }
 
@@ -201,6 +245,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         String name = nameInput.getText().toString();
         String email = emailInput.getText().toString();
         String number = phoneInput.getText().toString();
+        String password = passwordInput.getText().toString();
         String university = universityInput.getText().toString();
 
         //TODO: Error handling with floating text labels
@@ -218,7 +263,17 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         }
 
+        if (password.isEmpty()){
+            passwordInput.setError("Enter a password longer than 6 characters");
+            showPasswordInputDialog();
+            return false;
+        }
 
+        //TODO: Make sure it is an actual number with a try catch
+        if(number.length()> 12){
+            phoneInput.setError("Enter a valid number");
+            return false;
+        }
 
         if(university.isEmpty()|| !supportedUniversities.contains(university)){
             return  false;

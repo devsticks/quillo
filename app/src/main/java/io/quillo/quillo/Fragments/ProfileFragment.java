@@ -48,6 +48,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     private Listing temporaryListing;
     private int temporaryListingPosition;
 
+
     private ListingAdapter adapter;
     @BindView(R.id.rec_profile_listing_holder)
     RecyclerView recyclerView;
@@ -140,6 +141,9 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     public void onStop() {
         super.onStop();
         adapter.removeAllListings();
+        if(seller == null){
+            return;
+        }
         if (seller.getUid() != null) {
             ((MainActivity) getActivity()).quilloDatabase.stopObservingPersonListings(seller.getUid());
         }
