@@ -8,6 +8,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import io.quillo.quillo.R;
 import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.Listing;
@@ -27,6 +29,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
     private ToggleButton bookmarkButton;
     private ViewGroup container;
     private ProgressBar loading;
+    private LottieAnimationView loader;
 
     private ListingCellListener listingCellListener;
 
@@ -43,6 +46,8 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
         loading.setVisibility(View.INVISIBLE);
         this.bookmarkButton = (ToggleButton) itemView.findViewById(R.id.btn_bookmark);
         bookmarkButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+        this.loader = itemView.findViewById(R.id.loader_animation);
+
 
         this.container.setOnClickListener(this);
 
@@ -87,6 +92,7 @@ public class ListingCell extends RecyclerView.ViewHolder implements View.OnClick
     public ImageView getIcon(){
         return icon;
     }
+    public LottieAnimationView getLoader(){return loader;}
 
     @Override
     public void onClick(View view) {

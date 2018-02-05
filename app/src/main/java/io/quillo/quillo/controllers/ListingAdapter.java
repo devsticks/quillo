@@ -1,12 +1,18 @@
 package io.quillo.quillo.controllers;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +47,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
     }
 
     @Override
-    public void onBindViewHolder(ListingCell holder, int position) {
+    public void onBindViewHolder(final ListingCell holder, int position) {
 
         Listing listing = listings.get(position);
         holder.setListing(listing);
@@ -52,7 +58,21 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
 
         holder.setListingCellListener(listingCellListener);
         if (listing.getImageUrl() != null) {
-            Glide.with(context).load(listing.getImageUrl()).into(holder.getIcon());
+            Glide.with(context).load(listing.getImageUrl()).listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    holder.getLoader().setVisibility(View.GONE);
+                    holder.getLoader().cancelAnimation();
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    holder.getLoader().setVisibility(View.GONE);
+                    holder.getLoader().cancelAnimation();
+                    return false;
+                }
+            }).into(holder.getIcon());
         }
     }
 
