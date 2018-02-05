@@ -12,7 +12,7 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="seller_name_panel_title">Devdawg</string>
     <string name="title_activity_login">Sign in</string>
-    
+
     <string name="shared_pref_university_key">university</string>
 
     <!-- Strings for AddEditListing Activity-->
@@ -132,7 +132,7 @@
     <string name="title_profile">Profile</string>
     <string name="title_splash">Splash</string>
     <string name="title_activity_rand">Rand</string>
-    
+
     <!--Dialog Headers -->
     <string name="dialog_select_photo">Select Photo</string>
 
@@ -154,6 +154,30 @@
         <item>University of Cape Town</item>
         <item>Cape Peninsula University of Technology</item>
         <item>Nelson Mandela University</item>
+        <item>Rhodes University</item>
+        <item>University of Fort Hare</item>
+        <item>University of KwaZulu-Natal</item>
+        <item>University of Limpopo</item>
+        <item>University of Pretoria</item>
+        <item>University of Stellenbosch</item>
+        <item>University of the Free State</item>
+        <item>University of the Western Cape</item>
+        <item>University of the Witwatersrand</item>
+        <item>University of Johannesburg</item>
+        <item>University of South Africa</item>
+        <item>University of Venda</item>
+        <item>Walter Sisulu University</item>
+        <item>Cape Peninsula University of Technology</item>
+        <item>Durban University of Technology</item>
+        <item>University of Mpumalanga</item>
+        <item>Tshwane University of Technology</item>
+        <item>Vaal University of Technology</item>
+        <item>Varsity College</item>
+        <item>Vega</item>
+        <item>Red &amp; Yellow School</item>
+        <item>IMM Graduate School of Marketing</item>
+        <item>AFDA</item>
+        <item>Monash South Africa</item>
 
     </string-array>
 
