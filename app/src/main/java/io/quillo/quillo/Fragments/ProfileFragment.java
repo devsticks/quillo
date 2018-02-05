@@ -19,21 +19,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ListingCellListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.interfaces.PersonListingsListener;
+import io.quillo.quillo.utils.FirebaseHelper;
+import io.quillo.quillo.utils.GlideApp;
 
 /**
  * Created by shkla on 2018/01/22.
@@ -62,10 +61,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     ImageView profilePicture;
 
     public static ProfileFragment newInstance() {
-
         ProfileFragment profileFragment = new ProfileFragment();
         return profileFragment;
-
     }
 
 
@@ -105,6 +102,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         if (seller == null) {
             personUid = FirebaseHelper.getCurrentUserUid();
             if (personUid != null) {
+                //Is viewing own profile
                 ((MainActivity) getActivity()).quilloDatabase.loadPerson(personUid, new PersonListener() {
                     @Override
                     public void onPersonLoaded(Person person) {
@@ -115,6 +113,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
             }
 
         }else{
+            //Viewing another profile
             personUid = seller.getUid();
             bindSellerToViews();
         }
@@ -132,7 +131,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
             @Override
             public void onPersonListingRemoved(Listing listing) {
-
+                adapter.removeListing(listing.getUid());
             }
         });
     }
@@ -179,10 +178,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
         recyclerView.addItemDecoration(itemDecoration);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-        //TODO get actual universityLabel when we have that up and running
-        //universityLabel = ...
+
     }
 
     @Override
@@ -224,7 +220,10 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         universityLabel.setText(seller.getUniversityUid());
 
         if (seller.getImageUrl() != null) {
-            Glide.with(getContext()).load(seller.getImageUrl()).into(profilePicture);
+            GlideApp.with(getContext())
+                    .load(seller.getImageUrl())
+                    .into(profilePicture);
+
         }
     }
 

@@ -38,9 +38,6 @@ public class QuilloDatabase {
     private List<Listing> listings;
     private List<Person> users;
 
-
-
-
     private BookmarkListener bookmarkListener;
 
     private DatabaseReference database;
@@ -54,7 +51,6 @@ public class QuilloDatabase {
     private StorageReference storageListingRef;
     private StorageReference storagePeopleRef;
 
-    private String mElasticSearchPassword;
 
     public QuilloDatabase() {
         database = FirebaseDatabase.getInstance().getReference();

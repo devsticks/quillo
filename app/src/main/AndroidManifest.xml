@@ -35,7 +35,7 @@
         <activity
             android:name=".views.SignUpLoginActivity"
             android:theme="@style/AppTheme.Dark" />
-        
+
     </application>
 
 </manifest>
