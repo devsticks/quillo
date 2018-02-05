@@ -125,7 +125,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
                         if (task.isSuccessful()){
                             Log.d(EditProfileFragment.class.getName(), "User re authed");
                             passwordInput.setText(password);
-                            passwordInput.setError("");
                             userDidReauthenticate = true;
                             oldPassword = password;
                             dialogInterface.dismiss();
@@ -151,8 +150,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
     }
 
-
-
     private void bindPersonToViews(){
         nameInput.setText(person.getName());
         emailInput.setText(person.getEmail());
@@ -165,6 +162,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             Glide.with(getContext()).load(person.getImageUrl()).into(profileImage);
         }
     }
+
 
     @OnClick({R.id.profile_image, R.id.fab_add_photo})
     public void handleProfileImageClick(){
@@ -222,11 +220,12 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
-                        currentUser.updatePassword(passwordInput.getText().toString());
+
                         ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 90), new OnSuccessListener() {
                             @Override
                             public void onSuccess(Object o) {
                                 if ((Boolean) o) {
+                                    currentUser.updatePassword(passwordInput.getText().toString());
                                     getActivity().getSupportFragmentManager().popBackStack();
                                     ((MainActivity) getActivity()).showProfileUpdateSuccess();
                                     ((MainActivity) getActivity()).saveUniversityUidToSharedPrefrences(universityInput.getText().toString());
@@ -270,7 +269,6 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         if (password.isEmpty()){
             passwordInput.setError("Enter a password longer than 6 characters");
-            showPasswordInputDialog();
             return false;
         }
 
