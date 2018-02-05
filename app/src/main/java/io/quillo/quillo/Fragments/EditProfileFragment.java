@@ -1,6 +1,7 @@
 package io.quillo.quillo.Fragments;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthCredential;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -74,6 +79,52 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showPasswordInputDialog();
+
+    }
+
+    private void showPasswordInputDialog(){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity(), android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+        builder.setTitle("Verify your password");
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.password_dialog, (ViewGroup)getView(), false);
+        final EditText passwordInput = (EditText)view.findViewById(R.id.input_password);
+
+        passwordInput.setInputType(InputType.TYPE_CLASS_TEXT| InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passwordInput.setHint("Password");
+
+        builder.setView(view);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String password = passwordInput.getText().toString();
+                FirebaseUser user = FirebaseHelper.getCurrentFirebaseUser();
+                if (user == null){
+                    getActivity().getSupportFragmentManager().popBackStack();
+                    return;
+                }
+                AuthCredential credential = EmailAuthCredential.getC
+
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
+        builder.show();
+
+    }
+
 
 
     private void bindPersonToViews(){
