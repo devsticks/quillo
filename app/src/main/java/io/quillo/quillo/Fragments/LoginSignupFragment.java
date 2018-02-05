@@ -1,7 +1,9 @@
 package io.quillo.quillo.Fragments;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -215,7 +217,6 @@ public class LoginSignupFragment extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    auth.getCurrentUser().reload();
                     onLoginSuccess();
                     progressDialog.cancel();
                 }else{
@@ -240,13 +241,21 @@ public class LoginSignupFragment extends Fragment {
         ((MainActivity)getActivity()).quilloDatabase.addPerson(person);
 
 
-        Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+
         ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(university);
 
-        ((MainActivity) getActivity()).setSelectedFragment(goingTo);
-        ((MainActivity) getActivity()).changeFragment(false);
+        auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    showEmailVerificationSent();
+                }else{
+                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
-        ((MainActivity) getActivity()).showToolbar();
+
     }
 
     public void onSignupFailed() {
@@ -265,13 +274,35 @@ public class LoginSignupFragment extends Fragment {
                 String universityUid = person.getUniversityUid();
                 ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(universityUid);
                 ((MainActivity)getActivity()).resetPersonFragment();
-
                 ((MainActivity) getActivity()).setSelectedFragment(goingTo);
                 ((MainActivity) getActivity()).changeFragment(false);
+                ((MainActivity) getActivity()).showToolbar();
             }
         });
 
-        ((MainActivity) getActivity()).showToolbar();
+
+    }
+
+    public void showEmailVerificationSent(){
+        AlertDialog.Builder builder = new  AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
+        builder.setTitle("Email Verification sent");
+        if (inputUniversity.getText().toString().equals("University of Cape Town")) {
+            builder.setMessage("This isn't Tin Roof we going to need ID before we let you in.\n" +
+                    "Please verify your email before you add an advert");
+        }else{
+            builder.setMessage("Please verify your email before you add an advert");
+        }
+        builder.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ((MainActivity) getActivity()).setSelectedFragment(goingTo);
+                ((MainActivity) getActivity()).changeFragment(false);
+                ((MainActivity) getActivity()).showToolbar();
+                ((MainActivity) getActivity()).resetPersonFragment();
+                Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
     }
 
     public void onLoginFailed() {
@@ -307,7 +338,7 @@ public class LoginSignupFragment extends Fragment {
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
         String name = inputName.getText().toString();
-        String university = inputName.getText().toString();
+        String university = inputUniversity.getText().toString();
 
         ArrayList<String> supportedUniversities  = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.universities)));
 
@@ -318,6 +349,9 @@ public class LoginSignupFragment extends Fragment {
 
         if(!supportedUniversities.contains(university)){
             inputUniversity.setError("Not a supported uni");
+            return false;
+        }else{
+            inputUniversity.setError(null);
         }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
