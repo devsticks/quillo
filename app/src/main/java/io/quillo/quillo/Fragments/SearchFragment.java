@@ -261,8 +261,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
         SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
         universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
 
-        Log.e("Page", "" + searchPage);
-
         if (universityUid == null){
             return;
         }

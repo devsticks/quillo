@@ -24,7 +24,6 @@ public abstract class OnLoadMoreListener extends RecyclerView.OnScrollListener {
                 totalItemCount > visibleThreshold) {
             onLoadMore();
         }
-        Log.e("totalItems", "" + totalItemCount);
     }
 
     public abstract void onLoadMore();
