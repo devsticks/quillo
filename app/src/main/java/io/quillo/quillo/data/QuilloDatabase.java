@@ -486,6 +486,8 @@ public class QuilloDatabase {
                         });
                     }else{
                         Log.e(QuilloDatabase.class.getName(), "Could not updaate email : ");
+                        onSuccessListener.onSuccess(false);
+                        return;
 
                     }
                 }

@@ -29,7 +29,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.ByteArrayOutputStream;
@@ -215,7 +217,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             Calendar calendar = Calendar.getInstance();
             long secondsSince1970 = calendar.getTimeInMillis();
 
-            Listing newListing = new Listing(fields.get(DatabaseContract.FIREBASE_LISTING_NAME),
+            final Listing newListing = new Listing(fields.get(DatabaseContract.FIREBASE_LISTING_NAME),
                     fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR),
                     Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_EDITION)),
                     fields.get(DatabaseContract.FIREBASE_LISTING_DESCRIPTION),
@@ -238,16 +240,30 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                 photo1.setImageResource(R.drawable.ic_open_book);
             }
 
+            FirebaseHelper.getCurrentFirebaseUser().reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+
+                        if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
+                            
+                            ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
+                            Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
+                            ((MainActivity) getActivity()).showProfileFragment(false);
+                            photo1.setTag(notDefaultTag);
+
+                        }else{
+                            showEmailNotVerifiedAlert();
+                        }
+
+                    }else{
+
+                    }
+
+                }
+            });
 
 
-            if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
-                ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
-                Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
-                ((MainActivity) getActivity()).showProfileFragment(false);
-                photo1.setTag(notDefaultTag);
-            }else{
-                showEmailNotVerifiedAlert();
-            }
 
 
         }

@@ -226,10 +226,15 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
                         ((MainActivity)getActivity()).quilloDatabase.updatePerson(person, getBytesFromBitmap(getBitmapFromPhoto(), 90), new OnSuccessListener() {
                             @Override
                             public void onSuccess(Object o) {
-                                getActivity().getSupportFragmentManager().popBackStack();
-                                ((MainActivity) getActivity()).showProfileUpdateSuccess();
-                                ((MainActivity) getActivity()).saveUniversityUidToSharedPrefrences(universityInput.getText().toString());
-                                //Hide progress bar
+                                if ((Boolean) o) {
+                                    getActivity().getSupportFragmentManager().popBackStack();
+                                    ((MainActivity) getActivity()).showProfileUpdateSuccess();
+                                    ((MainActivity) getActivity()).saveUniversityUidToSharedPrefrences(universityInput.getText().toString());
+                                    //Hide progress bar
+                                }else{
+                                    Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                }
+
                             }
                         });
                     }
