@@ -34,14 +34,16 @@
                     android:background="@color/DarkText"
                     android:scaleType="centerCrop" />
 
-                <ProgressBar
-                    android:id="@+id/progressBar2"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@id/div_profile_details"
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/loader_animation"
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
+                    android:layout_above="@+id/div_profile_details"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="74dp" />
+                    android:layout_marginBottom="11dp"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="preloader.json"
+                    app:lottie_loop="true" />
 
                 <android.support.constraint.ConstraintLayout
                     android:id="@+id/div_profile_details"

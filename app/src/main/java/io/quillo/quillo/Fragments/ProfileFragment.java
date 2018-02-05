@@ -1,5 +1,6 @@
 package io.quillo.quillo.Fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.airbnb.lottie.LottieAnimationView;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,6 +66,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     ImageView editProfileBtn;
     @BindView(R.id.imv_profile_picture)
     ImageView profilePicture;
+    @BindView(R.id.loader_animation)
+    LottieAnimationView loader;
 
     public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
@@ -222,7 +231,23 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         if (seller.getImageUrl() != null) {
             GlideApp.with(getContext())
                     .load(seller.getImageUrl())
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
+                            loader.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            loader.cancelAnimation();
+                            loader.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
                     .into(profilePicture);
+
 
         }
     }
