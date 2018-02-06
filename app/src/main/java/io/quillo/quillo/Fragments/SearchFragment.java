@@ -2,7 +2,10 @@ package io.quillo.quillo.Fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,9 +18,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -70,6 +75,10 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     View emptyState;
     @BindView(R.id.error_state)
     View errorState;
+    @BindView(R.id.empty_search_state)
+    View emptySearchState;
+    @BindView(R.id.no_internet_state)
+    View noInternetState;
 
     public static SearchFragment newInstance(){
         SearchFragment searchFragment = new SearchFragment();
@@ -93,6 +102,9 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
     public final int STATE_LOADING = 1;
     public final int STATE_EMPTY = 2;
     public final int STATE_ERROR = 3;
+    public final int STATE_EMPTY_SEARCH = 4;
+    public final int STATE_NO_INTERNET = 5;
+    private ImageView loadingImageView;
 
 
     @Override
@@ -168,8 +180,17 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
 
     public void setUpView(View view) {
+        loadingImageView = (ImageView) view.findViewById(R.id.loading_state_view);
 
         showState(STATE_LOADING);
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        //no internet :(
+        if (netInfo == null || !netInfo.isConnected()){
+            showState(STATE_NO_INTERNET);
+        }
+
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
 
@@ -238,7 +259,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
             public void ListingUidsLoaded(ArrayList<String> listingUids) {
                 if (listingUids.isEmpty()){
                     //No listings match search
-                    showState(STATE_EMPTY);
+                    showState(STATE_EMPTY_SEARCH);
                     adapter.removeAllListings();
                 }else {
 
@@ -249,6 +270,7 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                         }
                     });
                     listingLoader.loadListings(listingUids);
+                    showState(STATE_NORMAL);
                 }
             }
         });
@@ -325,7 +347,6 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                             Log.e("Error", "onResponse: IOException: " + e.getMessage());
                         } finally {
                             onRefreshComplete();
-                            showState(STATE_NORMAL);
                         }
                     }
 
@@ -359,24 +380,49 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
                 loadingState.setVisibility(View.GONE);
                 emptyState.setVisibility(View.GONE);
                 errorState.setVisibility(View.GONE);
+                emptySearchState.setVisibility(View.GONE);
+                noInternetState.setVisibility(View.GONE);
                 break;
             case STATE_LOADING:
+                Glide.with(getContext()).load(R.drawable.porkie_loader).into(loadingImageView);
                 recyclerView.setVisibility(View.GONE);
                 loadingState.setVisibility(View.VISIBLE);
                 emptyState.setVisibility(View.GONE);
                 errorState.setVisibility(View.GONE);
+                emptySearchState.setVisibility(View.GONE);
+                noInternetState.setVisibility(View.GONE);
                 break;
             case STATE_EMPTY:
                 recyclerView.setVisibility(View.GONE);
                 loadingState.setVisibility(View.GONE);
                 emptyState.setVisibility(View.VISIBLE);
                 errorState.setVisibility(View.GONE);
+                emptySearchState.setVisibility(View.GONE);
+                noInternetState.setVisibility(View.GONE);
                 break;
             case STATE_ERROR:
                 recyclerView.setVisibility(View.GONE);
                 loadingState.setVisibility(View.GONE);
                 emptyState.setVisibility(View.GONE);
                 errorState.setVisibility(View.VISIBLE);
+                emptySearchState.setVisibility(View.GONE);
+                noInternetState.setVisibility(View.GONE);
+                break;
+            case STATE_EMPTY_SEARCH:
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.GONE);
+                errorState.setVisibility(View.GONE);
+                emptySearchState.setVisibility(View.VISIBLE);
+                noInternetState.setVisibility(View.GONE);
+                break;
+            case STATE_NO_INTERNET:
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.GONE);
+                errorState.setVisibility(View.GONE);
+                emptySearchState.setVisibility(View.GONE);
+                noInternetState.setVisibility(View.VISIBLE);
                 break;
         }
 
