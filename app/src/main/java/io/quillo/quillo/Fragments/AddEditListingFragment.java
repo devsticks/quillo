@@ -194,6 +194,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             if(fields == null){
                 return;
             }
+            publishButton.setEnabled(false);
 
             listing.setName(fields.get(DatabaseContract.FIREBASE_LISTING_NAME));
             listing.setAuthor(fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR));
@@ -244,7 +245,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             if (currentImage == defaultImage) {
                 photo1.setImageResource(R.drawable.ic_open_book);
             }
-
+            publishButton.setEnabled(false);
             FirebaseHelper.getCurrentFirebaseUser().reload().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -268,6 +269,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
                         }else{
                             showEmailNotVerifiedAlert();
+                            publishButton.setEnabled(true);
                         }
 
                     }else{

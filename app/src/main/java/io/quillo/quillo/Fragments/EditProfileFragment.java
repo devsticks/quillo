@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -63,6 +64,8 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     AutoCompleteTextView universityInput;
     @BindView(R.id.input_password)
     EditText passwordInput;
+    @BindView(R.id.save_btn)
+    Button saveButton;
     private Person person;
     private boolean userDidReauthenticate = false;
     private String oldPassword = "";
@@ -208,6 +211,8 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             return;
         }
         if(fieldsAreValid()){
+            saveButton.setEnabled(false);
+
 
             final FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
             person.setName(nameInput.getText().toString());
@@ -232,6 +237,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
                                     //Hide progress bar
                                 }else{
                                     Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                    saveButton.setEnabled(true);
                                 }
 
                             }

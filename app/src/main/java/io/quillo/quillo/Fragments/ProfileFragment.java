@@ -103,9 +103,22 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         super.onResume();
         if (isViewingOwnProfile) {
             ((MainActivity) getActivity()).showBottomNavBar();
+            updateUser();
         }
+
     }
 
+    public void updateUser(){
+        if (seller != null){
+            ((MainActivity)getActivity()).quilloDatabase.loadPerson(seller.getUid(), new PersonListener() {
+                @Override
+                public void onPersonLoaded(Person person) {
+                    seller = person;
+                    bindSellerToViews();
+                }
+            });
+        }
+    }
     public void setupDatabase() {
         String personUid;
         if (seller == null) {
