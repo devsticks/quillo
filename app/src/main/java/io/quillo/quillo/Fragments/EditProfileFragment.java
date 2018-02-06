@@ -296,7 +296,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
     @Override
     public void getImagePath(Uri imagePath) {
-        Glide.with(this).load(imagePath).into(profileImage);
+            Glide.with(this).load(imagePath).into(profileImage);
     }
 
     @Override

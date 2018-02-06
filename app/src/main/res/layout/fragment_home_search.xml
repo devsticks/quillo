@@ -75,4 +75,16 @@
         app:layout_constraintTop_toTopOf="@+id/recycler_linear_holder"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <include layout="@layout/empty_search_state"
+        android:id="@+id/empty_search_state"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/recycler_linear_holder"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <include layout="@layout/no_internet_state"
+        android:id="@+id/no_internet_state"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/recycler_linear_holder"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </android.support.constraint.ConstraintLayout>
