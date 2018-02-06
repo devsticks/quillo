@@ -16,7 +16,6 @@ public class ListingLoader {
 
     public interface ListingLoaderListener {
         public void onListingsLoaded(List<Listing> listings);
-
     }
 
     private ListingLoaderListener listingLoaderListener;

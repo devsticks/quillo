@@ -92,8 +92,9 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     @Override
     public void onResume() {
         super.onResume();
-        showPasswordInputDialog();
-
+        if(!userDidReauthenticate) {
+            showPasswordInputDialog();
+        }
     }
 
     private void showPasswordInputDialog(){
@@ -107,7 +108,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
 
         builder.setView(view);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialogInterface, int i) {
                 final String password = dialogPasswordInput.getText().toString();

@@ -1,3 +1,10 @@
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -52,17 +59,6 @@
         tools:text="James Stewart" />
 
     <TextView
-        android:id="@+id/lbl_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/div_center"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_author"
-        tools:text="Textbook about all things maths" />
-
-    <TextView
         android:id="@+id/lbl_edition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -77,13 +73,25 @@
         android:id="@+id/lbl_price"
         style="@style/Text.Accent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_above="@+id/lbl_description"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_description"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_author"
         tools:text="R 599" />
+
+    <TextView
+        android:id="@+id/lbl_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div_center"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_price"
+        tools:text="Textbook about all things maths" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_listing_action"
@@ -104,11 +112,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/border"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_description">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/btn_seller_profile"
@@ -162,6 +174,7 @@
                 android:id="@+id/seller_view_container"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -419,3 +432,4 @@
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
+</ScrollView>
