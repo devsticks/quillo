@@ -22,8 +22,8 @@
 
     <ImageView
         android:id="@+id/imv_cell_listing_icon"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
+        android:layout_width="50dp"
+        android:layout_height="70dp"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
@@ -70,7 +70,7 @@
     <TextView
         android:id="@+id/lbl_cell_author"
         style="@style/Text.Secondary"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="44dp"

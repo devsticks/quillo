@@ -153,8 +153,8 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     private void bindPersonToViews(){
         nameInput.setText(person.getName());
         emailInput.setText(person.getEmail());
-        if(person.getPhoneNumber() != null) {
-            phoneInput.setText(person.getPhoneNumber());
+        if(person.getPhone() != null) {
+            phoneInput.setText(person.getPhone());
         }
         universityInput.setText(person.getUniversityUid());
 
@@ -212,7 +212,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             final FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
             person.setName(nameInput.getText().toString());
             person.setEmail(emailInput.getText().toString());
-            person.setPhoneNumber(phoneInput.getText().toString());
+            person.setPhone(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
             AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);

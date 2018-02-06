@@ -149,7 +149,9 @@ public class SearchFragment extends Fragment implements ListingCellListener, Mat
 
     @Override
     public void onStop() {
-        ((MainActivity)getActivity()).toolbar.getMenu().findItem(R.id.action_search).setVisible(false);
+        if(((MainActivity)getActivity()).toolbar != null) {
+            ((MainActivity) getActivity()).toolbar.getMenu().findItem(R.id.action_search).setVisible(false);
+        }
         super.onStop();
     }
 

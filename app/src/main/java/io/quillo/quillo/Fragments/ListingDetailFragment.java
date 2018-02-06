@@ -233,9 +233,9 @@ public class ListingDetailFragment extends Fragment  {
             }
         });
 
-        if (seller.getPhoneNumber() != null &&
-                !seller.getPhoneNumber().isEmpty() &&
-                !seller.getPhoneNumber().equals("")) {
+        if (seller.getPhone() != null &&
+                !seller.getPhone().isEmpty() &&
+                !seller.getPhone().equals("")) {
 
             call.setVisibility(View.VISIBLE);
             text.setVisibility(View.VISIBLE);
@@ -245,7 +245,7 @@ public class ListingDetailFragment extends Fragment  {
                 public void onClick(View view) {
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
 
-                    callIntent.setData(Uri.parse("tel:" + seller.getPhoneNumber()));
+                    callIntent.setData(Uri.parse("tel:" + seller.getPhone()));
 
                     view.getContext().startActivity(callIntent);
                 }
@@ -259,7 +259,7 @@ public class ListingDetailFragment extends Fragment  {
                         Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
                         smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
                         view.getContext().startActivity(smsIntent);*/
-                        String number = "+27" + seller.getPhoneNumber().substring(1);
+                        String number = "+27" + seller.getPhone().substring(1);
                         String queryText = "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo. For R" + listing.getPrice();
                         Uri uri = Uri.parse("https://api.whatsapp.com/send?phone="+number+"&text="+queryText);
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);

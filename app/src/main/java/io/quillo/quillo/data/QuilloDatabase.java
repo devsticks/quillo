@@ -20,6 +20,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.quillo.quillo.interfaces.BookmarkListener;
@@ -521,10 +522,12 @@ public class QuilloDatabase {
                 passwordListener.onPasswordLoadFailed();
             }
         });
+    }
 
-
-
-
+    public void updateCurrentUsersNumber(String number){
+        HashMap<String, String > update = new HashMap<>();
+        update.put(DatabaseContract.FIREBASE_PERSON_PHONE, number);
+        databasePersonRef.child(FirebaseHelper.getCurrentUserUid()).child(DatabaseContract.FIREBASE_PERSON_PHONE).setValue(number);
     }
 
 

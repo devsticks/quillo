@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -48,6 +49,8 @@ import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.DatabaseContract;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
+import io.quillo.quillo.data.Person;
+import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
@@ -217,6 +220,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
             Calendar calendar = Calendar.getInstance();
             long secondsSince1970 = calendar.getTimeInMillis();
 
+
+
             final Listing newListing = new Listing(fields.get(DatabaseContract.FIREBASE_LISTING_NAME),
                     fields.get(DatabaseContract.FIREBASE_LISTING_AUTHOR),
                     Integer.parseInt(fields.get(DatabaseContract.FIREBASE_LISTING_EDITION)),
@@ -246,11 +251,20 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                     if(task.isSuccessful()){
 
                         if (FirebaseAuth.getInstance().getCurrentUser().isEmailVerified()){
-
                             ((MainActivity)getActivity()).quilloDatabase.addListing(newListing, getBytesFromBitmap(getBitmapFromPhoto(), 80));
-                            Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
-                            ((MainActivity) getActivity()).showProfileFragment(false);
-                            photo1.setTag(notDefaultTag);
+
+                            ((MainActivity)getActivity()).quilloDatabase.loadPerson(FirebaseHelper.getCurrentUserUid(), new PersonListener() {
+                                @Override
+                                public void onPersonLoaded(Person person) {
+                                    if (person.getPhone() == null || person.getPhone().isEmpty()){
+                                        showPhoneInputDialog();
+                                    } else{
+                                        navigateBack();
+                                    }
+
+                                }
+                            });
+
 
                         }else{
                             showEmailNotVerifiedAlert();
@@ -271,6 +285,54 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 //        ((MainActivity)getActivity()).pop();
 
 
+    }
+
+    private void navigateBack(){
+
+        Toast.makeText(getContext(), "Listing saved", Toast.LENGTH_SHORT).show();
+        ((MainActivity) getActivity()).showProfileFragment(false);
+        photo1.setTag(notDefaultTag);
+
+    }
+
+    private void showPhoneInputDialog(){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity(), android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+        builder.setTitle("You dont have a number");
+        builder.setMessage("Buyers are more likely to contact you if you have a phone number");
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.number_dialog, (ViewGroup)getView(), false);
+        final EditText dialogPhoneInput = (EditText)view.findViewById(R.id.input_number);
+
+
+
+        builder.setView(view);
+
+        builder.setPositiveButton("Save Number", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialogInterface, int i) {
+                final String number = dialogPhoneInput.getText().toString();
+                if(number == null || number.isEmpty()){
+                    Toast.makeText(getContext(), "Invalid Number", Toast.LENGTH_SHORT).show();
+                    showPhoneInputDialog();
+                    dialogInterface.cancel();
+                    return;
+                }
+                ((MainActivity)getActivity()).quilloDatabase.updateCurrentUsersNumber(number);
+                navigateBack();
+
+
+            }
+        });
+
+        builder.setNegativeButton("Don't save number", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+                navigateBack();
+            }
+        });
+
+        builder.show();
     }
 
     private void showEmailNotVerifiedAlert(){

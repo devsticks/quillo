@@ -53,11 +53,11 @@ public class Person implements Serializable {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
+    public String getPhone() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhone(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

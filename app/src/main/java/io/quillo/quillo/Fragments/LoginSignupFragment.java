@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +33,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.MainActivity;
-import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.PersonListener;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 /**
  * Created by shkla on 2018/01/26.
@@ -70,9 +69,7 @@ public class LoginSignupFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final Context context = new ContextThemeWrapper(getActivity(), R.style.AppTheme_Dark);
-        LayoutInflater layoutInflater = inflater.cloneInContext(context);
-        View view = layoutInflater.inflate(R.layout.fragment_signup_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_signup_login, container, false);
         view.setBackgroundColor(getResources().getColor(R.color.Primary));
 
         ButterKnife.bind(this, view);
