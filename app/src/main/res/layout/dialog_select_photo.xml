@@ -37,7 +37,7 @@
             android:layout_marginTop="8dp"
             android:foregroundGravity="center_vertical"
             android:gravity="center_vertical"
-            android:text="Chose Photo from Gallery"
+            android:text="Choose Photo from Gallery"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
