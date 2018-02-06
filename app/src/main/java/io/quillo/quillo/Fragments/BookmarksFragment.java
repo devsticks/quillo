@@ -9,7 +9,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +32,6 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
-
-    @BindView(R.id.tlb_home_search)
-    Toolbar toolbar;
 
     private ListingAdapter adapter;
     private QuilloDatabase quilloDatabase;
@@ -63,7 +59,7 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view  = inflater.inflate(R.layout.fragment_home_search, container, false);
+        final View view  = inflater.inflate(R.layout.fragment_bookmark, container, false);
         ButterKnife.bind(this, view);
         setupView(view);
 

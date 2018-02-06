@@ -172,8 +172,10 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
     @OnClick(R.id.btn_edit_profile)
     public void handleEditProfileButtonClick() {
+        if(seller == null){
+            return;
+        }
         EditProfileFragment editProfileFragment = new EditProfileFragment();
-
         Bundle bundle = new Bundle();
         bundle.putSerializable(IntentExtras.EXTRA_SELLER, seller);
         editProfileFragment.setArguments(bundle);
@@ -187,7 +189,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         ((MainActivity) getActivity()).hideBottomNavBar();
     }
 
-    //TODO Update with fragments
 
     public void setUpView(View view) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -199,8 +200,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         itemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider_white));
 
         recyclerView.addItemDecoration(itemDecoration);
-
-
+        
     }
 
     @Override
