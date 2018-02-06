@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -25,6 +26,7 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
+import io.fabric.sdk.android.Fabric;
 import io.quillo.quillo.Fragments.AddEditListingFragment;
 import io.quillo.quillo.Fragments.BookmarksFragment;
 import io.quillo.quillo.Fragments.LandingFragment;
@@ -33,13 +35,13 @@ import io.quillo.quillo.Fragments.LoginSignupFragment;
 import io.quillo.quillo.Fragments.ProfileFragment;
 import io.quillo.quillo.Fragments.SearchFragment;
 import io.quillo.quillo.R;
-import io.quillo.quillo.utils.FirebaseHelper;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.BottomNavigationViewHelper;
+import io.quillo.quillo.utils.FirebaseHelper;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RC_PERMISSIONS = 1;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         quilloDatabase = new QuilloDatabase();
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar)findViewById(R.id.toolbar);

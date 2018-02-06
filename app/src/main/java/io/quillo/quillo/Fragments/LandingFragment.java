@@ -90,7 +90,7 @@ public class LandingFragment extends Fragment{
         }
 
         if(!supportedUniversities.contains(university)){
-            universityInput.setError("Invalid Uni");
+            universityInput.setError("University not supported yet");
             return false;
         }
 

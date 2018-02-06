@@ -142,10 +142,6 @@
 
     <!--Supported Universities-->
     <string-array name="universities">
-        <item>UCT</item>
-        <item>WITS</item>
-        <item>CPUT</item>
-        <item>UJ</item>
         <item>Monash South Africa</item>
         <item>Rhodes University</item>
         <item>North West University</item>
