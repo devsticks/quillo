@@ -255,15 +255,20 @@ public class ListingDetailFragment extends Fragment  {
                 @Override
                 public void onClick(View view) {
                     try {
-                        /*Uri uri = Uri.parse("smsto:" + seller.getPhoneNumber());
-                        Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
-                        smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
-                        view.getContext().startActivity(smsIntent);*/
-                        String number = "+27" + seller.getPhone().substring(1);
-                        String queryText = "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo. For R" + listing.getPrice();
-                        Uri uri = Uri.parse("https://api.whatsapp.com/send?phone="+number+"&text="+queryText);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        startActivity(intent);
+                        if (whatsAppIsInstalled()){
+                            String number = "+27" + seller.getPhone().substring(1);
+                            String queryText = "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo. For R" + listing.getPrice();
+                            Uri uri = Uri.parse("https://api.whatsapp.com/send?phone="+number+"&text="+queryText);
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }else{
+                            Uri uri = Uri.parse("smsto:" + seller.getPhone());
+                            Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                            smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
+                            view.getContext().startActivity(smsIntent);
+                        }
+
+
                     } catch (Exception e) {
                         Toast.makeText(view.getContext(),
                                 "SMS failed, please try again later!",
@@ -283,7 +288,7 @@ public class ListingDetailFragment extends Fragment  {
                 boolean success = EmailIntentBuilder.from(view.getContext())
                         .to(seller.getEmail())
                         .subject("Quillo Enquiry")
-                        .body("Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.")
+                        .body("Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo for R" + listing.getPrice())
                         .start();
                 if (!success) {
                     Toast.makeText(view.getContext(),

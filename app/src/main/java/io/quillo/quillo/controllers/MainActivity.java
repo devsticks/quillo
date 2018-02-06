@@ -432,7 +432,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void showSearchFragmentAfterLanding() {
         showToolbar();
-
         SearchFragment searchFragment = new SearchFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_holder, searchFragment)
