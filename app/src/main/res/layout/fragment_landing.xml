@@ -43,6 +43,7 @@
             android:paddingHorizontal="16dp"
             app:layout_constraintBottom_toTopOf="@+id/btn_start"
             android:hint="University"
+            android:imeOptions="actionNext"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

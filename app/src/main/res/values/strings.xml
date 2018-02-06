@@ -140,6 +140,8 @@
     <string name="base_url">http://35.205.236.168//elasticsearch/listings/listing/</string>
     <string name="elastic_search_username">user</string>
 
+    <item type="id" name="glide_tag" />
+
     <!--Supported Universities-->
     <string-array name="universities">
         <item>Monash South Africa</item>

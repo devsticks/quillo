@@ -20,11 +20,12 @@
             <ImageView
                 android:id="@+id/imv_listing_photo_1"
                 android:layout_width="0dp"
-                android:layout_height="250dp"
+                android:layout_height="300dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@android:color/black"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_open_book" />
@@ -34,7 +35,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginTop="218dp"
+                android:layout_marginTop="268dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_photo_camera_black_48px" />
@@ -107,7 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Description"
-                android:inputType="textCapSentences"
+                android:inputType="textCapSentences|textMultiLine"
                 android:maxLength="200"
                 android:singleLine="false" />
         </android.support.design.widget.TextInputLayout>
@@ -156,7 +157,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:hint="University"
-
+                android:imeOptions="actionNext"
                 />
 
 

@@ -52,6 +52,7 @@ import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.FirebaseHelper;
+import io.quillo.quillo.utils.GlideApp;
 
 /**
  * Created by shkla on 2018/01/22.
@@ -130,7 +131,8 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
 
     @Override
     public void getImagePath(Uri imagePath) {
-        Glide.with(this).load(imagePath).into(photo1);
+        photo1.setTag("Photo 1 Tag");
+        GlideApp.with(this).load(imagePath).into(photo1);
     }
 
     @Override
