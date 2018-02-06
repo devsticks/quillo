@@ -302,7 +302,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
         builder.setTitle("You dont have a number");
         builder.setMessage("Buyers are more likely to contact you if you have a phone number");
 
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.number_dialog, (ViewGroup)getView(), false);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_number, (ViewGroup)getView(), false);
         final EditText dialogPhoneInput = (EditText)view.findViewById(R.id.input_number);
 
 

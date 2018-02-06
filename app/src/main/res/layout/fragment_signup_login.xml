@@ -5,7 +5,8 @@
     android:layout_width="fill_parent"
     android:background="@color/Primary"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    style="@style/AppTheme.Dark">
 
     <LinearLayout
         android:orientation="vertical"

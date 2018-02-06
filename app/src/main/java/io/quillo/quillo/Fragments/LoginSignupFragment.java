@@ -62,6 +62,7 @@ public class LoginSignupFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        getActivity().setTheme(R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
     }

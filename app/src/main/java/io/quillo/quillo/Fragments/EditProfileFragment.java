@@ -101,7 +101,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity(), android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
         builder.setTitle("Verify your password");
 
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.password_dialog, (ViewGroup)getView(), false);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_password, (ViewGroup)getView(), false);
         final EditText dialogPasswordInput = (EditText)view.findViewById(R.id.input_password);
         dialogPasswordInput.setInputType(InputType.TYPE_CLASS_TEXT| InputType.TYPE_TEXT_VARIATION_PASSWORD);
         dialogPasswordInput.setHint("Password");
