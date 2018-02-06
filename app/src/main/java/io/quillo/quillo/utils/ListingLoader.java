@@ -5,7 +5,7 @@ import java.util.List;
 
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.QuilloDatabase;
-import io.quillo.quillo.interfaces.ListingsListener;
+import io.quillo.quillo.interfaces.OneTimeListingListener;
 
 /**
  * Created by shkla on 2018/02/03.
@@ -30,7 +30,7 @@ public class ListingLoader {
     }
 
     public void loadListings(final ArrayList<String> listingUids){
-        ListingsListener listingsListener = new ListingsListener() {
+        OneTimeListingListener listingsListener = new OneTimeListingListener() {
             @Override
             public void onListingLoaded(Listing listing) {
                 listings.add(listing);
@@ -40,12 +40,7 @@ public class ListingLoader {
             }
 
             @Override
-            public void onListingUpdated(Listing listing) {
-
-            }
-
-            @Override
-            public void onListingRemoved(Listing listing) {
+            public void onListingLoadFail() {
 
             }
         };

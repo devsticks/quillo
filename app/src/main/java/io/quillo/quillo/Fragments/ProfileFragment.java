@@ -200,7 +200,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         itemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider_white));
 
         recyclerView.addItemDecoration(itemDecoration);
-        
+
     }
 
     @Override

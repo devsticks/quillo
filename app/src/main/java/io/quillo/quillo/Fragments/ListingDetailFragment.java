@@ -30,7 +30,7 @@ import io.quillo.quillo.controllers.MainActivity;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
-import io.quillo.quillo.interfaces.ListingsListener;
+import io.quillo.quillo.interfaces.OneTimeListingListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.FirebaseHelper;
 
@@ -337,7 +337,7 @@ public class ListingDetailFragment extends Fragment  {
     }
 
     public void loadListing() {
-        ((MainActivity) getActivity()).quilloDatabase.loadListing(listingUid, new ListingsListener() {
+        ((MainActivity) getActivity()).quilloDatabase.loadListing(listingUid, new OneTimeListingListener() {
             @Override
             public void onListingLoaded(Listing listing) {
                 setListing(listing);
@@ -346,15 +346,12 @@ public class ListingDetailFragment extends Fragment  {
             }
 
             @Override
-            public void onListingUpdated(Listing listing) {
-
-            }
-
-            @Override
-            public void onListingRemoved(Listing listing) {
+            public void onListingLoadFail() {
+                Toast.makeText(getContext(), "Uh oh something went wrong", Toast.LENGTH_SHORT).show();
 
             }
         });
+
     }
     
     public void loadSeller() {
