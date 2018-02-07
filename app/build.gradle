@@ -28,8 +28,8 @@ android {
         applicationId "io.quillo.quillo"
         minSdkVersion 17
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.02"
+        versionCode 4
+        versionName "1.04"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

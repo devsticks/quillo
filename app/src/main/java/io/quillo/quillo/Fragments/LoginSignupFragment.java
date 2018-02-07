@@ -285,7 +285,7 @@ public class LoginSignupFragment extends Fragment {
         AlertDialog.Builder builder = new  AlertDialog.Builder(getActivity(), AlertDialog.THEME_HOLO_LIGHT);
         builder.setTitle("Email Verification sent");
         if (inputUniversity.getText().toString().equals("University of Cape Town")) {
-            builder.setMessage("This isn't Tin Roof we going to need ID before we let you in.\n" +
+            builder.setMessage("Verification needed\n" +
                     "Please verify your email before you add an advert");
         }else{
             builder.setMessage("Please verify your email before you add an advert");
@@ -320,8 +320,8 @@ public class LoginSignupFragment extends Fragment {
             inputEmail.setError(null);
         }
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            inputPassword.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 4 ) {
+            inputPassword.setError("Password needs to be longer than 4 characters");
             return false;
         } else {
             inputPassword.setError(null);

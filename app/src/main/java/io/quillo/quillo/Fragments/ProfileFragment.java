@@ -103,12 +103,12 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         if (isViewingOwnProfile) {
             ((MainActivity) getActivity()).showBottomNavBar();
             updateUser();
-        }
-        if(adapter.getItemCount() == 0){
-            emptyProfileState.setVisibility(View.VISIBLE);
-        }else{
-            emptyProfileState.setVisibility(View.GONE);
+            if(adapter.getItemCount() == 0){
+                emptyProfileState.setVisibility(View.VISIBLE);
+            }else{
+                emptyProfileState.setVisibility(View.GONE);
 
+            }
         }
 
     }
