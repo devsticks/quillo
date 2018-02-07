@@ -259,7 +259,7 @@ public class AddEditListingFragment extends Fragment implements SelectPhotoDialo
                             ((MainActivity)getActivity()).quilloDatabase.loadPerson(FirebaseHelper.getCurrentUserUid(), new PersonListener() {
                                 @Override
                                 public void onPersonLoaded(Person person) {
-                                    if (person.getPhone() == null || person.getPhone().isEmpty()){
+                                    if (person.getPhoneNumber() == null || person.getPhoneNumber().isEmpty()){
                                         showPhoneInputDialog();
                                     } else{
                                         navigateBack();

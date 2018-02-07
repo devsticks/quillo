@@ -32,7 +32,7 @@
                     android:id="@+id/imv_profile_picture"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:background="@color/DarkText"
+                    android:background="@color/WHITE"
                     android:scaleType="centerCrop" />
 
                 <com.airbnb.lottie.LottieAnimationView

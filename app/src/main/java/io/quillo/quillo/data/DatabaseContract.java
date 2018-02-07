@@ -23,7 +23,7 @@ public class DatabaseContract {
     public static final String FIREBASE_PERSON_EMAIL = "email";
     public static final String FIREBASE_PERSON_UID = "uid";
     public static final String FIREBASE_PERSON_NAME = "name";
-    public static final String FIREBASE_PERSON_PHONE = "phone";
+    public static final String FIREBASE_PERSON_PHONE = "phoneNumber";
 
     public static final String FIREBASE_PERSON_LISTINGS_CHILD_NAME = "user_listings";
     public static final String FIREBASE_USER_BOOKMARKS_CHILD_NAME = "user_bookmarks";

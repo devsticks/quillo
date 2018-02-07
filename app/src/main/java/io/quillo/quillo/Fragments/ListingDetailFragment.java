@@ -131,6 +131,8 @@ public class ListingDetailFragment extends Fragment  {
 
         if (seller.getImageUrl() != null) {
             Glide.with(getContext()).load(seller.getImageUrl()).into(sellerProfilePic);
+        }else{
+            sellerProfilePic.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
         }
 
         setupSellerContainerButtons();
@@ -233,9 +235,9 @@ public class ListingDetailFragment extends Fragment  {
             }
         });
 
-        if (seller.getPhone() != null &&
-                !seller.getPhone().isEmpty() &&
-                !seller.getPhone().equals("")) {
+        if (seller.getPhoneNumber() != null &&
+                !seller.getPhoneNumber().isEmpty() &&
+                !seller.getPhoneNumber().equals("")) {
 
             call.setVisibility(View.VISIBLE);
             text.setVisibility(View.VISIBLE);
@@ -245,7 +247,7 @@ public class ListingDetailFragment extends Fragment  {
                 public void onClick(View view) {
                     Intent callIntent = new Intent(Intent.ACTION_DIAL);
 
-                    callIntent.setData(Uri.parse("tel:" + seller.getPhone()));
+                    callIntent.setData(Uri.parse("tel:" + seller.getPhoneNumber()));
 
                     view.getContext().startActivity(callIntent);
                 }
@@ -256,13 +258,13 @@ public class ListingDetailFragment extends Fragment  {
                 public void onClick(View view) {
                     try {
                         if (whatsAppIsInstalled()){
-                            String number = "+27" + seller.getPhone().substring(1);
+                            String number = "+27" + seller.getPhoneNumber().substring(1);
                             String queryText = "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo. For R" + listing.getPrice();
                             Uri uri = Uri.parse("https://api.whatsapp.com/send?phone="+number+"&text="+queryText);
                             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                             startActivity(intent);
                         }else{
-                            Uri uri = Uri.parse("smsto:" + seller.getPhone());
+                            Uri uri = Uri.parse("smsto:" + seller.getPhoneNumber());
                             Intent smsIntent = new Intent(Intent.ACTION_SENDTO, uri);
                             smsIntent.putExtra("sms_body", "Hi " + seller.getName() + ". I'd like to enquire about your ad for " + listing.getName() + " on Quillo.");
                             view.getContext().startActivity(smsIntent);

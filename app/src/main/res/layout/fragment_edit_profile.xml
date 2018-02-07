@@ -23,12 +23,12 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:adjustViewBounds="false"
-                android:background="@android:color/black"
+                android:background="@android:color/background_light"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_account_circle_black_24dp" />
+                app:srcCompat="@drawable/ic_person_black_24dp" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_add_photo"

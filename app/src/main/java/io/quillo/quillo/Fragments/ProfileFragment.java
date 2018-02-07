@@ -265,6 +265,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         }else{
             loader.cancelAnimation();
             loader.setVisibility(View.GONE);
+            profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
         }
     }
 

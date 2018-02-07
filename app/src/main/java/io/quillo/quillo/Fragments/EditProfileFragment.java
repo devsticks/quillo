@@ -157,13 +157,15 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
     private void bindPersonToViews(){
         nameInput.setText(person.getName());
         emailInput.setText(person.getEmail());
-        if(person.getPhone() != null) {
-            phoneInput.setText(person.getPhone());
+        if(person.getPhoneNumber() != null) {
+            phoneInput.setText(person.getPhoneNumber());
         }
         universityInput.setText(person.getUniversityUid());
 
-        if(person.getImageUrl() != null){
+        if(person.getImageUrl() != null && !person.getImageUrl().isEmpty()){
             Glide.with(getContext()).load(person.getImageUrl()).into(profileImage);
+        }else{
+            profileImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
         }
     }
 
@@ -218,7 +220,7 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
             final FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
             person.setName(nameInput.getText().toString());
             person.setEmail(emailInput.getText().toString());
-            person.setPhone(phoneInput.getText().toString());
+            person.setPhoneNumber(phoneInput.getText().toString());
             person.setUniversityUid(universityInput.getText().toString());
 
             AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
