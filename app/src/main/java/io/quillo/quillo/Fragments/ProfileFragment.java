@@ -4,15 +4,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +65,8 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
     ImageView profilePicture;
     @BindView(R.id.loader_animation)
     LottieAnimationView loader;
+    @BindView(R.id.empty_profile_state)
+    View emptyProfileState;
 
     public static ProfileFragment newInstance() {
         ProfileFragment profileFragment = new ProfileFragment();
@@ -104,6 +103,12 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         if (isViewingOwnProfile) {
             ((MainActivity) getActivity()).showBottomNavBar();
             updateUser();
+        }
+        if(adapter.getItemCount() == 0){
+            emptyProfileState.setVisibility(View.VISIBLE);
+        }else{
+            emptyProfileState.setVisibility(View.GONE);
+
         }
 
     }
@@ -277,27 +282,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
         adapter.insertListing(position, newListing);
     }
 
-    public void showUndoSnackBar(final Listing listing) {
-        Snackbar.make(
-                getActivity().findViewById(R.id.root_profile_activity),
-                getString(R.string.action_delete_item),
-                Snackbar.LENGTH_LONG
-        ).setAction(R.string.action_undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                handleUndoDeleteConfirmed();
-            }
-        })
-                .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                    @Override
-                    public void onDismissed(Snackbar transientBottomBar, int event) {
-                        super.onDismissed(transientBottomBar, event);
-
-                        handleSnackbarTimeout(listing);
-                    }
-                })
-                .show();
-    }
 
     @Override
     public void onClick(View view) {
@@ -306,62 +290,6 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
 
     }
 
-    private ItemTouchHelper.Callback createHelperCallback() {
-                /*First Param is for Up/Down motion, second is for Left/Right.
-        Note that we can supply 0, one constant (e.g. ItemTouchHelper.LEFT), or two constants (e.g.
-        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) to specify what directions are allowed.
-        */
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(
-                0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
-            //not used, as the first parameter above is 0
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-                                  RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-
-            @Override
-            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int position = viewHolder.getAdapterPosition();
-                if (isViewingOwnProfile) {
-                    handleListingSwiped(
-                            position,
-                            adapter.getListings().get(position)
-                    );
-                }
-            }
-        };
-
-        return simpleItemTouchCallback;
-    }
-
-    private void handleListingSwiped(int position, Listing listing) {
-
-        deleteListingCellAt(position);
-
-        temporaryListing = listing;
-        temporaryListingPosition = position;
-
-        showUndoSnackBar(listing);
-    }
-
-    private void handleUndoDeleteConfirmed() {
-        if (temporaryListing != null) {
-            //quilloDatabase.insertListing(temporaryListing);
-            insertListingCellAt(temporaryListingPosition, temporaryListing);
-
-            temporaryListing = null;
-            temporaryListingPosition = 0;
-        }
-    }
-
-
-    private void handleSnackbarTimeout(Listing listing) {
-        ((MainActivity)getActivity()).quilloDatabase.deleteListing(listing);
-    }
 
 
 }

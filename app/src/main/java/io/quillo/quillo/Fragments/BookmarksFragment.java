@@ -9,12 +9,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.quillo.quillo.Enums.RecyclerViewState;
 import io.quillo.quillo.R;
 import io.quillo.quillo.controllers.ListingAdapter;
 import io.quillo.quillo.controllers.MainActivity;
@@ -35,8 +37,12 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
 
     private ListingAdapter adapter;
     private QuilloDatabase quilloDatabase;
-
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerViewState recyclerViewState;
+    @BindView(R.id.loading_state)
+    View loadingState;
+    @BindView(R.id.empty_state)
+    View emptyState;
 
     public static BookmarksFragment newInstance(){
         BookmarksFragment bookmarksFragment = new BookmarksFragment();
@@ -79,6 +85,11 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
         super.onResume();
         ((MainActivity)getActivity()).toolbar.setVisibility(View.GONE);
         ((MainActivity)getActivity()).showBottomNavBar();
+        if(adapter.getItemCount() == 0){
+            changeState(RecyclerViewState.EMPTY);
+        }else{
+            changeState(RecyclerViewState.NORMAL);
+        }
     }
 
     @Override
@@ -89,6 +100,7 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     @Override
     public void onUnBookmarkClick(Listing listing) {
         quilloDatabase.removeBookmark(listing);
+
     }
 
     @Override
@@ -105,6 +117,9 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
     @Override
     public void onBookmarkRemoved(String listingUid) {
         adapter.removeListing(listingUid);
+        if(adapter.getItemCount() == 0){
+            changeState(RecyclerViewState.EMPTY);
+        }
 
     }
 
@@ -125,6 +140,33 @@ public class BookmarksFragment extends Fragment implements ListingCellListener, 
         if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    private void changeState(RecyclerViewState recyclerViewState){
+        switch (recyclerViewState){
+            case NORMAL:
+                recyclerView.setVisibility(View.VISIBLE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.GONE);
+                break;
+            case LOADING:
+                //Glide.with(getContext()).load(R.drawable.porkie_loader).into(loadingImageView);
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.VISIBLE);
+                emptyState.setVisibility(View.GONE);
+                break;
+            case EMPTY:
+                recyclerView.setVisibility(View.GONE);
+                loadingState.setVisibility(View.GONE);
+                emptyState.setVisibility(View.VISIBLE);
+                break;
+
+            default:
+                Log.d(BookmarksFragment.class.getName(), "Invalid fragment state:  "+ recyclerViewState);
+
+
+        }
+
     }
 
 }

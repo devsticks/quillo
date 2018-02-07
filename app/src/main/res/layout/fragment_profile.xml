@@ -120,5 +120,12 @@
             tools:listitem="@layout/listing_cell" />
     </android.support.design.widget.CoordinatorLayout>
 
+    <include
+        layout="@layout/empty_profile_state"
+        android:id="@+id/empty_profile_state"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/recycler_linear_holder"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 </android.support.constraint.ConstraintLayout>
