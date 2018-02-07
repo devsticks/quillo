@@ -395,9 +395,11 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
 
         bundle.putSerializable(IntentExtras.EXTRA_LISTING_UID, listing.getUid());
+        bundle.putSerializable(IntentExtras.EXTRA_LISTING, listing);
 
         ListingDetailFragment listingDetailFragment = new ListingDetailFragment();
         listingDetailFragment.setArguments(bundle);
+
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content_holder, listingDetailFragment)

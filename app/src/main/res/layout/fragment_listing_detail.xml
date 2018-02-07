@@ -29,16 +29,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/lbl_description"
+        android:layout_marginTop="8dp"
         android:background="@color/transparentBackgroundWhite"
-        android:paddingTop="16dp"
+        android:maxLines="3"
+        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imv_listing_image"
-        tools:text="Stewart Calculus, 5th Edition"
-        android:maxLines="3"/>
+        tools:text="Stewart Calculus, 5th Edition" />
 
     <View
         android:id="@+id/div_center"
@@ -118,6 +119,7 @@
         android:layout_marginTop="40dp"
         android:background="@drawable/border"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

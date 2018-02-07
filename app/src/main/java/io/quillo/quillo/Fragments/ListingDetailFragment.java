@@ -114,7 +114,7 @@ public class ListingDetailFragment extends Fragment  {
 
     private void setupViews(){
         listingActionFAB.setVisibility(View.INVISIBLE);
-        sellerContainer.setVisibility(View.GONE);
+        //sellerContainer.setVisibility(View.GONE);
         deleteOptionsContainer.setVisibility(View.GONE);
 
         if (whatsAppIsInstalled()){
