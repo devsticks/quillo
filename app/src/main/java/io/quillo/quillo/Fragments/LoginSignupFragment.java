@@ -297,7 +297,7 @@ public class LoginSignupFragment extends Fragment {
                 ((MainActivity) getActivity()).changeFragment(false);
                 ((MainActivity) getActivity()).showToolbar();
                 ((MainActivity) getActivity()).resetPersonFragment();
-                Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Welcome: " + auth.getCurrentUser().getDisplayName() + "!", Toast.LENGTH_SHORT).show();
             }
         });
         builder.show();

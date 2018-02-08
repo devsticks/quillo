@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -37,9 +36,7 @@ import io.quillo.quillo.Fragments.SearchFragment;
 import io.quillo.quillo.R;
 import io.quillo.quillo.data.IntentExtras;
 import io.quillo.quillo.data.Listing;
-import io.quillo.quillo.data.Person;
 import io.quillo.quillo.data.QuilloDatabase;
-import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.BottomNavigationViewHelper;
 import io.quillo.quillo.utils.FirebaseHelper;
 
@@ -106,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         searchFragment = SearchFragment.newInstance();
         bookmarksFragment = BookmarksFragment.newInstance();
         profileFragment = ProfileFragment.newInstance();
-
         selectedFragment = searchFragment;
         changeFragment(false);
     }
@@ -158,9 +154,8 @@ public class MainActivity extends AppCompatActivity {
         //TODO Get rid of this for launch (along with menu item...
         if (id == R.id.landing){
             showLandingFragment();
-        } else if (id == R.id.legal) {
-            //TODO make legal page and call it here
-        } else if (id == R.id.logout){
+        }
+        else if (id == R.id.logout){
             FirebaseAuth.getInstance().signOut();
 
             showLoginRegisterScreen(searchFragment, true);
@@ -169,31 +164,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void checkIfUniversityIsKnown(){
-        FirebaseUser currentUser = FirebaseHelper.getCurrentFirebaseUser();
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
-        final String universityUid = sharedPreferences.getString(getString(R.string.shared_pref_university_key), null);
 
-        if (universityUid == null){
-            //Uni is not saved in shared pref
-            if(currentUser == null){
-                //User is not logged in
-
-                showLandingFragment();
-
-            } else {
-                //User is logged in get uni from firebase
-                quilloDatabase.loadPerson(currentUser.getUid(), new PersonListener() {
-                    @Override
-                    public void onPersonLoaded(Person person) {
-                        String personUniversityUid = person.getUniversityUid();
-                        saveUniversityUidToSharedPrefrences(personUniversityUid);
-                    }
-                });
-
-            }
-        }
-    }
 
     public void saveUniversityUidToSharedPrefrences(String universityUid){
         SharedPreferences.Editor editor = this.getPreferences(Context.MODE_PRIVATE).edit();
@@ -426,14 +397,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public void showSearchFragment() {
-        SearchFragment searchFragment = new SearchFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_holder, searchFragment)
-                .addToBackStack(getSupportFragmentManager().findFragmentById(R.id.content_holder).getClass().getName())
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
-    }
 
     public void showSearchFragmentAfterLanding() {
         showToolbar();

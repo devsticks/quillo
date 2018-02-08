@@ -1,6 +1,7 @@
 package io.quillo.quillo.Fragments;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,6 +87,16 @@ public class EditProfileFragment extends Fragment implements SelectPhotoDialog.O
         person = (Person)this.getArguments().getSerializable(IntentExtras.EXTRA_SELLER);
         bindPersonToViews();
         universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
+        universityInput.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(arg1.getApplicationWindowToken(), 0);
+
+            }
+
+        });
 
 
         return view;

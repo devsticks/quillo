@@ -326,7 +326,7 @@ public class ListingDetailFragment extends Fragment  {
         });
     }
     private void shareListing(){
-        String text = "Look at this listing I found on quillo";
+        String text = "Look at this listing I found on Quillo";
         Uri imageUri = getImageUri(getBitmapFromPhoto());
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);

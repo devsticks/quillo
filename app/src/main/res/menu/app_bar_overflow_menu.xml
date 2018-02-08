@@ -5,13 +5,7 @@
     <item
         android:id="@+id/landing"
         android:orderInCategory="1"
-        android:title="Landing Screen"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/legal"
-        android:orderInCategory="2"
-        android:title="Legal"
+        android:title="Change University"
         app:showAsAction="never" />
 
     <item

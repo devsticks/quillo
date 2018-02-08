@@ -1,5 +1,6 @@
 package io.quillo.quillo.Fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,9 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +33,7 @@ public class LandingFragment extends Fragment{
 
     @BindView(R.id.input_university)
     AutoCompleteTextView universityInput;
-    @BindView(R.id.btn_skip)
-    TextView btnSkip;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,16 @@ public class LandingFragment extends Fragment{
 
 
         universityInput.setAdapter(FirebaseHelper.getSupportedUniversitiesAdapter(getActivity()));
+        universityInput.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(arg1.getApplicationWindowToken(), 0);
+
+            }
+
+        });
 
         return view;
     }
@@ -66,7 +77,7 @@ public class LandingFragment extends Fragment{
     }
 
     @OnClick(R.id.btn_start)
-    public void handleStartClick (View v) {
+    public void handleStartClick () {
         if (universityIsValid()){
             String universityUid = universityInput.getText().toString();
             ((MainActivity)getActivity()).saveUniversityUidToSharedPrefrences(universityUid);
@@ -74,11 +85,7 @@ public class LandingFragment extends Fragment{
         }
     }
 
-    @OnClick(R.id.btn_skip)
-    public void handleSkipClick (View v) {
-        //TODO What if they aren't in university?
-        ((MainActivity)getActivity()).showSearchFragmentAfterLanding();
-    }
+
 
     private boolean universityIsValid(){
         ArrayList<String> supportedUniversities = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.universities)));
