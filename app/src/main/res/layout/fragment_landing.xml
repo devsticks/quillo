@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="16dp"
             app:layout_constraintBottom_toTopOf="@+id/btn_start"
-            android:hint="University"
+            android:hint="University (Full)"
             android:maxLines="1"
             android:imeOptions="actionDone"
             app:layout_constraintEnd_toEndOf="parent"
