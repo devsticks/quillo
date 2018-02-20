@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,9 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
-
 import com.google.firebase.auth.FirebaseUser;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +39,6 @@ import io.quillo.quillo.data.Listing;
 import io.quillo.quillo.data.Person;
 import io.quillo.quillo.interfaces.ElasticSearchAPI;
 import io.quillo.quillo.interfaces.ListingCellListener;
-import io.quillo.quillo.utils.OnLoadMoreListener;
 import io.quillo.quillo.interfaces.PasswordListener;
 import io.quillo.quillo.interfaces.PersonListener;
 import io.quillo.quillo.utils.FirebaseHelper;
@@ -49,6 +46,7 @@ import io.quillo.quillo.utils.HitsList;
 import io.quillo.quillo.utils.HitsObject;
 import io.quillo.quillo.utils.ListingLoader;
 import io.quillo.quillo.utils.ListingSource;
+import io.quillo.quillo.utils.OnLoadMoreListener;
 import okhttp3.Credentials;
 import retrofit2.Call;
 import retrofit2.Callback;

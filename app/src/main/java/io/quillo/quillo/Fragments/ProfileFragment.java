@@ -149,6 +149,7 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
             @Override
             public void onPersonListingLoaded(Listing listing) {
                 adapter.addListing(listing);
+                emptyProfileState.setVisibility(View.GONE);
             }
 
             @Override
@@ -159,6 +160,9 @@ public class ProfileFragment extends Fragment implements ListingCellListener, Vi
             @Override
             public void onPersonListingRemoved(Listing listing) {
                 adapter.removeListing(listing.getUid());
+                if(adapter.getItemCount() == 0){
+                    emptyProfileState.setVisibility(View.GONE);
+                }
             }
         });
     }
