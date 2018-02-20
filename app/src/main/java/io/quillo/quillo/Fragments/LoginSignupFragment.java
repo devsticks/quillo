@@ -211,6 +211,10 @@ public class LoginSignupFragment extends Fragment {
         String email = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
 
+        if(getActivity() == null){
+            Log.e(SearchFragment.class.getName(), "Activity is null");
+        }
+
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

@@ -3,6 +3,7 @@ package io.quillo.quillo.controllers;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,10 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingCell> {
     private Context context;
     private boolean isViewingOwnListings;
     private ListingCellListener listingCellListener;
+
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     public ListingAdapter(ListingCellListener listingCellListener, Context context, boolean isViewingOwnListings) {
         this.listingCellListener = listingCellListener;
